@@ -39,7 +39,6 @@
             width: 90%; max-width: 400px;
         }
 
-        /* Botón de Google con Logo */
         .google-btn {
             background: white; color: #757575; border: none; padding: 12px 24px;
             border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Roboto', sans-serif;
@@ -73,7 +72,7 @@
         #app { display: none; padding: 20px; padding-top: 90px; }
         .view { display: none; max-width: 1100px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; opacity: 1; transform: translateY(0); } }
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
@@ -88,6 +87,13 @@
         
         #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; }
         .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-top: 5px; }
+
+        /* Estilos Calificaciones y Stock */
+        .stars-container { display: flex; justify-content: center; gap: 10px; margin: 20px 0; font-size: 2.5rem; }
+        .star-input { cursor: pointer; color: rgba(255,255,255,0.2); }
+        .star-input.active { color: var(--world-cup-yellow); }
+        .stock-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .stock-badge { background: var(--world-cup-yellow); color: black; padding: 2px 8px; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -108,8 +114,10 @@
         <div style="padding: 20px; text-align: center;"><h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">ALBUM PANINI 2026</h2></div>
         <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
         <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
+        <a href="#" onclick="showView('stock-view')">💎 CARTAS EN STOCK</a>
         <a href="#" onclick="showView('shop-view')">🛒 TIENDA</a>
         <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
+        <a href="#" onclick="showView('rating-view')">🌟 CALIFÍCANOS</a>
         <a href="#" onclick="handleLogout()" style="color: #ff5252; margin-top: 20px;">🚪 CERRAR SESIÓN</a>
     </nav>
 
@@ -154,6 +162,15 @@
             </div>
         </div>
 
+        <div id="stock-view" class="view" style="max-width: 700px;">
+            <div class="card">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">CARTAS DISPONIBLES</h2>
+                <div id="stock-list-container" style="margin-top:20px;">
+                    <p style="text-align:center; opacity:0.5;">Cargando inventario real...</p>
+                </div>
+            </div>
+        </div>
+
         <div id="shop-view" class="view">
             <h1 style="font-family:'Oswald'; text-align:center; margin-bottom:30px;">PRODUCTOS OFICIALES</h1>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
@@ -178,13 +195,28 @@
         <div id="prices-view" class="view" style="max-width:500px;">
             <div class="card">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center; margin-bottom:20px;">LISTA DE PRECIOS</h2>
-                <div style="line-height: 2.5;">
+                <div id="dynamic-prices-container" style="line-height: 2.5;">
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Sobre de Estampas</span> <b>Q 7.00</b></div>
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Pasta Dura</span> <b>Q 125.00</b></div>
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Normal</span> <b>Q 35.00</b></div>
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Caja (100 Sobres)</span> <b>Q 980.00</b></div>
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); color:var(--world-cup-yellow);"><span>Cartas Especiales</span> <b>Varía según jugador</b></div>
                 </div>
+            </div>
+        </div>
+
+        <div id="rating-view" class="view" style="max-width: 500px;">
+            <div class="card" style="text-align:center;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">¿QUÉ TE PARECE LA APP?</h2>
+                <p style="margin-top:10px; opacity:0.8;">Tu opinión nos ayuda a mejorar la experiencia del álbum.</p>
+                <div class="stars-container" id="starbox">
+                    <span class="star-input" onclick="setRate(1)">★</span>
+                    <span class="star-input" onclick="setRate(2)">★</span>
+                    <span class="star-input" onclick="setRate(3)">★</span>
+                    <span class="star-input" onclick="setRate(4)">★</span>
+                    <span class="star-input" onclick="setRate(5)">★</span>
+                </div>
+                <textarea id="rate-comment" placeholder="Déjanos un comentario (opcional)" style="width:100%; background:rgba(255,255,255,0.1); border:none; padding:15px; color:white; border-radius:10px;"></textarea>
+                <button class="buy-btn" onclick="submitRating()">ENVIAR CALIFICACIÓN</button>
             </div>
         </div>
     </div>
@@ -202,6 +234,77 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    let userRating = 0;
+
+    function setRate(n) {
+        userRating = n;
+        const stars = document.querySelectorAll('.star-input');
+        stars.forEach((s, i) => {
+            s.classList.toggle('active', i < n);
+        });
+    }
+
+    async function submitRating() {
+        if(userRating === 0) return msg("Por favor selecciona una estrella");
+        const comment = document.getElementById('rate-comment').value;
+        const user = auth.currentUser;
+
+        await db.collection("mejoras").add({
+            user: user.displayName,
+            email: user.email,
+            rating: userRating,
+            comment: comment,
+            date: new Date().toLocaleString()
+        });
+
+        msg("¡Gracias por calificar!");
+        showView('album-view');
+        userRating = 0;
+        setRate(0);
+        document.getElementById('rate-comment').value = "";
+    }
+
+    // Escuchar el stock del Admin en tiempo real
+    function listenToStock() {
+        db.collection("especiales").onSnapshot(snap => {
+            const container = document.getElementById('stock-list-container');
+            if(snap.empty) {
+                container.innerHTML = "<p style='text-align:center; opacity:0.5;'>No hay cartas especiales registradas.</p>";
+                return;
+            }
+            container.innerHTML = snap.docs.map(doc => {
+                const data = doc.data();
+                return `
+                    <div class="stock-item">
+                        <div>
+                            <strong style="color:var(--world-cup-yellow)">${data.name}</strong><br>
+                            <small>${data.rarity || 'Especial'}</small>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="stock-badge">Stock: ${data.stock}</div>
+                            <div style="font-size:0.8rem; margin-top:5px">Q ${data.price}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        });
+    }
+
+    // Escuchar precios dinámicos si se actualizan en Admin
+    function listenToPrices() {
+        db.collection("config").doc("precios").onSnapshot(doc => {
+            if(doc.exists) {
+                const data = doc.data();
+                const container = document.getElementById('dynamic-prices-container');
+                container.innerHTML = Object.entries(data).map(([nombre, precio]) => `
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <span>${nombre}</span> <b>Q ${precio}</b>
+                    </div>
+                `).join('');
+            }
+        });
+    }
 
     async function sendOrder(tipo) {
         const user = auth.currentUser;
@@ -256,6 +359,8 @@
                 if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
             });
             renderGroup();
+            listenToStock();
+            listenToPrices();
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('app').style.display = 'none';
