@@ -122,7 +122,8 @@
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
             <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 3rem;">PANINI 2026</h1>
-            <button class="google-btn" onclick="loginWithGoogle()">
+            <p id="auth-status" style="margin-top: 10px; font-size: 0.8rem; opacity: 0.7;">Inicia sesión para continuar</p>
+            <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
                 Acceder con Google
             </button>
@@ -215,56 +216,105 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // CORRECCIÓN MÓVIL: Persistencia y manejo de redirección
+    // 1. CONFIGURACIÓN DE PERSISTENCIA INICIAL
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-    auth.getRedirectResult().catch((error) => {
-        if(error.code === 'auth/internal-error') {
-            msg("Error de conexión. Intenta de nuevo.");
+    // 2. CAPTURAR EL RESULTADO DE REDIRECCIÓN (Evita el bucle en móviles)
+    auth.getRedirectResult().then((result) => {
+        if (result.user) {
+            console.log("Login exitoso vía Redirección");
+            // No hacemos nada más, onAuthStateChanged se encargará del resto
         }
+    }).catch((error) => {
+        console.error("Error en Redirect:", error);
+        document.getElementById('auth-status').innerText = "Error al conectar con Google. Reintenta.";
     });
 
     function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        // Usamos Redirect para evitar el error de "missing initial state" en móviles
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        provider.setCustomParameters({ prompt: 'select_account' });
+        
+        document.getElementById('auth-status').innerText = "Conectando...";
+        
+        // FORZAR REDIRECT EN TODO MÓVIL
+        if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
             auth.signInWithRedirect(provider);
         } else {
-            auth.signInWithPopup(provider);
+            auth.signInWithPopup(provider).catch(e => {
+                console.log("Popup bloqueado, intentando redirect...");
+                auth.signInWithRedirect(provider);
+            });
         }
     }
 
-    // --- LÓGICA DE PEDIDOS Y WHATSAPP ---
+    // --- MANEJO DE ESTADO DE USUARIO ---
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('menuBtn').style.display = 'block';
+            document.getElementById('contactGroup').style.display = 'flex';
+            
+            // Cargar datos del usuario
+            db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
+                if(doc.exists) { 
+                    myStickers = doc.data().coleccion || []; 
+                    if(activeTeam) renderStickers(); 
+                }
+            });
+            
+            initAppData();
+        } else {
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('menuBtn').style.display = 'none';
+            document.getElementById('contactGroup').style.display = 'none';
+            document.getElementById('auth-status').innerText = "Inicia sesión para continuar";
+        }
+    });
+
+    function initAppData() {
+        renderGroup(); 
+        // Stock real
+        db.collection("especiales").onSnapshot(snap => {
+            document.getElementById('stock-list-container').innerHTML = snap.docs.map(doc => `
+                <div class="stock-item" onclick="sendOrder('Carta Stock: ${doc.data().name}', '${doc.data().price}')">
+                    <span>${doc.data().name}</span> <span class="stock-badge">Q${doc.data().price}</span>
+                </div>
+            `).join('');
+        });
+        // Precios real
+        db.collection("config").doc("precios").onSnapshot(doc => {
+            if(doc.exists) {
+                document.getElementById('dynamic-prices-container').innerHTML = Object.entries(doc.data()).map(([n, p]) => `
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <span>${n}</span> <b>Q${p}</b>
+                    </div>
+                `).join('');
+            }
+        });
+    }
+
+    // --- FUNCIONES DE APP (IGUALES A LAS ANTERIORES) ---
     async function sendOrder(tipo, precio) {
         const user = auth.currentUser;
         const jug = document.getElementById('playerName').value || "";
         const eq = document.getElementById('playerTeam').value || "";
         const trackingID = "PN-" + Math.floor(1000 + Math.random() * 9000);
-        const numeroWA = "50246199644"; 
-
+        
         await db.collection("pedidos").add({
             name: `${user.displayName} - ${tipo}`,
-            trackingID: trackingID,
-            status: "pendiente",
+            trackingID: trackingID, status: "pendiente",
             details: `Producto: ${tipo} ${jug} ${eq}`,
-            email: user.email,
-            date: new Date().toLocaleString()
+            email: user.email, date: new Date().toLocaleString()
         });
         
-        let msj = `¡Hola! 👋 Quisiera solicitar:\n\n`;
-        msj += `📌 *Producto:* ${tipo}\n`;
+        let msj = `¡Hola! 👋 Quisiera solicitar:\n\n📌 *Producto:* ${tipo}\n`;
         if(jug) msj += `👤 *Detalle:* ${jug} ${eq}\n`;
-        msj += `💰 *Precio:* Q${precio}\n`;
-        msj += `🆔 *ID:* ${trackingID}\n\n`;
-        msj += `--------------------------\n`;
-        msj += `✅ *MÉTODOS DE PAGO:* \n`;
-        msj += `• Depósito bancario\n`;
-        msj += `• Efectivo`;
-
-        window.open(`https://wa.me/${numeroWA}?text=${encodeURIComponent(msj)}`, '_blank');
+        msj += `💰 *Precio:* Q${precio}\n🆔 *ID:* ${trackingID}\n\n✅ *PAGOS:* Depósito o Efectivo`;
+        window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msj)}`, '_blank');
     }
 
-    // --- SISTEMA DE STICKERS ---
     let currentIdx = 0; let activeTeam = ""; let myStickers = [];
     const grupos = [
         {id: "A", paises: ["México", "Sudáfrica", "Corea del Sur", "República Checa"]},
@@ -302,74 +352,23 @@
         }
     }
 
-    // --- UTILIDADES ---
     function changeGroup(n) { currentIdx = (currentIdx + n + grupos.length) % grupos.length; renderGroup(); }
     function getIso(p) {
         const codes = {"México":"mx", "Sudáfrica":"za", "Corea del Sur":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr"};
         return codes[p] || "un";
     }
-
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         if(window.innerWidth < 900) toggleMenu();
     }
-
     function msg(t) {
         const c = document.getElementById('toast-container');
         const d = document.createElement('div'); d.className = 'toast'; d.innerText = t;
         c.appendChild(d); setTimeout(() => d.remove(), 3000);
     }
-
     function handleLogout() { auth.signOut(); }
-
-    // --- LISTENERS ---
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            document.getElementById('menuBtn').style.display = 'block';
-            document.getElementById('contactGroup').style.display = 'flex';
-            db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-                if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
-            });
-            renderGroup(); 
-            // Listeners de Stock y Precios
-            db.collection("especiales").onSnapshot(snap => {
-                document.getElementById('stock-list-container').innerHTML = snap.docs.map(doc => `
-                    <div class="stock-item" onclick="sendOrder('Carta Stock: ${doc.data().name}', '${doc.data().price}')">
-                        <span>${doc.data().name}</span> <span class="stock-badge">Q${doc.data().price}</span>
-                    </div>
-                `).join('');
-            });
-            db.collection("config").doc("precios").onSnapshot(doc => {
-                if(doc.exists) {
-                    document.getElementById('dynamic-prices-container').innerHTML = Object.entries(doc.data()).map(([n, p]) => `
-                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);">
-                            <span>${n}</span> <b>Q${p}</b>
-                        </div>
-                    `).join('');
-                }
-            });
-        } else {
-            document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('app').style.display = 'none';
-            document.getElementById('menuBtn').style.display = 'none';
-            document.getElementById('contactGroup').style.display = 'none';
-        }
-    });
-
-    let userRating = 0;
-    function setRate(n) {
-        userRating = n;
-        document.querySelectorAll('.star-input').forEach((s, i) => s.classList.toggle('active', i < n));
-    }
-    async function submitRating() {
-        if(!userRating) return msg("Elige estrellas");
-        await db.collection("mejoras").add({ user: auth.currentUser.displayName, rating: userRating, comment: document.getElementById('rate-comment').value, date: new Date().toLocaleString() });
-        msg("¡Gracias!"); showView('album-view');
-    }
 </script>
 </body>
 </html>
