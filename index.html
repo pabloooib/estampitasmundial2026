@@ -46,13 +46,12 @@
             align-items: center; justify-content: center; gap: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .google-btn:hover { background: #f1f1f1; transform: translateY(-2px); }
 
         /* --- NAVEGACIÓN --- */
         .menu-toggle { 
             position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; 
             background: var(--world-cup-yellow); color: black; padding: 12px 18px; 
-            border-radius: 12px; font-weight: 900; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border-radius: 12px; font-weight: 900; display: none;
         }
 
         .contact-buttons { position: fixed; bottom: 20px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 1000; }
@@ -80,7 +79,7 @@
 
         .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
         .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
-        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; box-shadow: 0 0 15px rgba(255,235,59,0.4); }
+        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
 
         .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; font-size: 1rem; margin-top: 15px; text-transform: uppercase; }
         .price-tag { font-size: 1.8rem; font-weight: 900; color: var(--world-cup-yellow); margin: 10px 0; }
@@ -88,7 +87,6 @@
         #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; }
         .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-top: 5px; }
 
-        /* Estilos Calificaciones y Stock */
         .stars-container { display: flex; justify-content: center; gap: 10px; margin: 20px 0; font-size: 2.5rem; }
         .star-input { cursor: pointer; color: rgba(255,255,255,0.2); }
         .star-input.active { color: var(--world-cup-yellow); }
@@ -123,7 +121,7 @@
 
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 3rem; letter-spacing: 2px;">PANINI 2026</h1>
+            <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 3rem;">PANINI 2026</h1>
             <button class="google-btn" onclick="loginWithGoogle()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
                 Acceder con Google
@@ -132,7 +130,6 @@
     </div>
 
     <div id="app">
-        
         <div id="album-view" class="view active">
             <div class="grid-layout">
                 <div class="card">
@@ -153,26 +150,20 @@
         <div id="special-card-view" class="view" style="max-width: 600px;">
             <div class="card">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA ESPECÍFICA</h2>
-                <p style="margin: 15px 0; font-size: 0.9rem; opacity: 0.8;">
-                    Ingresa el nombre del jugador que buscas.
-                </p>
                 <input type="text" id="playerName" placeholder="Nombre del Jugador" style="width:100%; padding:12px; border-radius:8px; border:none; margin-bottom:10px; background: rgba(255,255,255,0.1); color: white;">
                 <input type="text" id="playerTeam" placeholder="Selección" style="width:100%; padding:12px; border-radius:8px; border:none; background: rgba(255,255,255,0.1); color: white;">
-                <button class="buy-btn" onclick="sendOrder('Carta Especial', 'A convenir')">CONSULTAR PRECIO CON ASESOR</button>
+                <button class="buy-btn" onclick="sendOrder('Carta Especial', 'A convenir')">CONSULTAR PRECIO POR WHATSAPP</button>
             </div>
         </div>
 
         <div id="stock-view" class="view" style="max-width: 700px;">
             <div class="card">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">CARTAS DISPONIBLES</h2>
-                <div id="stock-list-container" style="margin-top:20px;">
-                    <p style="text-align:center; opacity:0.5;">Cargando inventario real...</p>
-                </div>
+                <div id="stock-list-container" style="margin-top:20px;"></div>
             </div>
         </div>
 
         <div id="shop-view" class="view">
-            <h1 style="font-family:'Oswald'; text-align:center; margin-bottom:30px;">PRODUCTOS OFICIALES</h1>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
                 <div class="card" style="text-align:center; background:white; color:black;">
                     <h3 style="font-family:'Oswald';">ALBUM PASTA DURA</h3>
@@ -184,35 +175,28 @@
                     <div class="price-tag" style="color:var(--world-cup-green);">Q 35.00</div>
                     <button class="buy-btn" style="background:var(--world-cup-green); color:white;" onclick="sendOrder('Album Normal', '35.00')">COMPRAR</button>
                 </div>
-                <div class="card" style="text-align:center; background:white; color:black;">
-                    <h3 style="font-family:'Oswald';">CAJA 100 SOBRES</h3>
-                    <div class="price-tag" style="color:#000;">Q 980.00</div>
-                    <button class="buy-btn" onclick="sendOrder('Caja 100 Sobres', '980.00')">COMPRAR CAJA</button>
-                </div>
             </div>
         </div>
 
         <div id="prices-view" class="view" style="max-width:500px;">
             <div class="card">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center; margin-bottom:20px;">LISTA DE PRECIOS</h2>
-                <div id="dynamic-prices-container" style="line-height: 2.5;">
-                    <p style="text-align:center;">Cargando precios...</p>
-                </div>
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">LISTA DE PRECIOS</h2>
+                <div id="dynamic-prices-container" style="line-height: 2.5; margin-top: 20px;"></div>
             </div>
         </div>
 
         <div id="rating-view" class="view" style="max-width: 500px;">
             <div class="card" style="text-align:center;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">¿QUÉ TE PARECE LA APP?</h2>
-                <div class="stars-container" id="starbox">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">CALIFÍCANOS</h2>
+                <div class="stars-container">
                     <span class="star-input" onclick="setRate(1)">★</span>
                     <span class="star-input" onclick="setRate(2)">★</span>
                     <span class="star-input" onclick="setRate(3)">★</span>
                     <span class="star-input" onclick="setRate(4)">★</span>
                     <span class="star-input" onclick="setRate(5)">★</span>
                 </div>
-                <textarea id="rate-comment" placeholder="Déjanos un comentario" style="width:100%; background:rgba(255,255,255,0.1); border:none; padding:15px; color:white; border-radius:10px;"></textarea>
-                <button class="buy-btn" onclick="submitRating()">ENVIAR CALIFICACIÓN</button>
+                <textarea id="rate-comment" placeholder="Comentario" style="width:100%; background:rgba(255,255,255,0.1); border:none; padding:15px; color:white; border-radius:10px;"></textarea>
+                <button class="buy-btn" onclick="submitRating()">ENVIAR</button>
             </div>
         </div>
     </div>
@@ -231,149 +215,57 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let userRating = 0;
+    // CORRECCIÓN MÓVIL: Persistencia y manejo de redirección
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-    function setRate(n) {
-        userRating = n;
-        const stars = document.querySelectorAll('.star-input');
-        stars.forEach((s, i) => { s.classList.toggle('active', i < n); });
+    auth.getRedirectResult().catch((error) => {
+        if(error.code === 'auth/internal-error') {
+            msg("Error de conexión. Intenta de nuevo.");
+        }
+    });
+
+    function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        // Usamos Redirect para evitar el error de "missing initial state" en móviles
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+            auth.signInWithRedirect(provider);
+        } else {
+            auth.signInWithPopup(provider);
+        }
     }
 
-    async function submitRating() {
-        if(userRating === 0) return msg("Por favor selecciona una estrella");
-        const comment = document.getElementById('rate-comment').value;
-        const user = auth.currentUser;
-        await db.collection("mejoras").add({
-            user: user.displayName,
-            rating: userRating,
-            comment: comment,
-            date: new Date().toLocaleString()
-        });
-        msg("¡Gracias por calificar!");
-        showView('album-view');
-        userRating = 0; setRate(0);
-        document.getElementById('rate-comment').value = "";
-    }
-
-    function listenToStock() {
-        db.collection("especiales").onSnapshot(snap => {
-            const container = document.getElementById('stock-list-container');
-            if(snap.empty) {
-                container.innerHTML = "<p style='text-align:center; opacity:0.5;'>No hay cartas especiales.</p>";
-                return;
-            }
-            container.innerHTML = snap.docs.map(doc => {
-                const data = doc.data();
-                return `
-                    <div class="stock-item" onclick="sendOrder('Carta Stock: ${data.name}', '${data.price}')" style="cursor:pointer;">
-                        <div>
-                            <strong style="color:var(--world-cup-yellow)">${data.name}</strong><br>
-                            <small>${data.rarity}</small>
-                        </div>
-                        <div style="text-align:right">
-                            <div class="stock-badge">Q ${data.price}</div>
-                            <div style="font-size:0.7rem; margin-top:5px">Toca para comprar</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        });
-    }
-
-    function listenToPrices() {
-        db.collection("config").doc("precios").onSnapshot(doc => {
-            if(doc.exists) {
-                const data = doc.data();
-                const container = document.getElementById('dynamic-prices-container');
-                container.innerHTML = Object.entries(data).map(([nombre, precio]) => `
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);">
-                        <span>${nombre}</span> <b>Q ${precio}</b>
-                    </div>
-                `).join('');
-            }
-        });
-    }
-
-    // --- FUNCIÓN UNIFICADA DE PEDIDO (WHATSAPP + FIREBASE + PAGOS) ---
+    // --- LÓGICA DE PEDIDOS Y WHATSAPP ---
     async function sendOrder(tipo, precio) {
         const user = auth.currentUser;
         const jug = document.getElementById('playerName').value || "";
         const eq = document.getElementById('playerTeam').value || "";
         const trackingID = "PN-" + Math.floor(1000 + Math.random() * 9000);
-        const numeroWhatsApp = "50246199644"; 
+        const numeroWA = "50246199644"; 
 
-        // 1. Guardar en Firebase para el Admin
         await db.collection("pedidos").add({
             name: `${user.displayName} - ${tipo}`,
             trackingID: trackingID,
             status: "pendiente",
-            details: `Producto: ${tipo} ${jug} ${eq} - Precio: Q${precio}`,
+            details: `Producto: ${tipo} ${jug} ${eq}`,
             email: user.email,
             date: new Date().toLocaleString()
         });
         
-        msg(`Generando pedido ${trackingID}...`);
+        let msj = `¡Hola! 👋 Quisiera solicitar:\n\n`;
+        msj += `📌 *Producto:* ${tipo}\n`;
+        if(jug) msj += `👤 *Detalle:* ${jug} ${eq}\n`;
+        msj += `💰 *Precio:* Q${precio}\n`;
+        msj += `🆔 *ID:* ${trackingID}\n\n`;
+        msj += `--------------------------\n`;
+        msj += `✅ *MÉTODOS DE PAGO:* \n`;
+        msj += `• Depósito bancario\n`;
+        msj += `• Efectivo`;
 
-        // 2. Construir mensaje de WhatsApp
-        let mensaje = `¡Hola! 👋 Quisiera solicitar lo siguiente:\n\n`;
-        mensaje += `📌 *Producto:* ${tipo}\n`;
-        if(jug) mensaje += `👤 *Jugador:* ${jug}\n`;
-        mensaje += `💰 *Precio:* Q${precio}\n`;
-        mensaje += `🆔 *ID Pedido:* ${trackingID}\n\n`;
-        mensaje += `--------------------------\n`;
-        mensaje += `✅ *MÉTODOS DE PAGO:* \n`;
-        mensaje += `• Depósito bancario\n`;
-        mensaje += `• Efectivo`;
-
-        // 3. Abrir WhatsApp
-        setTimeout(() => {
-            const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-            window.open(url, '_blank');
-        }, 1000);
+        window.open(`https://wa.me/${numeroWA}?text=${encodeURIComponent(msj)}`, '_blank');
     }
 
-    function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-    
-    function showView(id) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(window.innerWidth < 900) toggleMenu();
-    }
-
-    function handleLogout() {
-        auth.signOut().then(() => {
-            document.getElementById('menuBtn').style.display = 'none';
-            document.getElementById('contactGroup').style.display = 'none';
-            document.getElementById('sidebar').classList.remove('active');
-        });
-    }
-
-    function msg(t) {
-        const c = document.getElementById('toast-container');
-        const d = document.createElement('div'); d.className = 'toast'; d.innerText = t;
-        c.appendChild(d); setTimeout(() => d.remove(), 3000);
-    }
-
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            document.getElementById('menuBtn').style.display = 'block';
-            document.getElementById('contactGroup').style.display = 'flex';
-            db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-                if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
-            });
-            renderGroup(); listenToStock(); listenToPrices();
-        } else {
-            document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('app').style.display = 'none';
-            document.getElementById('menuBtn').style.display = 'none';
-            document.getElementById('contactGroup').style.display = 'none';
-        }
-    });
-
-    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-
+    // --- SISTEMA DE STICKERS ---
+    let currentIdx = 0; let activeTeam = ""; let myStickers = [];
     const grupos = [
         {id: "A", paises: ["México", "Sudáfrica", "Corea del Sur", "República Checa"]},
         {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
@@ -381,15 +273,13 @@
         {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Turquía"]}
     ];
 
-    let currentIdx = 0; let activeTeam = ""; let myStickers = [];
-
     function renderGroup() {
         const g = grupos[currentIdx];
         document.getElementById('grp-name').innerText = "GRUPO " + g.id;
         const list = document.getElementById('team-list'); list.innerHTML = "";
         g.paises.forEach(p => {
             const d = document.createElement('div');
-            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; font-size:0.9rem;";
+            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald';";
             d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
             d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
             list.appendChild(d);
@@ -412,11 +302,73 @@
         }
     }
 
+    // --- UTILIDADES ---
     function changeGroup(n) { currentIdx = (currentIdx + n + grupos.length) % grupos.length; renderGroup(); }
-    
     function getIso(p) {
         const codes = {"México":"mx", "Sudáfrica":"za", "Corea del Sur":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr"};
         return codes[p] || "un";
+    }
+
+    function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(window.innerWidth < 900) toggleMenu();
+    }
+
+    function msg(t) {
+        const c = document.getElementById('toast-container');
+        const d = document.createElement('div'); d.className = 'toast'; d.innerText = t;
+        c.appendChild(d); setTimeout(() => d.remove(), 3000);
+    }
+
+    function handleLogout() { auth.signOut(); }
+
+    // --- LISTENERS ---
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('menuBtn').style.display = 'block';
+            document.getElementById('contactGroup').style.display = 'flex';
+            db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
+                if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
+            });
+            renderGroup(); 
+            // Listeners de Stock y Precios
+            db.collection("especiales").onSnapshot(snap => {
+                document.getElementById('stock-list-container').innerHTML = snap.docs.map(doc => `
+                    <div class="stock-item" onclick="sendOrder('Carta Stock: ${doc.data().name}', '${doc.data().price}')">
+                        <span>${doc.data().name}</span> <span class="stock-badge">Q${doc.data().price}</span>
+                    </div>
+                `).join('');
+            });
+            db.collection("config").doc("precios").onSnapshot(doc => {
+                if(doc.exists) {
+                    document.getElementById('dynamic-prices-container').innerHTML = Object.entries(doc.data()).map(([n, p]) => `
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);">
+                            <span>${n}</span> <b>Q${p}</b>
+                        </div>
+                    `).join('');
+                }
+            });
+        } else {
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('menuBtn').style.display = 'none';
+            document.getElementById('contactGroup').style.display = 'none';
+        }
+    });
+
+    let userRating = 0;
+    function setRate(n) {
+        userRating = n;
+        document.querySelectorAll('.star-input').forEach((s, i) => s.classList.toggle('active', i < n));
+    }
+    async function submitRating() {
+        if(!userRating) return msg("Elige estrellas");
+        await db.collection("mejoras").add({ user: auth.currentUser.displayName, rating: userRating, comment: document.getElementById('rate-comment').value, date: new Date().toLocaleString() });
+        msg("¡Gracias!"); showView('album-view');
     }
 </script>
 </body>
