@@ -3,175 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANINI DIGITAL | MUNDIAL 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --fifa-blue: #004b87; --fifa-gold: #c6a15a; --fifa-green: #008f4c;
-            --white: #ffffff; --bg: #0e1a2b; --text: #333;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Roboto', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+    <title>ÁLBUM DIGITAL 2026 | UPANA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore-compat.js"></script>
 
-        /* Pantallas de Login */
-        .auth-screen {
-            height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: linear-gradient(rgba(0,75,135,0.9), rgba(0,75,135,0.9)), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000');
-            background-size: cover; color: white; padding: 20px;
+    <style>
+        :root { --fifa-red: #8a0631; --fifa-blue: #021a35; --fifa-gold: #c6a15a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Roboto', sans-serif; background: #121212; color: white; overflow: hidden; }
+
+        /* Notificaciones Estéticas */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+        .toast {
+            background: rgba(0,0,0,0.9); color: white; padding: 12px 20px;
+            border-bottom: 3px solid var(--fifa-gold); border-radius: 5px; margin-bottom: 10px;
+            font-family: 'Oswald'; font-size: 0.9rem; animation: slideIn 0.4s ease forwards;
         }
-        .auth-card { background: white; padding: 2rem; border-radius: 15px; width: 100%; max-width: 400px; color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        /* Pantalla de Inicio */
+        .auth-container { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
+        #bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.3); }
+        
+        .auth-card { 
+            background: rgba(0,0,0,0.85); padding: 2.5rem; border-radius: 15px; border: 1px solid var(--fifa-gold); 
+            width: 90%; max-width: 400px; text-align: center; backdrop-filter: blur(10px);
+        }
+
+        .btn-google {
+            width: 100%; padding: 14px; border: none; border-radius: 5px; cursor: pointer;
+            font-family: 'Oswald'; text-transform: uppercase; margin-top: 20px;
+            background: white; color: #444; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s; font-size: 1rem; font-weight: bold;
+        }
+        .btn-google:hover { background: #f1f1f1; transform: translateY(-2px); }
 
         /* App Principal */
-        #app { display: none; max-width: 500px; margin: 0 auto; background: #f4f4f4; min-height: 100vh; flex-direction: column; }
-        header { background: var(--fifa-blue); color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 1000; }
+        #app { display: none; min-height: 100vh; background: #f4f4f4; color: #333; flex-direction: column; }
+        header { background: var(--fifa-blue); color: white; padding: 1rem; text-align: center; border-bottom: 4px solid var(--fifa-gold); position: relative; }
         
-        /* Navegación del Álbum (Hojas) */
-        .album-navigation { display: flex; justify-content: space-between; align-items: center; background: #ddd; padding: 10px; font-weight: bold; }
-        .page-container { flex: 1; padding: 15px; transition: transform 0.3s ease; }
-        
-        /* Estilo de la Hoja del Álbum */
-        .album-page { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 8px solid var(--fifa-blue); }
-        .grid-estampitas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .slot { 
-            aspect-ratio: 2/3; background: #e0e0e0; border: 2px solid #ccc; border-radius: 5px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            font-size: 0.7rem; font-weight: bold; cursor: pointer; position: relative; transition: 0.2s;
-        }
-        .slot.collected { background: var(--fifa-green); color: white; border-color: #006b39; }
-        .slot.repeated { background: var(--fifa-gold); color: white; border-color: #a3854a; }
-        .slot.repeated::after { content: 'x2'; position: absolute; top: 2px; right: 2px; background: white; color: black; font-size: 0.5rem; padding: 2px; border-radius: 2px; }
+        .logout-btn { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: transparent; border: 1px solid white; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
 
-        /* Tienda y Cotizador */
-        .card-tienda { background: white; margin: 10px; padding: 15px; border-radius: 10px; display: flex; align-items: center; gap: 15px; }
-        .price-tag { color: var(--fifa-green); font-weight: bold; font-size: 1.2rem; }
-        
-        .btn { background: var(--fifa-blue); color: white; border: none; padding: 12px; border-radius: 5px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
-        .nav-tabs { display: flex; background: #222; }
-        .nav-tabs button { flex: 1; padding: 12px; border: none; background: transparent; color: white; font-size: 0.7rem; cursor: pointer; }
-        .nav-tabs button.active { border-bottom: 3px solid var(--fifa-gold); }
+        .album-layout { max-width: 1100px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1.5fr; background: white; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; flex-grow: 1; }
+        .sidebar { background: #f9f9f9; border-right: 1px solid #ddd; padding: 20px; }
+        .team-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .sticker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+        .sticker { aspect-ratio: 2/3; background: #eee; border: 1px solid #ccc; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; }
+        .sticker.owned { background: #008f4c !important; color: white; border-color: #004d2a; transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen" class="auth-screen">
+    <div id="toast-container"></div>
+
+    <div class="auth-container" id="auth-screen">
+        <video autoplay muted loop id="bg-video">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-stadium-lights-shining-at-night-4248-large.mp4" type="video/mp4">
+        </video>
         <div class="auth-card">
-            <h2 id="auth-title" style="text-align:center; margin-bottom:1rem;">INICIAR SESIÓN</h2>
-            <input type="email" id="email" placeholder="Correo Electrónico">
-            <input type="password" id="pass" placeholder="Contraseña">
-            <button class="btn" onclick="login()">ENTRAR</button>
-            <p style="text-align:center; margin-top:1rem; font-size:0.8rem; cursor:pointer;" onclick="toggleAuth()">
-                <span id="auth-switch">¿No tienes cuenta? Crea una aquí</span>
-            </p>
+            <h1 style="font-family:'Oswald'; color:var(--fifa-gold); font-size: 2.5rem;">PANINI 2026</h1>
+            <button class="btn-google" onclick="loginWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+                Iniciar con Google
+            </button>
         </div>
     </div>
 
     <div id="app">
-        <header><h1 style="font-family:'Oswald'">FIFA WORLD CUP 2026</h1></header>
-        
-        <nav class="nav-tabs">
-            <button onclick="changeTab('album')" id="tab-album" class="active">ÁLBUM DIGITAL</button>
-            <button onclick="changeTab('tienda')" id="tab-tienda">COMPRAR</button>
-            <button onclick="changeTab('cotizar')" id="tab-cotizar">COTIZAR CARTA</button>
-        </nav>
-
-        <main id="main-content"></main>
+        <header>
+            <h1 style="font-family:'Oswald'">COLECCIÓN GUATEMALA</h1>
+            <p id="user-display" style="font-size: 0.7rem; opacity: 0.8;"></p>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </header>
+        <div class="album-layout">
+            <div class="sidebar">
+                <div style="background:var(--fifa-red); color:white; padding:10px; font-family:'Oswald'; text-align:center; margin-bottom:10px;" id="grp-name">GRUPO A</div>
+                <div id="team-list"></div>
+                <div style="display:flex; justify-content:space-between; margin-top:15px;">
+                    <button onclick="changeGroup(-1)" style="padding:10px; background:var(--fifa-gold); border:none; color:white; cursor:pointer;">◀</button>
+                    <button onclick="changeGroup(1)" style="padding:10px; background:var(--fifa-gold); border:none; color:white; cursor:pointer;">▶</button>
+                </div>
+            </div>
+            <div style="padding:30px;">
+                <h2 id="current-team-title" style="font-family:'Oswald'; color:var(--fifa-blue);">SELECCIONA PAÍS</h2>
+                <div class="sticker-grid" id="sticker-grid"></div>
+            </div>
+        </div>
     </div>
 
 <script>
-    // DATOS INICIALES
-    const selecciones = ["ESTADOS UNIDOS", "MÉXICO", "CANADÁ", "ARGENTINA", "ESPAÑA", "BRASIL", "FRANCIA", "ALEMANIA"];
-    let currentPage = 0;
-    let isLogin = true;
-    let currentUser = null;
+    // Tu Configuración de Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
+        authDomain: "tiendaskin-bccba.firebaseapp.com",
+        projectId: "tiendaskin-bccba",
+        storageBucket: "tiendaskin-bccba.firebasestorage.app",
+        messagingSenderId: "280193902268",
+        appId: "1:280193902268:web:743d0e2172641be7a292b9"
+    };
 
-    // Estado del álbum (se cargaría de una DB)
-    let myAlbum = JSON.parse(localStorage.getItem('user_album')) || {};
+    // Inicialización Estándar
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    function toggleAuth() {
-        isLogin = !isLogin;
-        document.getElementById('auth-title').innerText = isLogin ? 'INICIAR SESIÓN' : 'CREAR CUENTA';
-        document.getElementById('auth-switch').innerText = isLogin ? '¿No tienes cuenta? Crea una aquí' : '¿Ya tienes cuenta? Inicia sesión';
+    function msg(text) {
+        const container = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerText = text;
+        container.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
     }
 
-    function login() {
-        const mail = document.getElementById('email').value;
-        if(mail) {
-            currentUser = mail;
+    // FUNCIÓN DE LOGIN CORREGIDA
+    function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        
+        // Esto fuerza a que se abra la ventana de Google
+        auth.signInWithPopup(provider)
+            .then((result) => {
+                const user = result.user;
+                // Crear espacio en base de datos si es nuevo
+                db.collection("usuarios").doc(user.uid).get().then(doc => {
+                    if(!doc.exists) {
+                        db.collection("usuarios").doc(user.uid).set({ coleccion: [] });
+                    }
+                });
+                msg("✅ ¡Bienvenido!");
+            })
+            .catch(error => {
+                console.error("Detalle del error:", error.code);
+                if(error.code === 'auth/operation-not-allowed') msg("❌ Error: Habilita Google en Firebase");
+                else if(error.code === 'auth/auth-domain-config-required') msg("❌ Error: Configura el dominio en Firebase");
+                else msg("❌ Error al iniciar sesión");
+            });
+    }
+
+    function logout() {
+        auth.signOut();
+    }
+
+    // Lógica del Álbum
+    const grupos = [
+        {id: "A", paises: ["México", "Sudáfrica", "Corea del Sur", "República Checa"]},
+        {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
+        {id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},
+        {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Turquía"]},
+        {id: "E", paises: ["Alemania", "Ecuador", "Costa de Marfil", "Curazao"]},
+        {id: "F", paises: ["Países Bajos", "Japón", "Suecia", "Túnez"]},
+        {id: "G", paises: ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"]},
+        {id: "H", paises: ["España", "Uruguay", "Cabo Verde", "Arabia Saudita"]},
+        {id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},
+        {id: "J", paises: ["Argentina", "Argelia", "Austria", "Jordania"]},
+        {id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "R. D. del Congo"]},
+        {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
+    ];
+
+    let currentGrpIdx = 0;
+    let activeTeam = "";
+    let myStickers = [];
+
+    auth.onAuthStateChanged(user => {
+        if(user) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
-            changeTab('album');
+            document.getElementById('user-display').innerText = user.displayName;
+            db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
+                if(doc.exists) {
+                    myStickers = doc.data().coleccion || [];
+                    if(activeTeam) renderStickers();
+                }
+            });
+            renderGroup();
+        } else {
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('app').style.display = 'none';
+        }
+    });
+
+    function renderGroup() {
+        const g = grupos[currentGrpIdx];
+        document.getElementById('grp-name').innerText = "GRUPO " + g.id;
+        const list = document.getElementById('team-list');
+        list.innerHTML = "";
+        g.paises.forEach(p => {
+            const d = document.createElement('div');
+            d.className = 'team-item';
+            d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
+            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="25"> <span style="font-family:'Oswald'; font-size:0.8rem;">${p.toUpperCase()}</span>`;
+            list.appendChild(d);
+        });
+    }
+
+    function renderStickers() {
+        const grid = document.getElementById('sticker-grid');
+        grid.innerHTML = "";
+        for(let i=1; i<=20; i++) {
+            const id = `${activeTeam}-${i}`;
+            const owned = myStickers.includes(id);
+            const s = document.createElement('div');
+            s.className = `sticker ${owned ? 'owned' : ''}`;
+            s.innerText = i;
+            s.onclick = () => {
+                const newCol = owned ? myStickers.filter(x => x !== id) : [...myStickers, id];
+                db.collection("usuarios").doc(auth.currentUser.uid).update({ coleccion: newCol });
+            };
+            grid.appendChild(s);
         }
     }
 
-    function changeTab(tab) {
-        const content = document.getElementById('main-content');
-        document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-'+tab).classList.add('active');
+    function changeGroup(n) { currentGrpIdx = (currentGrpIdx + n + grupos.length) % grupos.length; renderGroup(); }
 
-        if(tab === 'album') {
-            renderAlbum();
-        } else if(tab === 'tienda') {
-            content.innerHTML = `
-                <div style="padding:15px">
-                    <h2>Tienda Oficial</h2>
-                    <div class="card-tienda"><div><h4>Álbum Pasta Dura</h4><p class="price-tag">Q150.00</p></div></div>
-                    <div class="card-tienda"><div><h4>Álbum Normal</h4><p class="price-tag">Q30.00</p></div></div>
-                    <div class="card-tienda"><div><h4>Caja (104 Sobres)</h4><p class="price-tag">Q975.00</p></div></div>
-                    <div class="card-tienda"><div><h4>Sobre Individual</h4><p class="price-tag">Q10.00</p></div></div>
-                </div>`;
-        } else if(tab === 'cotizar') {
-            content.innerHTML = `
-                <div style="padding:15px">
-                    <h2>Cotizador de Estampas</h2>
-                    <p>¿Te falta una en específico? Consultanos:</p>
-                    <input type="text" id="carta-req" placeholder="Ej: Messi (ARG 10) o Estadio Azteca">
-                    <button class="btn" style="background:var(--fifa-green)" onclick="contactar()">Consultar Disponibilidad</button>
-                    <div id="resp" style="margin-top:20px; font-style:italic; font-size:0.8rem; text-align:center;"></div>
-                </div>`;
-        }
-    }
-
-    function renderAlbum() {
-        const content = document.getElementById('main-content');
-        const pais = selecciones[currentPage];
-        
-        content.innerHTML = `
-            <div class="album-navigation">
-                <button onclick="prevPage()">◀</button>
-                <span>${pais} (Pág ${currentPage + 1}/${selecciones.length})</span>
-                <button onclick="nextPage()">▶</button>
-            </div>
-            <div class="page-container">
-                <div class="album-page">
-                    <h3>${pais}</h3>
-                    <div class="grid-estampitas">
-                        ${Array.from({length: 12}).map((_, i) => {
-                            const id = `${pais.substring(0,3)}-${i+1}`;
-                            const status = myAlbum[id] || 0;
-                            const cls = status === 1 ? 'collected' : (status === 2 ? 'repeated' : '');
-                            return `<div class="slot ${cls}" onclick="mark('${id}')">${id}</div>`;
-                        }).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    function mark(id) {
-        myAlbum[id] = (myAlbum[id] || 0) + 1;
-        if(myAlbum[id] > 2) myAlbum[id] = 0;
-        localStorage.setItem('user_album', JSON.stringify(myAlbum));
-        renderAlbum();
-    }
-
-    function prevPage() { if(currentPage > 0) { currentPage--; renderAlbum(); } }
-    function nextPage() { if(currentPage < selecciones.length - 1) { currentPage++; renderAlbum(); } }
-
-    function contactar() {
-        const carta = document.getElementById('carta-req').value;
-        if(!carta) return;
-        document.getElementById('resp').innerHTML = `Buscando "${carta}"... Un asesor de Panini se pondrá en contacto contigo a tu correo ${currentUser} para darte el precio exacto.`;
+    function getIso(name) {
+        const codes = {"México":"mx", "Sudáfrica":"za", "Corea del Sur":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Ecuador":"ec", "Costa de Marfil":"ci", "Curazao":"cw", "Países Bajos":"nl", "Japón":"jp", "Suecia":"se", "Túnez":"tn", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz", "España":"es", "Uruguay":"uy", "Cabo Verde":"cv", "Arabia Saudita":"sa", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Argelia":"dz", "Austria":"at", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "R. D. del Congo":"cd", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa"};
+        return codes[name] || "un";
     }
 </script>
 </body>
