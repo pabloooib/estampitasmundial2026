@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANINI 2026 </title>
+    <title>Álbum Panini 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
@@ -38,11 +38,6 @@
             border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px);
             width: 90%; max-width: 400px;
         }
-        .btn-google { 
-            width: 100%; padding: 15px; border: none; border-radius: 50px; cursor: pointer; 
-            font-family: 'Oswald'; background: white; display: flex; align-items: center; 
-            justify-content: center; gap: 15px; font-size: 1rem; margin-top: 20px;
-        }
 
         /* --- MENÚ Y CONTACTO --- */
         .menu-toggle { 
@@ -52,11 +47,9 @@
         }
 
         .contact-buttons { position: fixed; bottom: 20px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 1000; }
-        
         .float-btn { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); text-decoration: none; }
         .wa-color { background-color: #25d366; }
         .ig-color { background: var(--instagram-gradient); }
-        .float-btn:hover { transform: scale(1.1) rotate(10deg); }
         
         nav {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
@@ -65,9 +58,8 @@
         }
         nav.active { left: 0; }
         nav a { display: block; padding: 18px 30px; color: white; text-decoration: none; font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        nav a:hover { background: var(--world-cup-yellow); color: black; padding-left: 40px; }
 
-        /* --- CONTENIDO --- */
+        /* --- VISTAS --- */
         #app { display: none; padding: 20px; padding-top: 90px; }
         .view { display: none; max-width: 1100px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
@@ -79,19 +71,18 @@
 
         .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
         .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
-        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; transform: scale(1.05); box-shadow: 0 0 15px rgba(255,235,59,0.4); border: none; }
+        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; box-shadow: 0 0 15px rgba(255,235,59,0.4); }
 
         .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; font-size: 1rem; margin-top: 15px; text-transform: uppercase; }
-        .special-form input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: white; color: #333; }
-
-        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; }
-        .toast { background: white; color: black; padding: 12px 25px; border-radius: 50px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; }
+        .price-tag { font-size: 1.8rem; font-weight: 900; color: var(--world-cup-yellow); margin: 10px 0; }
+        
+        #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; }
+        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div id="toast-container"></div>
-    
     <div class="menu-toggle" id="menuBtn" onclick="toggleMenu()">☰ MENU</div>
     
     <div class="contact-buttons" id="contactGroup">
@@ -104,28 +95,23 @@
     </div>
 
     <nav id="sidebar">
-        <div style="padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
-            <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">PANINI 2026</h2>
-        </div>
+        <div style="padding: 20px; text-align: center;"><h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">ALBUM PANINI 2026</h2></div>
         <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
         <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
-        <a href="#" onclick="showView('shop-view')">🛒 COMPRAR ÁLBUM</a>
-        <a href="https://www.instagram.com/pablooib" target="_blank" style="color:#ff85a1;">📸 INSTAGRAM (@pablooib)</a>
+        <a href="#" onclick="showView('shop-view')">🛒 COMPRAR PRODUCTOS</a>
+        <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
         <a href="#" onclick="handleLogout()" style="color: #ff5252; margin-top: 20px;">🚪 CERRAR SESIÓN</a>
     </nav>
 
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 3.5rem;">2026</h1>
-            <p style="letter-spacing: 5px; font-weight: 300;">PROYECTO UPANA</p>
-            <button class="btn-google" onclick="loginWithGoogle()">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                ACCEDER CON GOOGLE
-            </button>
+            <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 3rem;">PANINI 2026</h1>
+            <button class="buy-btn" style="background:white; margin-top:30px;" onclick="loginWithGoogle()">ACCEDER CON GOOGLE</button>
         </div>
     </div>
 
     <div id="app">
+        
         <div id="album-view" class="view active">
             <div class="grid-layout">
                 <div class="card">
@@ -145,27 +131,52 @@
 
         <div id="special-card-view" class="view" style="max-width: 600px;">
             <div class="card">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR JUGADOR</h2>
-                <div class="special-form">
-                    <input type="text" id="playerName" placeholder="Nombre del Jugador">
-                    <input type="text" id="playerTeam" placeholder="Selección">
-                    <p style="font-size:0.8rem; margin-top:15px; opacity:0.7;">Esta solicitud será enviada a tu Asesor para cotización.</p>
-                    <button class="buy-btn" onclick="sendOrder('Carta Especial')">ENVIAR A ASESOR</button>
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA ESPECÍFICA</h2>
+                <div style="background: rgba(255,235,59,0.1); padding: 15px; border-radius: 10px; margin: 15px 0; font-size: 0.9rem;">
+                    ⚠️ <b>Nota:</b> El precio de las cartas individuales <b>no es fijo</b>. Cambia según la demanda y rareza del jugador solicitado.
+                </div>
+                <input type="text" id="playerName" placeholder="Nombre del Jugador" style="width:100%; padding:12px; border-radius:8px; border:none; margin-bottom:10px;">
+                <input type="text" id="playerTeam" placeholder="Selección" style="width:100%; padding:12px; border-radius:8px; border:none;">
+                <button class="buy-btn" onclick="sendOrder('Carta Especial')">CONSULTAR PRECIO CON ASESOR</button>
+            </div>
+        </div>
+
+        <div id="shop-view" class="view">
+            <h1 style="font-family:'Oswald'; text-align:center; margin-bottom:30px;">TIENDA OFICIAL</h1>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+                <div class="card" style="text-align:center; background:white; color:black;">
+                    <h3 style="font-family:'Oswald';">ALBUM PASTA DURA</h3>
+                    <div class="price-tag" style="color:var(--world-cup-purple);">Q 125.00</div>
+                    <button class="buy-btn" style="background:var(--world-cup-purple); color:white;" onclick="sendOrder('Album Pasta Dura')">COMPRAR</button>
+                </div>
+                <div class="card" style="text-align:center; background:white; color:black;">
+                    <h3 style="font-family:'Oswald';">ALBUM NORMAL</h3>
+                    <div class="price-tag" style="color:var(--world-cup-green);">Q 35.00</div>
+                    <button class="buy-btn" style="background:var(--world-cup-green); color:white;" onclick="sendOrder('Album Normal')">COMPRAR</button>
+                </div>
+                <div class="card" style="text-align:center; background:white; color:black;">
+                    <h3 style="font-family:'Oswald';">CAJA 100 SOBRES</h3>
+                    <div class="price-tag" style="color:#000;">Q 980.00</div>
+                    <button class="buy-btn" onclick="sendOrder('Caja 100 Sobres')">COMPRAR CAJA</button>
                 </div>
             </div>
         </div>
 
-        <div id="shop-view" class="view" style="text-align: center;">
-            <div class="card" style="max-width:400px; margin:0 auto; background:white; color:black;">
-                <h2 style="font-family:'Oswald';">ÁLBUM FÍSICO</h2>
-                <div style="font-size:3rem; font-weight:900; margin:20px 0; color:var(--world-cup-purple);">Q 125.00</div>
-                <button class="buy-btn" style="background:var(--world-cup-purple); color:white;" onclick="sendOrder('Álbum Pasta Dura')">COMPRAR AHORA</button>
+        <div id="prices-view" class="view" style="max-width:500px;">
+            <div class="card">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">LISTA DE PRECIOS OFICIAL</h2>
+                <div style="margin-top:20px; line-height: 2.5;">
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Sobre de Estampas</span> <b>Q 7.00</b></div>
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Pasta Dura</span> <b>Q 125.00</b></div>
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Normal</span> <b>Q 35.00</b></div>
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Caja (100 Sobres)</span> <b>Q 980.00</b></div>
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Carta Especial</span> <b>Varía</b></div>
+                </div>
             </div>
         </div>
     </div>
 
 <script>
-    // Tu Configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -179,37 +190,27 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Lógica para enviar pedidos a la página de Asesor
     async function sendOrder(tipo) {
         const user = auth.currentUser;
-        const jugador = document.getElementById('playerName').value || "N/A";
-        const equipo = document.getElementById('playerTeam').value || "N/A";
-        
+        const jug = document.getElementById('playerName').value || "Producto Directo";
+        const eq = document.getElementById('playerTeam').value || "";
         const trackingID = "PN-" + Math.floor(1000 + Math.random() * 9000);
 
-        try {
-            await db.collection("pedidos").add({
-                name: `${user.displayName} - ${tipo}`,
-                trackingID: trackingID,
-                status: "pendiente",
-                details: `Jugador: ${jugador}, Selección: ${equipo}`,
-                email: user.email,
-                date: new Date().toLocaleString()
-            });
-            
-            msg(`¡Solicitud ${trackingID} enviada! Revisa tu WhatsApp.`);
-            
-            // También abre WhatsApp por comodidad
-            setTimeout(() => {
-                window.open(`https://wa.me/50246199644?text=Hola,%20hice%20un%20pedido%20(${trackingID})%20de:%20${tipo}%20${jugador}`);
-            }, 1500);
-
-        } catch (e) {
-            msg("Error al conectar con asesor.");
-        }
+        await db.collection("pedidos").add({
+            name: `${user.displayName} - ${tipo}`,
+            trackingID: trackingID,
+            status: "pendiente",
+            details: `Ref: ${jug} ${eq}`,
+            email: user.email,
+            date: new Date().toLocaleString()
+        });
+        
+        msg(`Pedido ${trackingID} registrado.`);
+        setTimeout(() => {
+            window.open(`https://wa.me/50246199644?text=Hola,%20solicito%20${tipo}:%20${jug}%20(ID:%20${trackingID})`);
+        }, 1000);
     }
 
-    // Funciones de Interfaz
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -227,12 +228,10 @@
 
     function msg(t) {
         const c = document.getElementById('toast-container');
-        const d = document.createElement('div');
-        d.className = 'toast'; d.innerText = t;
-        c.appendChild(d); setTimeout(() => d.remove(), 4000);
+        const d = document.createElement('div'); d.className = 'toast'; d.innerText = t;
+        c.appendChild(d); setTimeout(() => d.remove(), 3000);
     }
 
-    // Monitoreo de Sesión
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
@@ -240,10 +239,7 @@
             document.getElementById('menuBtn').style.display = 'block';
             document.getElementById('contactGroup').style.display = 'flex';
             db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-                if(doc.exists) {
-                    myStickers = doc.data().coleccion || [];
-                    if(activeTeam) renderStickers();
-                }
+                if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
             });
             renderGroup();
         } else {
@@ -254,12 +250,8 @@
         }
     });
 
-    function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider);
-    }
+    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
-    // Datos Álbum y Renderizado
     const grupos = [
         {id: "A", paises: ["México", "Sudáfrica", "Corea del Sur", "República Checa"]},
         {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
