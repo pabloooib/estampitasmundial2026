@@ -16,10 +16,9 @@
             --world-cup-blue: #001b3a;
             --world-cup-purple: #4a148c;
             --world-cup-yellow: #ffeb3b;
-            --glass: rgba(255, 255, 255, 0.1);
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s ease; }
         
         body { 
             font-family: 'Roboto', sans-serif; 
@@ -29,7 +28,7 @@
             overflow-x: hidden;
         }
 
-        /* --- LOGIN AESTHETIC --- */
+        /* --- LOGIN (SE MANTIENE IGUAL) --- */
         .auth-container { 
             height: 100vh; display: flex; align-items: center; justify-content: center; 
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
@@ -38,7 +37,7 @@
         .auth-card { 
             background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 30px; 
             border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); width: 90%; max-width: 400px;
         }
         .btn-google { 
             width: 100%; padding: 15px; border: none; border-radius: 50px; cursor: pointer; 
@@ -46,57 +45,64 @@
             justify-content: center; gap: 15px; font-size: 1rem; margin-top: 20px;
         }
 
-        /* --- MENÚ DESPLEGABLE (DRAWER) --- */
-        .menu-toggle { position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; background: var(--world-cup-yellow); color: black; padding: 10px; border-radius: 10px; font-weight: bold; }
+        /* --- MENÚ DINÁMICO --- */
+        .menu-toggle { 
+            position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; 
+            background: var(--world-cup-yellow); color: black; padding: 12px 18px; 
+            border-radius: 12px; font-weight: 900; display: none; /* Invisible hasta login */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
         
         nav {
-            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
-            background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px);
-            z-index: 999; padding-top: 80px; border-right: 1px solid var(--world-cup-yellow);
+            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
+            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px);
+            z-index: 999; padding-top: 80px; border-right: 2px solid var(--world-cup-yellow);
         }
         nav.active { left: 0; }
-        nav a { display: block; padding: 15px 30px; color: white; text-decoration: none; font-family: 'Oswald'; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        nav a:hover { background: var(--world-cup-yellow); color: black; }
+        nav a { display: block; padding: 18px 30px; color: white; text-decoration: none; font-family: 'Oswald'; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        nav a:hover { background: var(--world-cup-yellow); color: black; padding-left: 40px; }
 
-        /* --- APP CONTENT --- */
-        #app { display: none; padding: 20px; padding-top: 80px; }
-        .view { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.5s ease; }
+        /* --- CONTENIDO PRINCIPAL --- */
+        #app { display: none; padding: 20px; padding-top: 90px; }
+        .view { display: none; max-width: 1100px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Álbum View */
-        .album-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
-        .card { background: rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        
-        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 20px; }
-        .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
-        .sticker.owned { background: var(--world-cup-yellow); color: black; border: none; transform: scale(1.05); box-shadow: 0 0 15px var(--world-cup-yellow); }
+        .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
 
-        /* Tienda Física View */
-        .shop-container { text-align: center; }
-        .price-card { background: white; color: black; padding: 30px; border-radius: 20px; margin: 10px; display: inline-block; width: 250px; vertical-align: top; }
-        .price-card h4 { font-family: 'Oswald'; color: var(--world-cup-purple); }
-        .price-card .cost { font-size: 2rem; font-weight: 900; margin: 15px 0; }
-        .buy-btn { background: var(--world-cup-green); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; width: 100%; font-family: 'Oswald'; }
+        /* Mobile First Grid */
+        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 900px) { .grid-layout { grid-template-columns: 320px 1fr; } }
 
-        /* Notificaciones */
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
-        .toast { background: var(--world-cup-yellow); color: black; padding: 15px 25px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        /* Estampas */
+        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
+        .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
+        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; transform: scale(1.05); border: none; box-shadow: 0 0 15px rgba(255,235,59,0.4); }
 
-        @media (max-width: 800px) { .album-grid { grid-template-columns: 1fr; } }
+        /* Formulario Especial */
+        .special-form input, .special-form select, .special-form textarea {
+            width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: rgba(255,255,255,0.9); color: #333; font-family: 'Roboto';
+        }
+        .info-box { background: rgba(255, 235, 59, 0.1); border: 1px solid var(--world-cup-yellow); padding: 15px; border-radius: 10px; margin-top: 15px; font-size: 0.9rem; color: var(--world-cup-yellow); }
+
+        .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; font-size: 1rem; margin-top: 15px; text-transform: uppercase; }
+        .buy-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,235,59,0.3); }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; }
+        .toast { background: white; color: black; padding: 15px 25px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; border-left: 5px solid var(--world-cup-green); }
     </style>
 </head>
 <body>
 
     <div id="toast-container"></div>
-
-    <div class="menu-toggle" id="menuBtn" onclick="toggleMenu()">☰ MENÚ</div>
+    <div class="menu-toggle" id="menuBtn" onclick="toggleMenu()">☰ MENU</div>
 
     <nav id="sidebar">
-        <a href="#" onclick="showView('album-view')">📔 MI ÁLBUM DIGITAL</a>
+        <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
+        <a href="#" onclick="showView('special-card-view')">⭐ CARTA EN ESPECÍFICO</a>
         <a href="#" onclick="showView('shop-view')">🛒 COMPRAR ÁLBUM FÍSICO</a>
         <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
-        <a href="#" onclick="auth.signOut()" style="color: #ff4444;">🚪 CERRAR SESIÓN</a>
+        <a href="#" onclick="handleLogout()" style="color: #ff5252; border-top: 1px solid rgba(255,255,255,0.1);">🚪 CERRAR SESIÓN</a>
     </nav>
 
     <div class="auth-container" id="auth-screen">
@@ -105,7 +111,7 @@
             <p style="text-transform: uppercase; letter-spacing: 5px; font-weight: 300;">Panini Digital Tracker</p>
             <button class="btn-google" onclick="loginWithGoogle()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                INICIAR SESIÓN CON GOOGLE
+                ACCEDER CON GOOGLE
             </button>
         </div>
     </div>
@@ -113,52 +119,82 @@
     <div id="app">
         
         <div id="album-view" class="view active">
-            <div class="album-grid">
+            <div class="grid-layout">
                 <div class="card">
-                    <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow);">GRUPO A</h3>
-                    <div id="team-list" style="margin-top:20px;"></div>
-                    <div style="display:flex; gap:10px; margin-top:20px;">
-                        <button onclick="changeGroup(-1)" class="buy-btn" style="background:rgba(255,255,255,0.1)">ANTERIOR</button>
-                        <button onclick="changeGroup(1)" class="buy-btn">SIGUIENTE</button>
+                    <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow); margin-bottom:15px;">GRUPO A</h3>
+                    <div id="team-list"></div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                        <button onclick="changeGroup(-1)" class="buy-btn" style="background:rgba(255,255,255,0.1); color:white;">◄</button>
+                        <button onclick="changeGroup(1)" class="buy-btn">►</button>
                     </div>
                 </div>
                 <div class="card">
-                    <h2 id="current-team-title" style="font-family:'Oswald'; text-align:center;">SELECCIONA PAÍS</h2>
+                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow); padding-bottom: 10px;">SELECCIONA PAÍS</h2>
                     <div class="sticker-grid" id="sticker-grid"></div>
                 </div>
             </div>
         </div>
 
-        <div id="shop-view" class="view shop-container">
-            <h1 style="font-family:'Oswald'; margin-bottom:30px;">ORDENA TU ÁLBUM FÍSICO</h1>
-            <div class="price-card">
-                <h4>PACK INICIAL</h4>
-                <p>Álbum Pasta Suave + 2 Sobres</p>
-                <div class="cost">Q 35.00</div>
-                <button class="buy-btn" onclick="msg('Redirigiendo a pago...')">COMPRAR YA</button>
-            </div>
-            <div class="price-card">
-                <h4>CAJA CERRADA</h4>
-                <p>Caja con 100 sobres oficiales</p>
-                <div class="cost">Q 980.00</div>
-                <button class="buy-btn" onclick="msg('Redirigiendo a pago...')">COMPRAR YA</button>
+        <div id="special-card-view" class="view" style="max-width: 600px;">
+            <div class="card">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA ESPECIAL</h2>
+                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 5px;">¿Te falta un jugador clave para completar tu álbum físico?</p>
+                
+                <div class="special-form">
+                    <label style="display:block; margin-top:20px; font-size:0.8rem;">Nombre del Jugador / Número</label>
+                    <input type="text" id="playerName" placeholder="Ej: Lionel Messi #10">
+                    
+                    <label style="display:block; margin-top:15px; font-size:0.8rem;">Selección</label>
+                    <input type="text" id="playerTeam" placeholder="Ej: Argentina">
+
+                    <div class="info-box">
+                        ⚠️ <b>Nota importante:</b> El precio de las cartas individuales no es fijo. El costo final dependerá de la <b>rareza del jugador</b>, su demanda y disponibilidad en el mercado actual.
+                    </div>
+
+                    <button class="buy-btn" onclick="requestCard()">CONSULTAR DISPONIBILIDAD</button>
+                </div>
             </div>
         </div>
 
-        <div id="prices-view" class="view" style="max-width: 600px;">
+        <div id="shop-view" class="view" style="text-align: center;">
+            <h1 style="font-family:'Oswald'; margin-bottom:30px;">ÁLBUM FÍSICO 2026</h1>
+            <div class="grid-layout" style="display:flex; flex-wrap: wrap; justify-content: center;">
+                <div class="card" style="width: 280px; margin: 10px; background: white; color: black;">
+                    <h4 style="font-family:'Oswald';">PACK STARTER</h4>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin: 15px 0; color: var(--world-cup-purple);">Q 35.00</div>
+                    <p style="font-size:0.8rem;">Álbum pasta suave + 2 sobres gratis</p>
+                    <button class="buy-btn" style="background:var(--world-cup-purple); color:white;" onclick="msg('Redirigiendo a Tienda...')">COMPRAR</button>
+                </div>
+                <div class="card" style="width: 280px; margin: 10px; background: white; color: black;">
+                    <h4 style="font-family:'Oswald';">CAJA COLECCIONISTA</h4>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin: 15px 0; color: var(--world-cup-green);">Q 980.00</div>
+                    <p style="font-size:0.8rem;">Caja sellada con 100 sobres (500 estampas)</p>
+                    <button class="buy-btn" style="background:var(--world-cup-green); color:white;" onclick="msg('Redirigiendo a Tienda...')">COMPRAR</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="prices-view" class="view" style="max-width: 500px;">
             <div class="card">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">PRECIOS OFICIALES 2026</h2>
-                <ul style="list-style:none; margin-top:20px;">
-                    <li style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Sobre de Estampas</span> <b>Q 7.00</b></li>
-                    <li style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Pasta Dura</span> <b>Q 125.00</b></li>
-                    <li style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Caja 100 Sobres</span> <b>Q 980.00</b></li>
-                </ul>
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">LISTA DE PRECIOS</h2>
+                <div style="margin-top:20px;">
+                    <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <span>Sobre Oficial</span> <b>Q 7.00</b>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <span>Álbum Pasta Dura</span> <b>Q 125.00</b>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <span>Caja 100 Sobres</span> <b>Q 980.00</b>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
 
 <script>
+    // Configuración Firebase (La tuya propia)
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -172,52 +208,38 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // Lógica UI
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-
+    
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
-        toggleMenu();
+        if(window.innerWidth < 900) toggleMenu();
     }
 
     function msg(text) {
-        const container = document.getElementById('toast-container');
+        const c = document.getElementById('toast-container');
         const t = document.createElement('div');
         t.className = 'toast';
         t.innerText = text;
-        container.appendChild(t);
+        c.appendChild(t);
         setTimeout(() => t.remove(), 3000);
     }
 
-    function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).then(res => {
-            db.collection("usuarios").doc(res.user.uid).get().then(doc => {
-                if(!doc.exists) db.collection("usuarios").doc(res.user.uid).set({ coleccion: [] });
-            });
-            msg("⚽ CONECTADO");
+    function handleLogout() {
+        auth.signOut().then(() => {
+            document.getElementById('menuBtn').style.display = 'none'; // Desaparece el botón
+            document.getElementById('sidebar').classList.remove('active'); // Cierra menú
         });
     }
 
-    const grupos = [
-        {id: "A", paises: ["México", "Sudáfrica", "Corea del Sur", "República Checa"]},
-        {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
-        {id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},
-        {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Turquía"]},
-        {id: "E", paises: ["Alemania", "Ecuador", "Costa de Marfil", "Curazao"]},
-        {id: "F", paises: ["Países Bajos", "Japón", "Suecia", "Túnez"]},
-        {id: "G", paises: ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"]},
-        {id: "H", paises: ["España", "Uruguay", "Cabo Verde", "Arabia Saudita"]},
-        {id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},
-        {id: "J", paises: ["Argentina", "Argelia", "Austria", "Jordania"]},
-        {id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "R. D. del Congo"]},
-        {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
-    ];
+    function requestCard() {
+        const name = document.getElementById('playerName').value;
+        if(!name) return msg("Escribe el nombre del jugador");
+        msg("Consulta enviada. Te contactaremos con el precio.");
+    }
 
-    let currentIdx = 0;
-    let activeTeam = "";
-    let myStickers = [];
-
+    // Auth state
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
@@ -237,6 +259,31 @@
         }
     });
 
+    function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(e => msg("Error de conexión"));
+    }
+
+    // Datos Álbum
+    const grupos = [
+        {id: "A", paises: ["México", "Sudáfrica", "Corea del Sur", "República Checa"]},
+        {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
+        {id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},
+        {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Turquía"]},
+        {id: "E", paises: ["Alemania", "Ecuador", "Costa de Marfil", "Curazao"]},
+        {id: "F", paises: ["Países Bajos", "Japón", "Suecia", "Túnez"]},
+        {id: "G", paises: ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"]},
+        {id: "H", paises: ["España", "Uruguay", "Cabo Verde", "Arabia Saudita"]},
+        {id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},
+        {id: "J", paises: ["Argentina", "Argelia", "Austria", "Jordania"]},
+        {id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "R. D. del Congo"]},
+        {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
+    ];
+
+    let currentIdx = 0;
+    let activeTeam = "";
+    let myStickers = [];
+
     function renderGroup() {
         const g = grupos[currentIdx];
         document.getElementById('grp-name').innerText = "GRUPO " + g.id;
@@ -244,10 +291,9 @@
         list.innerHTML = "";
         g.paises.forEach(p => {
             const d = document.createElement('div');
-            d.className = 'team-item';
-            d.style.cssText = "padding:10px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald';";
+            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; font-size:0.9rem;";
             d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
-            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="25"> ${p.toUpperCase()}`;
+            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
             list.appendChild(d);
         });
     }
@@ -270,7 +316,6 @@
     }
 
     function changeGroup(n) { currentIdx = (currentIdx + n + grupos.length) % grupos.length; renderGroup(); }
-
     function getIso(p) {
         const codes = {"México":"mx", "Sudáfrica":"za", "Corea del Sur":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Ecuador":"ec", "Costa de Marfil":"ci", "Curazao":"cw", "Países Bajos":"nl", "Japón":"jp", "Suecia":"se", "Túnez":"tn", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz", "España":"es", "Uruguay":"uy", "Cabo Verde":"cv", "Arabia Saudita":"sa", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Argelia":"dz", "Austria":"at", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "R. D. del Congo":"cd", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa"};
         return codes[p] || "un";
