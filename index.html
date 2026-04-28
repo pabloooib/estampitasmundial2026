@@ -72,7 +72,7 @@
         #app { display: none; padding: 20px; padding-top: 90px; }
         .view { display: none; max-width: 1100px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
@@ -154,11 +154,11 @@
             <div class="card">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA ESPECÍFICA</h2>
                 <p style="margin: 15px 0; font-size: 0.9rem; opacity: 0.8;">
-                    Ingresa el nombre del jugador que buscas. El precio se ajustará según el mercado actual del jugador.
+                    Ingresa el nombre del jugador que buscas.
                 </p>
                 <input type="text" id="playerName" placeholder="Nombre del Jugador" style="width:100%; padding:12px; border-radius:8px; border:none; margin-bottom:10px; background: rgba(255,255,255,0.1); color: white;">
                 <input type="text" id="playerTeam" placeholder="Selección" style="width:100%; padding:12px; border-radius:8px; border:none; background: rgba(255,255,255,0.1); color: white;">
-                <button class="buy-btn" onclick="sendOrder('Carta Especial')">CONSULTAR PRECIO CON ASESOR</button>
+                <button class="buy-btn" onclick="sendOrder('Carta Especial', 'A convenir')">CONSULTAR PRECIO CON ASESOR</button>
             </div>
         </div>
 
@@ -177,17 +177,17 @@
                 <div class="card" style="text-align:center; background:white; color:black;">
                     <h3 style="font-family:'Oswald';">ALBUM PASTA DURA</h3>
                     <div class="price-tag" style="color:var(--world-cup-purple);">Q 125.00</div>
-                    <button class="buy-btn" style="background:var(--world-cup-purple); color:white;" onclick="sendOrder('Album Pasta Dura')">COMPRAR</button>
+                    <button class="buy-btn" style="background:var(--world-cup-purple); color:white;" onclick="sendOrder('Album Pasta Dura', '125.00')">COMPRAR</button>
                 </div>
                 <div class="card" style="text-align:center; background:white; color:black;">
                     <h3 style="font-family:'Oswald';">ALBUM NORMAL</h3>
                     <div class="price-tag" style="color:var(--world-cup-green);">Q 35.00</div>
-                    <button class="buy-btn" style="background:var(--world-cup-green); color:white;" onclick="sendOrder('Album Normal')">COMPRAR</button>
+                    <button class="buy-btn" style="background:var(--world-cup-green); color:white;" onclick="sendOrder('Album Normal', '35.00')">COMPRAR</button>
                 </div>
                 <div class="card" style="text-align:center; background:white; color:black;">
                     <h3 style="font-family:'Oswald';">CAJA 100 SOBRES</h3>
                     <div class="price-tag" style="color:#000;">Q 980.00</div>
-                    <button class="buy-btn" onclick="sendOrder('Caja 100 Sobres')">COMPRAR CAJA</button>
+                    <button class="buy-btn" onclick="sendOrder('Caja 100 Sobres', '980.00')">COMPRAR CAJA</button>
                 </div>
             </div>
         </div>
@@ -196,10 +196,7 @@
             <div class="card">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center; margin-bottom:20px;">LISTA DE PRECIOS</h2>
                 <div id="dynamic-prices-container" style="line-height: 2.5;">
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Sobre de Estampas</span> <b>Q 7.00</b></div>
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Pasta Dura</span> <b>Q 125.00</b></div>
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Normal</span> <b>Q 35.00</b></div>
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Caja (100 Sobres)</span> <b>Q 980.00</b></div>
+                    <p style="text-align:center;">Cargando precios...</p>
                 </div>
             </div>
         </div>
@@ -207,7 +204,6 @@
         <div id="rating-view" class="view" style="max-width: 500px;">
             <div class="card" style="text-align:center;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">¿QUÉ TE PARECE LA APP?</h2>
-                <p style="margin-top:10px; opacity:0.8;">Tu opinión nos ayuda a mejorar la experiencia del álbum.</p>
                 <div class="stars-container" id="starbox">
                     <span class="star-input" onclick="setRate(1)">★</span>
                     <span class="star-input" onclick="setRate(2)">★</span>
@@ -215,7 +211,7 @@
                     <span class="star-input" onclick="setRate(4)">★</span>
                     <span class="star-input" onclick="setRate(5)">★</span>
                 </div>
-                <textarea id="rate-comment" placeholder="Déjanos un comentario (opcional)" style="width:100%; background:rgba(255,255,255,0.1); border:none; padding:15px; color:white; border-radius:10px;"></textarea>
+                <textarea id="rate-comment" placeholder="Déjanos un comentario" style="width:100%; background:rgba(255,255,255,0.1); border:none; padding:15px; color:white; border-radius:10px;"></textarea>
                 <button class="buy-btn" onclick="submitRating()">ENVIAR CALIFICACIÓN</button>
             </div>
         </div>
@@ -240,50 +236,43 @@
     function setRate(n) {
         userRating = n;
         const stars = document.querySelectorAll('.star-input');
-        stars.forEach((s, i) => {
-            s.classList.toggle('active', i < n);
-        });
+        stars.forEach((s, i) => { s.classList.toggle('active', i < n); });
     }
 
     async function submitRating() {
         if(userRating === 0) return msg("Por favor selecciona una estrella");
         const comment = document.getElementById('rate-comment').value;
         const user = auth.currentUser;
-
         await db.collection("mejoras").add({
             user: user.displayName,
-            email: user.email,
             rating: userRating,
             comment: comment,
             date: new Date().toLocaleString()
         });
-
         msg("¡Gracias por calificar!");
         showView('album-view');
-        userRating = 0;
-        setRate(0);
+        userRating = 0; setRate(0);
         document.getElementById('rate-comment').value = "";
     }
 
-    // Escuchar el stock del Admin en tiempo real
     function listenToStock() {
         db.collection("especiales").onSnapshot(snap => {
             const container = document.getElementById('stock-list-container');
             if(snap.empty) {
-                container.innerHTML = "<p style='text-align:center; opacity:0.5;'>No hay cartas especiales registradas.</p>";
+                container.innerHTML = "<p style='text-align:center; opacity:0.5;'>No hay cartas especiales.</p>";
                 return;
             }
             container.innerHTML = snap.docs.map(doc => {
                 const data = doc.data();
                 return `
-                    <div class="stock-item">
+                    <div class="stock-item" onclick="sendOrder('Carta Stock: ${data.name}', '${data.price}')" style="cursor:pointer;">
                         <div>
                             <strong style="color:var(--world-cup-yellow)">${data.name}</strong><br>
-                            <small>${data.rarity || 'Especial'}</small>
+                            <small>${data.rarity}</small>
                         </div>
                         <div style="text-align:right">
-                            <div class="stock-badge">Stock: ${data.stock}</div>
-                            <div style="font-size:0.8rem; margin-top:5px">Q ${data.price}</div>
+                            <div class="stock-badge">Q ${data.price}</div>
+                            <div style="font-size:0.7rem; margin-top:5px">Toca para comprar</div>
                         </div>
                     </div>
                 `;
@@ -291,7 +280,6 @@
         });
     }
 
-    // Escuchar precios dinámicos si se actualizan en Admin
     function listenToPrices() {
         db.collection("config").doc("precios").onSnapshot(doc => {
             if(doc.exists) {
@@ -306,25 +294,42 @@
         });
     }
 
-    async function sendOrder(tipo) {
+    // --- FUNCIÓN UNIFICADA DE PEDIDO (WHATSAPP + FIREBASE + PAGOS) ---
+    async function sendOrder(tipo, precio) {
         const user = auth.currentUser;
-        const jug = document.getElementById('playerName').value || "Genérico";
+        const jug = document.getElementById('playerName').value || "";
         const eq = document.getElementById('playerTeam').value || "";
         const trackingID = "PN-" + Math.floor(1000 + Math.random() * 9000);
+        const numeroWhatsApp = "50246199644"; 
 
+        // 1. Guardar en Firebase para el Admin
         await db.collection("pedidos").add({
             name: `${user.displayName} - ${tipo}`,
             trackingID: trackingID,
             status: "pendiente",
-            details: `Jugador: ${jug} ${eq}`,
+            details: `Producto: ${tipo} ${jug} ${eq} - Precio: Q${precio}`,
             email: user.email,
             date: new Date().toLocaleString()
         });
         
-        msg(`Pedido ${trackingID} enviado al asesor.`);
+        msg(`Generando pedido ${trackingID}...`);
+
+        // 2. Construir mensaje de WhatsApp
+        let mensaje = `¡Hola! 👋 Quisiera solicitar lo siguiente:\n\n`;
+        mensaje += `📌 *Producto:* ${tipo}\n`;
+        if(jug) mensaje += `👤 *Jugador:* ${jug}\n`;
+        mensaje += `💰 *Precio:* Q${precio}\n`;
+        mensaje += `🆔 *ID Pedido:* ${trackingID}\n\n`;
+        mensaje += `--------------------------\n`;
+        mensaje += `✅ *MÉTODOS DE PAGO:* \n`;
+        mensaje += `• Depósito bancario\n`;
+        mensaje += `• Efectivo`;
+
+        // 3. Abrir WhatsApp
         setTimeout(() => {
-            window.open(`https://wa.me/50246199644?text=Hola,%20me%20interesa%20${tipo}:%20${jug}%20(ID:%20${trackingID})`);
-        }, 1200);
+            const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }, 1000);
     }
 
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
@@ -358,9 +363,7 @@
             db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
             });
-            renderGroup();
-            listenToStock();
-            listenToPrices();
+            renderGroup(); listenToStock(); listenToPrices();
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('app').style.display = 'none';
