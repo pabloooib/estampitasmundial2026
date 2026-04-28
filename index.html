@@ -39,7 +39,17 @@
             width: 90%; max-width: 400px;
         }
 
-        /* --- MENÚ Y CONTACTO --- */
+        /* Botón de Google con Logo */
+        .google-btn {
+            background: white; color: #757575; border: none; padding: 12px 24px;
+            border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Roboto', sans-serif;
+            font-weight: 500; font-size: 1rem; margin-top: 30px; display: flex;
+            align-items: center; justify-content: center; gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .google-btn:hover { background: #f1f1f1; transform: translateY(-2px); }
+
+        /* --- NAVEGACIÓN --- */
         .menu-toggle { 
             position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; 
             background: var(--world-cup-yellow); color: black; padding: 12px 18px; 
@@ -98,15 +108,18 @@
         <div style="padding: 20px; text-align: center;"><h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">ALBUM PANINI 2026</h2></div>
         <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
         <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
-        <a href="#" onclick="showView('shop-view')">🛒 COMPRAR PRODUCTOS</a>
+        <a href="#" onclick="showView('shop-view')">🛒 TIENDA</a>
         <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
         <a href="#" onclick="handleLogout()" style="color: #ff5252; margin-top: 20px;">🚪 CERRAR SESIÓN</a>
     </nav>
 
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 3rem;">PANINI 2026</h1>
-            <button class="buy-btn" style="background:white; margin-top:30px;" onclick="loginWithGoogle()">ACCEDER CON GOOGLE</button>
+            <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 3rem; letter-spacing: 2px;">PANINI 2026</h1>
+            <button class="google-btn" onclick="loginWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
+                Acceder con Google
+            </button>
         </div>
     </div>
 
@@ -132,17 +145,17 @@
         <div id="special-card-view" class="view" style="max-width: 600px;">
             <div class="card">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA ESPECÍFICA</h2>
-                <div style="background: rgba(255,235,59,0.1); padding: 15px; border-radius: 10px; margin: 15px 0; font-size: 0.9rem;">
-                    ⚠️ <b>Nota:</b> El precio de las cartas individuales <b>no es fijo</b>. Cambia según la demanda y rareza del jugador solicitado.
-                </div>
-                <input type="text" id="playerName" placeholder="Nombre del Jugador" style="width:100%; padding:12px; border-radius:8px; border:none; margin-bottom:10px;">
-                <input type="text" id="playerTeam" placeholder="Selección" style="width:100%; padding:12px; border-radius:8px; border:none;">
+                <p style="margin: 15px 0; font-size: 0.9rem; opacity: 0.8;">
+                    Ingresa el nombre del jugador que buscas. El precio se ajustará según el mercado actual del jugador.
+                </p>
+                <input type="text" id="playerName" placeholder="Nombre del Jugador" style="width:100%; padding:12px; border-radius:8px; border:none; margin-bottom:10px; background: rgba(255,255,255,0.1); color: white;">
+                <input type="text" id="playerTeam" placeholder="Selección" style="width:100%; padding:12px; border-radius:8px; border:none; background: rgba(255,255,255,0.1); color: white;">
                 <button class="buy-btn" onclick="sendOrder('Carta Especial')">CONSULTAR PRECIO CON ASESOR</button>
             </div>
         </div>
 
         <div id="shop-view" class="view">
-            <h1 style="font-family:'Oswald'; text-align:center; margin-bottom:30px;">TIENDA OFICIAL</h1>
+            <h1 style="font-family:'Oswald'; text-align:center; margin-bottom:30px;">PRODUCTOS OFICIALES</h1>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
                 <div class="card" style="text-align:center; background:white; color:black;">
                     <h3 style="font-family:'Oswald';">ALBUM PASTA DURA</h3>
@@ -164,13 +177,13 @@
 
         <div id="prices-view" class="view" style="max-width:500px;">
             <div class="card">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">LISTA DE PRECIOS OFICIAL</h2>
-                <div style="margin-top:20px; line-height: 2.5;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center; margin-bottom:20px;">LISTA DE PRECIOS</h2>
+                <div style="line-height: 2.5;">
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Sobre de Estampas</span> <b>Q 7.00</b></div>
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Pasta Dura</span> <b>Q 125.00</b></div>
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Normal</span> <b>Q 35.00</b></div>
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Caja (100 Sobres)</span> <b>Q 980.00</b></div>
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Carta Especial</span> <b>Varía</b></div>
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); color:var(--world-cup-yellow);"><span>Cartas Especiales</span> <b>Varía según jugador</b></div>
                 </div>
             </div>
         </div>
@@ -192,7 +205,7 @@
 
     async function sendOrder(tipo) {
         const user = auth.currentUser;
-        const jug = document.getElementById('playerName').value || "Producto Directo";
+        const jug = document.getElementById('playerName').value || "Genérico";
         const eq = document.getElementById('playerTeam').value || "";
         const trackingID = "PN-" + Math.floor(1000 + Math.random() * 9000);
 
@@ -200,18 +213,19 @@
             name: `${user.displayName} - ${tipo}`,
             trackingID: trackingID,
             status: "pendiente",
-            details: `Ref: ${jug} ${eq}`,
+            details: `Jugador: ${jug} ${eq}`,
             email: user.email,
             date: new Date().toLocaleString()
         });
         
-        msg(`Pedido ${trackingID} registrado.`);
+        msg(`Pedido ${trackingID} enviado al asesor.`);
         setTimeout(() => {
-            window.open(`https://wa.me/50246199644?text=Hola,%20solicito%20${tipo}:%20${jug}%20(ID:%20${trackingID})`);
-        }, 1000);
+            window.open(`https://wa.me/50246199644?text=Hola,%20me%20interesa%20${tipo}:%20${jug}%20(ID:%20${trackingID})`);
+        }, 1200);
     }
 
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+    
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -267,7 +281,7 @@
         const list = document.getElementById('team-list'); list.innerHTML = "";
         g.paises.forEach(p => {
             const d = document.createElement('div');
-            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald';";
+            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; font-size:0.9rem;";
             d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
             d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
             list.appendChild(d);
@@ -291,6 +305,7 @@
     }
 
     function changeGroup(n) { currentIdx = (currentIdx + n + grupos.length) % grupos.length; renderGroup(); }
+    
     function getIso(p) {
         const codes = {"México":"mx", "Sudáfrica":"za", "Corea del Sur":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr"};
         return codes[p] || "un";
