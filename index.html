@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANINI 2026 </title>
+    <title>PANINI 2026 | UPANA DIGITAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
@@ -28,7 +28,7 @@
             overflow-x: hidden;
         }
 
-        /* --- LOGIN (SE MANTIENE IGUAL) --- */
+        /* --- LOGIN AESTHETIC --- */
         .auth-container { 
             height: 100vh; display: flex; align-items: center; justify-content: center; 
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
@@ -45,13 +45,22 @@
             justify-content: center; gap: 15px; font-size: 1rem; margin-top: 20px;
         }
 
-        /* --- MENÚ DINÁMICO --- */
+        /* --- MENÚ Y BOTONES --- */
         .menu-toggle { 
             position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; 
             background: var(--world-cup-yellow); color: black; padding: 12px 18px; 
-            border-radius: 12px; font-weight: 900; display: none; /* Invisible hasta login */
+            border-radius: 12px; font-weight: 900; display: none;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
+
+        .whatsapp-float {
+            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
+            background-color: #25d366; color: white; border-radius: 50px;
+            display: none; align-items: center; justify-content: center;
+            font-size: 30px; z-index: 1000; text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .whatsapp-float:hover { transform: scale(1.1) rotate(5deg); background-color: #128c7e; }
         
         nav {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
@@ -62,7 +71,7 @@
         nav a { display: block; padding: 18px 30px; color: white; text-decoration: none; font-family: 'Oswald'; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
         nav a:hover { background: var(--world-cup-yellow); color: black; padding-left: 40px; }
 
-        /* --- CONTENIDO PRINCIPAL --- */
+        /* --- CONTENIDO --- */
         #app { display: none; padding: 20px; padding-top: 90px; }
         .view { display: none; max-width: 1100px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
@@ -70,36 +79,34 @@
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
 
-        /* Mobile First Grid */
         .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 900px) { .grid-layout { grid-template-columns: 320px 1fr; } }
 
-        /* Estampas */
         .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
         .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
-        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; transform: scale(1.05); border: none; box-shadow: 0 0 15px rgba(255,235,59,0.4); }
-
-        /* Formulario Especial */
-        .special-form input, .special-form select, .special-form textarea {
-            width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: rgba(255,255,255,0.9); color: #333; font-family: 'Roboto';
-        }
-        .info-box { background: rgba(255, 235, 59, 0.1); border: 1px solid var(--world-cup-yellow); padding: 15px; border-radius: 10px; margin-top: 15px; font-size: 0.9rem; color: var(--world-cup-yellow); }
+        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; transform: scale(1.05); box-shadow: 0 0 15px rgba(255,235,59,0.4); border: none; }
 
         .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; font-size: 1rem; margin-top: 15px; text-transform: uppercase; }
-        .buy-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,235,59,0.3); }
+        .special-form input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: white; color: #333; }
 
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; }
-        .toast { background: white; color: black; padding: 15px 25px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; border-left: 5px solid var(--world-cup-green); }
+        #toast-container { position: fixed; bottom: 20px; right: 90px; z-index: 10000; }
+        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-left: 5px solid var(--world-cup-green); }
     </style>
 </head>
 <body>
 
     <div id="toast-container"></div>
+    
     <div class="menu-toggle" id="menuBtn" onclick="toggleMenu()">☰ MENU</div>
+    
+    <a href="https://wa.me/50246199644?text=Hola!%20Vengo%20desde%20la%20App%20Panini%20Digital.%20Necesito%20información." 
+       class="whatsapp-float" id="waBtn" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35">
+    </a>
 
     <nav id="sidebar">
         <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
-        <a href="#" onclick="showView('special-card-view')">⭐ CARTA EN ESPECÍFICO</a>
+        <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
         <a href="#" onclick="showView('shop-view')">🛒 COMPRAR ÁLBUM FÍSICO</a>
         <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
         <a href="#" onclick="handleLogout()" style="color: #ff5252; border-top: 1px solid rgba(255,255,255,0.1);">🚪 CERRAR SESIÓN</a>
@@ -117,19 +124,18 @@
     </div>
 
     <div id="app">
-        
         <div id="album-view" class="view active">
             <div class="grid-layout">
                 <div class="card">
-                    <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow); margin-bottom:15px;">GRUPO A</h3>
-                    <div id="team-list"></div>
+                    <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow);">GRUPO A</h3>
+                    <div id="team-list" style="margin-top:15px;"></div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
                         <button onclick="changeGroup(-1)" class="buy-btn" style="background:rgba(255,255,255,0.1); color:white;">◄</button>
                         <button onclick="changeGroup(1)" class="buy-btn">►</button>
                     </div>
                 </div>
                 <div class="card">
-                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow); padding-bottom: 10px;">SELECCIONA PAÍS</h2>
+                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow);">SELECCIONA PAÍS</h2>
                     <div class="sticker-grid" id="sticker-grid"></div>
                 </div>
             </div>
@@ -137,64 +143,40 @@
 
         <div id="special-card-view" class="view" style="max-width: 600px;">
             <div class="card">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA ESPECIAL</h2>
-                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 5px;">¿Te falta un jugador clave para completar tu álbum físico?</p>
-                
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">CONSULTAR CARTA</h2>
                 <div class="special-form">
-                    <label style="display:block; margin-top:20px; font-size:0.8rem;">Nombre del Jugador / Número</label>
-                    <input type="text" id="playerName" placeholder="Ej: Lionel Messi #10">
-                    
-                    <label style="display:block; margin-top:15px; font-size:0.8rem;">Selección</label>
-                    <input type="text" id="playerTeam" placeholder="Ej: Argentina">
-
-                    <div class="info-box">
-                        ⚠️ <b>Nota importante:</b> El precio de las cartas individuales no es fijo. El costo final dependerá de la <b>rareza del jugador</b>, su demanda y disponibilidad en el mercado actual.
-                    </div>
-
-                    <button class="buy-btn" onclick="requestCard()">CONSULTAR DISPONIBILIDAD</button>
+                    <input type="text" id="playerName" placeholder="Nombre del Jugador (Ej: Messi)">
+                    <input type="text" id="playerTeam" placeholder="Selección">
+                    <p style="font-size:0.8rem; margin-top:15px; color:var(--world-cup-yellow);">* Los precios varían según la rareza del jugador.</p>
+                    <button class="buy-btn" onclick="requestCard()">CONSULTAR PRECIO</button>
                 </div>
             </div>
         </div>
 
         <div id="shop-view" class="view" style="text-align: center;">
-            <h1 style="font-family:'Oswald'; margin-bottom:30px;">ÁLBUM FÍSICO 2026</h1>
-            <div class="grid-layout" style="display:flex; flex-wrap: wrap; justify-content: center;">
-                <div class="card" style="width: 280px; margin: 10px; background: white; color: black;">
-                    <h4 style="font-family:'Oswald';">PACK STARTER</h4>
-                    <div style="font-size: 2.5rem; font-weight: 900; margin: 15px 0; color: var(--world-cup-purple);">Q 35.00</div>
-                    <p style="font-size:0.8rem;">Álbum pasta suave + 2 sobres gratis</p>
-                    <button class="buy-btn" style="background:var(--world-cup-purple); color:white;" onclick="msg('Redirigiendo a Tienda...')">COMPRAR</button>
-                </div>
-                <div class="card" style="width: 280px; margin: 10px; background: white; color: black;">
-                    <h4 style="font-family:'Oswald';">CAJA COLECCIONISTA</h4>
-                    <div style="font-size: 2.5rem; font-weight: 900; margin: 15px 0; color: var(--world-cup-green);">Q 980.00</div>
-                    <p style="font-size:0.8rem;">Caja sellada con 100 sobres (500 estampas)</p>
-                    <button class="buy-btn" style="background:var(--world-cup-green); color:white;" onclick="msg('Redirigiendo a Tienda...')">COMPRAR</button>
+            <h1 style="font-family:'Oswald'; margin-bottom:20px;">PRODUCTOS FÍSICOS</h1>
+            <div class="grid-layout" style="display:flex; flex-wrap:wrap; justify-content:center;">
+                <div class="card" style="width:280px; background:white; color:black; margin:10px;">
+                    <h4 style="font-family:'Oswald';">CAJA 100 SOBRES</h4>
+                    <div style="font-size:2rem; font-weight:900; color:var(--world-cup-green);">Q 980.00</div>
+                    <button class="buy-btn" onclick="window.open('https://wa.me/50246199644?text=Quiero%20comprar%20una%20caja%20de%20100%20sobres')">COMPRAR</button>
                 </div>
             </div>
         </div>
 
-        <div id="prices-view" class="view" style="max-width: 500px;">
+        <div id="prices-view" class="view" style="max-width:500px;">
             <div class="card">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">LISTA DE PRECIOS</h2>
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">PRECIOS 2026</h2>
                 <div style="margin-top:20px;">
-                    <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                        <span>Sobre Oficial</span> <b>Q 7.00</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                        <span>Álbum Pasta Dura</span> <b>Q 125.00</b>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                        <span>Caja 100 Sobres</span> <b>Q 980.00</b>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Sobre (5 cartas)</span> <b>Q 7.00</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Álbum Pasta Dura</span> <b>Q 125.00</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);"><span>Caja Cerrada</span> <b>Q 980.00</b></div>
                 </div>
             </div>
         </div>
-
     </div>
 
 <script>
-    // Configuración Firebase (La tuya propia)
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -208,43 +190,40 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Lógica UI
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-    
-    function showView(viewId) {
+    function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(viewId).classList.add('active');
+        document.getElementById(id).classList.add('active');
         if(window.innerWidth < 900) toggleMenu();
-    }
-
-    function msg(text) {
-        const c = document.getElementById('toast-container');
-        const t = document.createElement('div');
-        t.className = 'toast';
-        t.innerText = text;
-        c.appendChild(t);
-        setTimeout(() => t.remove(), 3000);
     }
 
     function handleLogout() {
         auth.signOut().then(() => {
-            document.getElementById('menuBtn').style.display = 'none'; // Desaparece el botón
-            document.getElementById('sidebar').classList.remove('active'); // Cierra menú
+            document.getElementById('menuBtn').style.display = 'none';
+            document.getElementById('waBtn').style.display = 'none';
+            document.getElementById('sidebar').classList.remove('active');
         });
     }
 
     function requestCard() {
-        const name = document.getElementById('playerName').value;
-        if(!name) return msg("Escribe el nombre del jugador");
-        msg("Consulta enviada. Te contactaremos con el precio.");
+        const p = document.getElementById('playerName').value;
+        if(!p) return msg("Escribe el nombre del jugador");
+        window.open(`https://wa.me/50246199644?text=Hola,%20busco%20la%20carta%20especial%20de:%20${p}`);
     }
 
-    // Auth state
+    function msg(t) {
+        const c = document.getElementById('toast-container');
+        const d = document.createElement('div');
+        d.className = 'toast'; d.innerText = t;
+        c.appendChild(d); setTimeout(() => d.remove(), 3000);
+    }
+
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             document.getElementById('menuBtn').style.display = 'block';
+            document.getElementById('waBtn').style.display = 'flex';
             db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     myStickers = doc.data().coleccion || [];
@@ -256,12 +235,13 @@
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('app').style.display = 'none';
             document.getElementById('menuBtn').style.display = 'none';
+            document.getElementById('waBtn').style.display = 'none';
         }
     });
 
     function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(e => msg("Error de conexión"));
+        auth.signInWithPopup(provider);
     }
 
     // Datos Álbum
@@ -280,18 +260,15 @@
         {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
     ];
 
-    let currentIdx = 0;
-    let activeTeam = "";
-    let myStickers = [];
+    let currentIdx = 0; let activeTeam = ""; let myStickers = [];
 
     function renderGroup() {
         const g = grupos[currentIdx];
         document.getElementById('grp-name').innerText = "GRUPO " + g.id;
-        const list = document.getElementById('team-list');
-        list.innerHTML = "";
+        const list = document.getElementById('team-list'); list.innerHTML = "";
         g.paises.forEach(p => {
             const d = document.createElement('div');
-            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; font-size:0.9rem;";
+            d.style.cssText = "padding:10px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; font-size:0.9rem;";
             d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
             d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
             list.appendChild(d);
@@ -299,8 +276,7 @@
     }
 
     function renderStickers() {
-        const grid = document.getElementById('sticker-grid');
-        grid.innerHTML = "";
+        const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
         for(let i=1; i<=20; i++) {
             const id = `${activeTeam}-${i}`;
             const owned = myStickers.includes(id);
