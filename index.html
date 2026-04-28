@@ -3,153 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANINI GUATEMALA | MUNDIAL 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <title>PANINI DIGITAL | MUNDIAL 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --fifa-blue: #004b87; --fifa-gold: #c6a15a; --fifa-green: #008f4c;
-            --white: #ffffff; --bg: #f4f7f6; --text: #1a1a1a; --border: #dee2e6;
+            --white: #ffffff; --bg: #0e1a2b; --text: #333;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); }
-        #app { max-width: 600px; margin: 0 auto; background: var(--white); min-height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 40px rgba(0,0,0,0.1); }
+        body { font-family: 'Roboto', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+
+        /* Pantallas de Login */
+        .auth-screen {
+            height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: linear-gradient(rgba(0,75,135,0.9), rgba(0,75,135,0.9)), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000');
+            background-size: cover; color: white; padding: 20px;
+        }
+        .auth-card { background: white; padding: 2rem; border-radius: 15px; width: 100%; max-width: 400px; color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+
+        /* App Principal */
+        #app { display: none; max-width: 500px; margin: 0 auto; background: #f4f4f4; min-height: 100vh; flex-direction: column; }
+        header { background: var(--fifa-blue); color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 1000; }
         
-        header { padding: 1.2rem; text-align: center; background: var(--fifa-blue); color: white; position: sticky; top: 0; z-index: 100; }
-        .brand { font-family: 'Oswald', sans-serif; font-size: 1.4rem; letter-spacing: 2px; }
+        /* Navegación del Álbum (Hojas) */
+        .album-navigation { display: flex; justify-content: space-between; align-items: center; background: #ddd; padding: 10px; font-weight: bold; }
+        .page-container { flex: 1; padding: 15px; transition: transform 0.3s ease; }
+        
+        /* Estilo de la Hoja del Álbum */
+        .album-page { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 8px solid var(--fifa-blue); }
+        .grid-estampitas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .slot { 
+            aspect-ratio: 2/3; background: #e0e0e0; border: 2px solid #ccc; border-radius: 5px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            font-size: 0.7rem; font-weight: bold; cursor: pointer; position: relative; transition: 0.2s;
+        }
+        .slot.collected { background: var(--fifa-green); color: white; border-color: #006b39; }
+        .slot.repeated { background: var(--fifa-gold); color: white; border-color: #a3854a; }
+        .slot.repeated::after { content: 'x2'; position: absolute; top: 2px; right: 2px; background: white; color: black; font-size: 0.5rem; padding: 2px; border-radius: 2px; }
 
-        nav { display: flex; background: #eee; }
-        nav button { flex: 1; padding: 10px; border: none; font-size: 0.7rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        nav button.active { background: var(--fifa-gold); color: white; }
-
-        main { flex: 1; padding: 1.5rem; }
-        h2 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; margin-bottom: 1rem; color: var(--fifa-blue); border-bottom: 2px solid var(--fifa-gold); display: inline-block; }
-
-        /* Tienda */
-        .shop-card { border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 15px; }
-        .shop-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; background: #f9f9f9; }
-        .shop-info h4 { font-size: 1rem; margin-bottom: 4px; }
-        .price { color: var(--fifa-green); font-weight: bold; font-size: 1.1rem; }
-
-        /* Album Digital */
-        .sticker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 1rem; }
-        .sticker { aspect-ratio: 1; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; cursor: pointer; border: 2px solid transparent; }
-        .sticker.have { background: var(--fifa-green); color: white; }
-        .sticker.repeat { border-color: var(--fifa-gold); background: #fffde7; }
-
-        /* Formulario */
-        .form-group { margin-top: 2rem; background: #f9f9f9; padding: 1.5rem; border-radius: 12px; border: 1px dashed var(--fifa-blue); }
-        textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; margin: 10px 0; font-family: inherit; }
-        .btn { width: 100%; padding: 12px; background: var(--fifa-blue); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        /* Tienda y Cotizador */
+        .card-tienda { background: white; margin: 10px; padding: 15px; border-radius: 10px; display: flex; align-items: center; gap: 15px; }
+        .price-tag { color: var(--fifa-green); font-weight: bold; font-size: 1.2rem; }
+        
+        .btn { background: var(--fifa-blue); color: white; border: none; padding: 12px; border-radius: 5px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+        .nav-tabs { display: flex; background: #222; }
+        .nav-tabs button { flex: 1; padding: 12px; border: none; background: transparent; color: white; font-size: 0.7rem; cursor: pointer; }
+        .nav-tabs button.active { border-bottom: 3px solid var(--fifa-gold); }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <header><div class="brand">FIFA WORLD CUP 2026™</div></header>
-    
-    <nav>
-        <button onclick="showSection('album')" id="btn-album" class="active">Mi Álbum</button>
-        <button onclick="showSection('tienda')" id="btn-tienda">Tienda Q</button>
-        <button onclick="showSection('servicio')" id="btn-servicio">Servicio de Estampas</button>
-    </nav>
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-card">
+            <h2 id="auth-title" style="text-align:center; margin-bottom:1rem;">INICIAR SESIÓN</h2>
+            <input type="email" id="email" placeholder="Correo Electrónico">
+            <input type="password" id="pass" placeholder="Contraseña">
+            <button class="btn" onclick="login()">ENTRAR</button>
+            <p style="text-align:center; margin-top:1rem; font-size:0.8rem; cursor:pointer;" onclick="toggleAuth()">
+                <span id="auth-switch">¿No tienes cuenta? Crea una aquí</span>
+            </p>
+        </div>
+    </div>
 
-    <main id="content"></main>
-</div>
+    <div id="app">
+        <header><h1 style="font-family:'Oswald'">FIFA WORLD CUP 2026</h1></header>
+        
+        <nav class="nav-tabs">
+            <button onclick="changeTab('album')" id="tab-album" class="active">ÁLBUM DIGITAL</button>
+            <button onclick="changeTab('tienda')" id="tab-tienda">COMPRAR</button>
+            <button onclick="changeTab('cotizar')" id="tab-cotizar">COTIZAR CARTA</button>
+        </nav>
+
+        <main id="main-content"></main>
+    </div>
 
 <script>
-    const state = {
-        section: 'album',
-        myCollection: JSON.parse(localStorage.getItem('wc26_coll')) || {}
-    };
+    // DATOS INICIALES
+    const selecciones = ["ESTADOS UNIDOS", "MÉXICO", "CANADÁ", "ARGENTINA", "ESPAÑA", "BRASIL", "FRANCIA", "ALEMANIA"];
+    let currentPage = 0;
+    let isLogin = true;
+    let currentUser = null;
 
-    function showSection(section) {
-        state.section = section;
-        render();
+    // Estado del álbum (se cargaría de una DB)
+    let myAlbum = JSON.parse(localStorage.getItem('user_album')) || {};
+
+    function toggleAuth() {
+        isLogin = !isLogin;
+        document.getElementById('auth-title').innerText = isLogin ? 'INICIAR SESIÓN' : 'CREAR CUENTA';
+        document.getElementById('auth-switch').innerText = isLogin ? '¿No tienes cuenta? Crea una aquí' : '¿Ya tienes cuenta? Inicia sesión';
     }
 
-    function toggleSticker(id) {
-        const current = state.myCollection[id] || 0;
-        state.myCollection[id] = (current + 1) % 3;
-        localStorage.setItem('wc26_coll', JSON.stringify(state.myCollection));
-        render();
-    }
-
-    function render() {
-        const container = document.getElementById('content');
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(`btn-${state.section}`).classList.add('active');
-
-        if(state.section === 'album') {
-            container.innerHTML = `
-                <h2>Mi Álbum Digital</h2>
-                <p style="font-size:0.8rem; margin-bottom:1rem;">Toca para marcar: <br> Gris (Falta) | Verde (Tengo) | Amarillo (Repetida)</p>
-                <div class="sticker-grid">
-                    ${Array.from({length: 48}).map((_, i) => {
-                        const id = i + 1;
-                        const status = state.myCollection[id] || 0;
-                        const cls = status === 1 ? 'have' : (status === 2 ? 'repeat' : '');
-                        return `<div class="sticker ${cls}" onclick="toggleSticker(${id})">${id}</div>`;
-                    }).join('')}
-                </div>
-            `;
-        } 
-
-        else if(state.section === 'tienda') {
-            container.innerHTML = `
-                <h2>Catálogo Oficial 2026</h2>
-                <div class="shop-card">
-                    <div class="shop-info">
-                        <h4>Álbum Pasta Dura (Empastado)</h4>
-                        <p class="price">Q150.00</p>
-                        <small>Colección de lujo con acabados dorados.</small>
-                    </div>
-                </div>
-                <div class="shop-card">
-                    <div class="shop-info">
-                        <h4>Álbum Pasta Suave (Normal)</h4>
-                        <p class="price">Q30.00</p>
-                        <small>La edición clásica para llevar a todos lados.</small>
-                    </div>
-                </div>
-                <div class="shop-card">
-                    <div class="shop-info">
-                        <h4>Caja de Estampas (104 sobres)</h4>
-                        <p class="price">Q975.00</p>
-                        <small>Ideal para llenar tu álbum rápido.</small>
-                    </div>
-                </div>
-                <div class="shop-card">
-                    <div class="shop-info">
-                        <h4>Sobre Individual (5 estampas)</h4>
-                        <p class="price">Q10.00</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        else if(state.section === 'servicio') {
-            container.innerHTML = `
-                <h2>¿Buscas Estampas Específicas?</h2>
-                <p style="font-size:0.9rem;">Verificamos disponibilidad en nuestro stock de repetidas.</p>
-                <div class="form-group">
-                    <label>Escribe los números que necesitas:</label>
-                    <textarea id="needed" rows="4" placeholder="Ej: 10, 45, 120, MEX-1..."></textarea>
-                    <label>Tu número de WhatsApp:</label>
-                    <input type="text" id="contact" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd;">
-                    <button class="btn" onclick="enviarInfo()">Consultar con Asesor</button>
-                </div>
-                <p style="font-size:0.7rem; margin-top:1rem; text-align:center;">Un asesor verificará nuestro inventario y te contactará en breve.</p>
-            `;
+    function login() {
+        const mail = document.getElementById('email').value;
+        if(mail) {
+            currentUser = mail;
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+            changeTab('album');
         }
     }
 
-    window.enviarInfo = () => {
-        const lista = document.getElementById('needed').value;
-        if(!lista) return alert("Por favor escribe qué estampas necesitas");
-        alert("Tu solicitud ha sido enviada. El asesor 2026 verificará el stock de las estampas: " + lista);
-    };
+    function changeTab(tab) {
+        const content = document.getElementById('main-content');
+        document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-'+tab).classList.add('active');
 
-    render();
+        if(tab === 'album') {
+            renderAlbum();
+        } else if(tab === 'tienda') {
+            content.innerHTML = `
+                <div style="padding:15px">
+                    <h2>Tienda Oficial</h2>
+                    <div class="card-tienda"><div><h4>Álbum Pasta Dura</h4><p class="price-tag">Q150.00</p></div></div>
+                    <div class="card-tienda"><div><h4>Álbum Normal</h4><p class="price-tag">Q30.00</p></div></div>
+                    <div class="card-tienda"><div><h4>Caja (104 Sobres)</h4><p class="price-tag">Q975.00</p></div></div>
+                    <div class="card-tienda"><div><h4>Sobre Individual</h4><p class="price-tag">Q10.00</p></div></div>
+                </div>`;
+        } else if(tab === 'cotizar') {
+            content.innerHTML = `
+                <div style="padding:15px">
+                    <h2>Cotizador de Estampas</h2>
+                    <p>¿Te falta una en específico? Consultanos:</p>
+                    <input type="text" id="carta-req" placeholder="Ej: Messi (ARG 10) o Estadio Azteca">
+                    <button class="btn" style="background:var(--fifa-green)" onclick="contactar()">Consultar Disponibilidad</button>
+                    <div id="resp" style="margin-top:20px; font-style:italic; font-size:0.8rem; text-align:center;"></div>
+                </div>`;
+        }
+    }
+
+    function renderAlbum() {
+        const content = document.getElementById('main-content');
+        const pais = selecciones[currentPage];
+        
+        content.innerHTML = `
+            <div class="album-navigation">
+                <button onclick="prevPage()">◀</button>
+                <span>${pais} (Pág ${currentPage + 1}/${selecciones.length})</span>
+                <button onclick="nextPage()">▶</button>
+            </div>
+            <div class="page-container">
+                <div class="album-page">
+                    <h3>${pais}</h3>
+                    <div class="grid-estampitas">
+                        ${Array.from({length: 12}).map((_, i) => {
+                            const id = `${pais.substring(0,3)}-${i+1}`;
+                            const status = myAlbum[id] || 0;
+                            const cls = status === 1 ? 'collected' : (status === 2 ? 'repeated' : '');
+                            return `<div class="slot ${cls}" onclick="mark('${id}')">${id}</div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function mark(id) {
+        myAlbum[id] = (myAlbum[id] || 0) + 1;
+        if(myAlbum[id] > 2) myAlbum[id] = 0;
+        localStorage.setItem('user_album', JSON.stringify(myAlbum));
+        renderAlbum();
+    }
+
+    function prevPage() { if(currentPage > 0) { currentPage--; renderAlbum(); } }
+    function nextPage() { if(currentPage < selecciones.length - 1) { currentPage++; renderAlbum(); } }
+
+    function contactar() {
+        const carta = document.getElementById('carta-req').value;
+        if(!carta) return;
+        document.getElementById('resp').innerHTML = `Buscando "${carta}"... Un asesor de Panini se pondrá en contacto contigo a tu correo ${currentUser} para darte el precio exacto.`;
+    }
 </script>
 </body>
 </html>
