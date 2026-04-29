@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Álbum Panini 2026</title>
-    
     <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2026_FIFA_World_Cup_Logo.svg/256px-2026_FIFA_World_Cup_Logo.svg.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
@@ -86,23 +85,20 @@
             to { opacity: 0; visibility: hidden; }
         }
 
-        /* --- ESTILOS DE LA APP --- */
+        /* --- LOGIN --- */
         .auth-container { 
             height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: linear-gradient(135deg, var(--world-cup-blue) 0%, var(--world-cup-purple) 50%, var(--world-cup-green) 100%);
-            position: fixed; width: 100%; top: 0; z-index: 2000;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
+            background-size: cover; position: fixed; width: 100%; top: 0; z-index: 2000;
         }
         .auth-card { 
             background: rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 30px; 
             border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px);
             width: 90%; max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
+        /* ANIMACIÓN DE PULSO PARA EL LOGO EN OTRAS PARTES (SI HUBIERA) */
         .world-cup-logo img {
-            width: 70px;
-            height: auto;
-            filter: drop-shadow(0 0 10px rgba(255, 235, 59, 0.6));
             animation: pulse 2s infinite;
         }
 
@@ -118,6 +114,7 @@
             margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
+        /* --- APP CONTAINER --- */
         #app { display: none; }
 
         .menu-toggle { 
@@ -157,6 +154,8 @@
         .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
         .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; }
         
+        #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; }
+        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 5px; }
         .star { cursor: pointer; font-size: 2.5rem; transition: color 0.2s; }
         .star.active { color: var(--world-cup-yellow); }
     </style>
@@ -172,13 +171,11 @@
         <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b8c78.mp3">
     </audio>
 
+    <div id="toast-container"></div>
     <div id="menu-overlay" onclick="toggleMenu()"></div>
 
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <div class="world-cup-logo">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2026_FIFA_World_Cup_Logo.svg/256px-2026_FIFA_World_Cup_Logo.svg.png" width="60" alt="Logo WC 2026">
-            </div>
             <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 2.5rem;">PANINI 2026</h1>
             <p id="auth-status" style="margin-top: 10px; font-size: 0.9rem;">Cargando sistema...</p>
             <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()" style="display: none;">
@@ -428,7 +425,7 @@
 
     function changeGroup(n) { currentIdx = (currentIdx + n + grupos.length) % grupos.length; renderGroup(); }
 
-    /* --- LÓGICA DE LA INTRO AGREGADA --- */
+    /* --- LÓGICA DE INTRO AGREGADA --- */
     // partículas
     for (let i = 0; i < 40; i++) {
         let p = document.createElement("div");
@@ -440,9 +437,7 @@
 
     // sonido
     setTimeout(() => {
-        document.getElementById("introSound").play().catch(()=>{
-            console.log("El navegador bloqueó el autoplay. Se requiere interacción del usuario.");
-        });
+        document.getElementById("introSound").play().catch(()=>{});
     }, 500);
 
     // quitar intro
