@@ -325,10 +325,19 @@
         });
     }
 
+    // CORRECCIÓN: Envío de Reseñas al Admin
     function submitRating() {
         if(userRating === 0) return alert("Por favor, selecciona una estrella antes de enviar.");
-        alert("¡Gracias por tu calificación de " + userRating + " estrellas!");
-        showView('album-view');
+        
+        db.collection("mejoras").add({
+            user: auth.currentUser.displayName || "Usuario Panini",
+            rating: userRating,
+            comment: "Calificación desde el álbum",
+            date: new Date().toLocaleDateString()
+        }).then(() => {
+            alert("¡Gracias por tu calificación de " + userRating + " estrellas!");
+            showView('album-view');
+        });
     }
 
     let myStickers = [];
@@ -450,8 +459,19 @@
         return codes[p] || "un";
     }
 
+    // CORRECCIÓN: Envío de Pedidos al Admin
     async function sendOrder(t, p) {
         const id = "PN-" + Math.floor(1000 + Math.random()*9000);
+        
+        // Guardar en Firebase para el Admin
+        db.collection("pedidos").add({
+            name: auth.currentUser.displayName || "Cliente",
+            details: t,
+            status: "pendiente",
+            date: new Date().toLocaleString()
+        });
+
+        // Continuar con WhatsApp
         let msj = `¡Hola! 👋 Orden: *${t}*\nID: ${id}\nPrecio: Q${p}`;
         window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msj)}`, '_blank');
     }
