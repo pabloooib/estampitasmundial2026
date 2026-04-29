@@ -202,17 +202,13 @@
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
     // FUNCIÓN DE LOGIN
-    function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        
-        // Preferimos Redirect en móviles para evitar bloqueos de popups
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-            auth.signInWithRedirect(provider);
-        } else {
-            auth.signInWithPopup(provider).catch(() => auth.signInWithRedirect(provider));
-        }
-    }
+ function loginWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(err => {
+        console.log("Popup bloqueado, usando redirect...");
+        auth.signInWithRedirect(provider);
+    });
+}
 
     // OBSERVADOR DE ESTADO (Soluciona el bloqueo en móviles)
     auth.onAuthStateChanged(async (user) => {
