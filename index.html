@@ -30,7 +30,6 @@
             color: white; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- ANIMACIÓN ESPACIAL (NUEVO) --- */
         #intro-space {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -74,7 +73,6 @@
             100% { transform: scale(25) rotate(15deg); opacity: 0; }
         }
 
-        /* --- LOGIN --- */
         .auth-container { 
             height: 100vh; display: flex; align-items: center; justify-content: center; 
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
@@ -85,7 +83,7 @@
             border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px);
             width: 90%; max-width: 400px;
             animation: fadeInLogin 1s ease forwards;
-            animation-delay: 3.5s; /* Aparece cuando el mundo termina de pasar */
+            animation-delay: 3.5s;
             opacity: 0;
         }
 
@@ -99,7 +97,6 @@
             margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
-        /* --- APP CONTAINER --- */
         #app { display: none; }
 
         .menu-toggle { 
@@ -218,24 +215,15 @@
         </div>
 
         <div id="shop-view" class="view">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
-                <div class="card" style="text-align:center; background:white; color:black;">
-                    <h3 style="font-family:'Oswald';">ALBUM PASTA DURA</h3>
-                    <p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q 125.00</p>
-                    <button class="buy-btn" style="background:#4a148c; color:white;" onclick="sendOrder('Album Pasta Dura', '125.00')">COMPRAR</button>
+            <div id="shop-items-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
                 </div>
-                <div class="card" style="text-align:center; background:white; color:black;">
-                    <h3 style="font-family:'Oswald';">ALBUM NORMAL</h3>
-                    <p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q 35.00</p>
-                    <button class="buy-btn" style="background:#004d3d; color:white;" onclick="sendOrder('Album Normal', '35.00')">COMPRAR</button>
-                </div>
-            </div>
         </div>
 
         <div id="prices-view" class="view">
              <div class="card" style="max-width:400px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">PRECIOS</h2>
-                <div id="dynamic-prices-container" style="line-height:2.5; margin-top:15px;"></div>
+                <div id="dynamic-prices-container" style="line-height:2.5; margin-top:15px;">
+                    </div>
             </div>
         </div>
 
@@ -268,7 +256,6 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // LÓGICA DE ANIMACIÓN INICIAL
     function startIntro() {
         const intro = document.getElementById('intro-space');
         for (let i = 0; i < 150; i++) {
@@ -364,14 +351,55 @@
 
     function initApp(user) {
         renderGroup();
+        
+        // ESCUCHA DE COLECCIÓN PERSONAL
         db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
             if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
         });
+
+        // ESCUCHA DE CARTAS EN STOCK (ESPECIALES)
         db.collection("especiales").onSnapshot(snap => {
             document.getElementById('stock-list-container').innerHTML = snap.docs.map(doc => `
                 <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1)">
                     <span>${doc.data().name}</span> <b style="color:var(--world-cup-yellow)">Q${doc.data().price}</b>
                 </div>`).join('');
+        });
+
+        // ESCUCHA DE PRECIOS Y TIENDA DINÁMICA
+        db.collection("config").doc("precios").onSnapshot(doc => {
+            if(doc.exists) {
+                const p = doc.data();
+                
+                // Actualizar Vista de Precios
+                const pricesContainer = document.getElementById('dynamic-prices-container');
+                pricesContainer.innerHTML = "";
+                for (const [key, value] of Object.entries(p)) {
+                    pricesContainer.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.05)">
+                            <span>${key}:</span> <b style="color:var(--world-cup-yellow)">Q ${value}</b>
+                        </div>`;
+                }
+
+                // Actualizar Vista de Tienda (Items principales)
+                const shopGrid = document.getElementById('shop-items-grid');
+                shopGrid.innerHTML = `
+                    <div class="card" style="text-align:center; background:white; color:black;">
+                        <h3 style="font-family:'Oswald';">ALBUM PASTA DURA</h3>
+                        <p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q ${p["Album Pasta Dura"] || '0'}</p>
+                        <button class="buy-btn" style="background:#4a148c; color:white;" onclick="sendOrder('Album Pasta Dura', '${p["Album Pasta Dura"]}')">COMPRAR</button>
+                    </div>
+                    <div class="card" style="text-align:center; background:white; color:black;">
+                        <h3 style="font-family:'Oswald';">ALBUM NORMAL</h3>
+                        <p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q ${p["Album Normal"] || '0'}</p>
+                        <button class="buy-btn" style="background:#004d3d; color:white;" onclick="sendOrder('Album Normal', '${p["Album Normal"]}')">COMPRAR</button>
+                    </div>
+                    <div class="card" style="text-align:center; background:white; color:black;">
+                        <h3 style="font-family:'Oswald';">SOBRE DE ESTAMPAS</h3>
+                        <p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q ${p["Sobre de Estampas"] || '0'}</p>
+                        <button class="buy-btn" style="background:var(--world-cup-purple); color:white;" onclick="sendOrder('Sobre de Estampas', '${p["Sobre de Estampas"]}')">COMPRAR</button>
+                    </div>
+                `;
+            }
         });
     }
 
