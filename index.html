@@ -34,7 +34,7 @@
             background-size: cover; position: fixed; width: 100%; top: 0; z-index: 2000;
         }
         .auth-card { 
-            background: rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 30px; 
+            background: rgba(255, 255, 255, 0.1); padding: 2.5rem; border-radius: 30px; 
             border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px);
             width: 90%; max-width: 400px;
         }
@@ -45,25 +45,15 @@
             margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
-        /* --- APP CONTAINER --- */
+        /* --- UI ELEMENTS --- */
         #app { display: none; }
-
-        .menu-toggle { 
-            position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; 
-            background: var(--world-cup-yellow); color: black; padding: 12px 18px; 
-            border-radius: 12px; font-weight: 900;
-        }
-
+        .menu-toggle { position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; background: var(--world-cup-yellow); color: black; padding: 12px 18px; border-radius: 12px; font-weight: 900; }
         .contact-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
         .float-btn { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); text-decoration: none; }
         .wa-color { background-color: #25d366; }
         .ig-color { background: var(--instagram-gradient); }
         
-        nav {
-            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
-            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px);
-            z-index: 1500; padding-top: 80px; border-right: 2px solid var(--world-cup-yellow);
-        }
+        nav { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px); z-index: 1500; padding-top: 80px; border-right: 2px solid var(--world-cup-yellow); }
         nav.active { left: 0; }
         nav a { display: block; padding: 18px 30px; color: white; text-decoration: none; font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
@@ -76,18 +66,14 @@
         .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
         .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
         .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; }
-        
-        #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; }
     </style>
 </head>
 <body>
 
-    <div id="toast-container"></div>
-
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
             <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 2.5rem;">PANINI 2026</h1>
-            <p id="auth-status" style="margin-top: 10px; font-size: 0.9rem;">Verificando sesión...</p>
+            <p id="auth-status">Verificando sesión...</p>
             <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()" style="display: none;">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
                 Entrar con Google
@@ -110,7 +96,6 @@
             <a href="#" onclick="showView('stock-view')">💎 CARTAS EN STOCK</a>
             <a href="#" onclick="showView('shop-view')">🛒 TIENDA</a>
             <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
-            <a href="#" onclick="showView('rating-view')">🌟 CALIFÍCANOS</a>
             <a href="#" onclick="handleLogout()" style="color: #ff5252; margin-top: 20px;">🚪 CERRAR SESIÓN</a>
         </nav>
 
@@ -143,7 +128,7 @@
         <div id="stock-view" class="view">
             <div class="card" style="max-width:600px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">EN STOCK</h2>
-                <div id="stock-list-container" style="margin-top:15px;"></div>
+                <div id="stock-list-container"></div>
             </div>
         </div>
 
@@ -165,21 +150,7 @@
         <div id="prices-view" class="view">
              <div class="card" style="max-width:400px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">PRECIOS</h2>
-                <div id="dynamic-prices-container" style="line-height:2.5; margin-top:15px;"></div>
-            </div>
-        </div>
-
-        <div id="rating-view" class="view">
-            <div class="card" style="text-align:center; max-width:400px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">CALIFÍCANOS</h2>
-                <div id="stars" style="font-size:2.5rem; margin:15px 0;">
-                    <span style="cursor:pointer" onclick="setRate(1)">☆</span>
-                    <span style="cursor:pointer" onclick="setRate(2)">☆</span>
-                    <span style="cursor:pointer" onclick="setRate(3)">☆</span>
-                    <span style="cursor:pointer" onclick="setRate(4)">☆</span>
-                    <span style="cursor:pointer" onclick="setRate(5)">☆</span>
-                </div>
-                <button class="buy-btn" onclick="submitRating()">ENVIAR RESEÑA</button>
+                <div id="dynamic-prices-container"></div>
             </div>
         </div>
     </div>
@@ -198,36 +169,35 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Persistencia local para móviles
+    // Persistencia Local Forzada
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-    // FUNCIÓN DE LOGIN
- function loginWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(err => {
-        console.log("Popup bloqueado, usando redirect...");
+    function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        // Usar Redirect directamente en móviles para evitar bloqueos
         auth.signInWithRedirect(provider);
-    });
-}
+    }
 
-    // OBSERVADOR DE ESTADO (Soluciona el bloqueo en móviles)
+    // GESTOR DE AUTENTICACIÓN MEJORADO
     auth.onAuthStateChanged(async (user) => {
         const authScreen = document.getElementById('auth-screen');
         const app = document.getElementById('app');
-        const loginBtn = document.getElementById('loginBtn');
         const statusTxt = document.getElementById('auth-status');
+        const loginBtn = document.getElementById('loginBtn');
 
         if(user) {
             authScreen.style.display = 'none';
             app.style.display = 'block';
-            initApp(user);
+            // Pequeño delay para que Firestore reconozca el token en móviles
+            setTimeout(() => initApp(user), 600);
         } else {
-            // Revisar si venimos de un redirect fallido o exitoso
             try {
+                // Capturar el resultado si venimos regresando de Google
                 const result = await auth.getRedirectResult();
-                if (result.user) return; // onAuthStateChanged se activará de nuevo
+                if (result && result.user) return; 
             } catch (error) {
-                console.error("Error redirect:", error);
+                console.error("Error en redirección:", error);
             }
             
             authScreen.style.display = 'flex';
@@ -241,7 +211,7 @@
         auth.signOut().then(() => window.location.reload());
     }
 
-    // --- LÓGICA DE LA APP ---
+    // LÓGICA DE NEGOCIO
     let myStickers = [];
     let activeTeam = "";
     let currentIdx = 0;
@@ -254,10 +224,15 @@
 
     function initApp(user) {
         renderGroup();
+        // Listener de stickers
         db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-            if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
+            if(doc.exists) { 
+                myStickers = doc.data().coleccion || []; 
+                if(activeTeam) renderStickers(); 
+            }
         });
         
+        // Listener de Stock
         db.collection("especiales").onSnapshot(snap => {
             document.getElementById('stock-list-container').innerHTML = snap.docs.map(doc => `
                 <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1)">
@@ -266,10 +241,11 @@
             `).join('');
         });
 
+        // Listener de Precios
         db.collection("config").doc("precios").onSnapshot(doc => {
             if(doc.exists) {
                 document.getElementById('dynamic-prices-container').innerHTML = Object.entries(doc.data()).map(([n, p]) => `
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1)">
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding: 5px 0;">
                         <span>${n}</span> <b>Q${p}</b>
                     </div>
                 `).join('');
@@ -284,7 +260,11 @@
         g.paises.forEach(p => {
             const d = document.createElement('div');
             d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald';";
-            d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
+            d.onclick = () => { 
+                activeTeam = p; 
+                document.getElementById('current-team-title').innerText = p.toUpperCase(); 
+                renderStickers(); 
+            };
             d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
             list.appendChild(d);
         });
@@ -311,34 +291,19 @@
         return codes[p] || "un";
     }
 
-    async function sendOrder(t, p) {
+    function sendOrder(t, p) {
         const id = "PN-" + Math.floor(1000 + Math.random()*9000);
         let msj = `¡Hola! 👋 Orden: *${t}*\nID: ${id}\nPrecio: Q${p}`;
         window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msj)}`, '_blank');
     }
 
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-    
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        if(window.innerWidth < 900 && document.getElementById('sidebar').classList.contains('active')) toggleMenu();
+        if(window.innerWidth < 900) document.getElementById('sidebar').classList.remove('active');
     }
-    
     function changeGroup(n) { currentIdx = (currentIdx + n + grupos.length) % grupos.length; renderGroup(); }
-
-    let selectedRate = 0;
-    function setRate(n) {
-        selectedRate = n;
-        const stars = document.getElementById('stars').children;
-        for(let i=0; i<5; i++) stars[i].innerText = i < n ? '★' : '☆';
-    }
-
-    function submitRating() {
-        if(selectedRate === 0) return alert("Selecciona una calificación");
-        alert("¡Gracias por tu calificación de " + selectedRate + " estrellas!");
-        showView('album-view');
-    }
 </script>
 </body>
 </html>
