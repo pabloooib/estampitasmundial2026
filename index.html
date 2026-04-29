@@ -29,29 +29,67 @@
             color: white; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- LOGIN ACTUALIZADO --- */
-        .auth-container { 
-            height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
-                        url('https://upload.wikimedia.org/wikipedia/commons/4/43/2026_FIFA_World_Cup_Logo.svg');
-            background-size: contain; 
-            background-repeat: no-repeat;
-            background-position: center;
-            background-color: #000;
-            position: fixed; width: 100%; top: 0; z-index: 2000;
-        }
-        .auth-card { 
-            background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 30px; 
-            border: 1px solid rgba(255,255,255,0.15); text-align: center; backdrop-filter: blur(20px);
-            width: 90%; max-width: 400px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        /* --- ANIMACIÓN ESPACIAL (NUEVO) --- */
+        #intro-space {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            pointer-events: none;
+            transition: opacity 2s ease, visibility 2s;
         }
 
-        .world-cup-logo {
-            width: 100px; height: 100px; background: white; border-radius: 50%;
-            padding: 10px; margin: 0 auto 20px auto;
-            box-shadow: 0 0 20px rgba(255, 235, 59, 0.4);
-            display: flex; align-items: center; justify-content: center;
+        .star-field {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: zoomStar 4s infinite ease-in;
+        }
+
+        @keyframes zoomStar {
+            0% { transform: scale(0) translate(0, 0); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: scale(1.5) translate(var(--x), var(--y)); opacity: 0; }
+        }
+
+        .earth-intro {
+            width: 150px;
+            height: 150px;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png');
+            background-size: cover;
+            filter: drop-shadow(0 0 30px rgba(0, 140, 255, 0.4));
+            animation: approachEarth 5s forwards ease-in-out;
+            z-index: 3001;
+        }
+
+        @keyframes approachEarth {
+            0% { transform: scale(0.05) rotate(0deg); opacity: 0; filter: brightness(0.5) blur(2px); }
+            30% { opacity: 1; filter: brightness(1) blur(0px); }
+            100% { transform: scale(25) rotate(15deg); opacity: 0; }
+        }
+
+        /* --- LOGIN --- */
+        .auth-container { 
+            height: 100vh; display: flex; align-items: center; justify-content: center; 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
+            background-size: cover; position: fixed; width: 100%; top: 0; z-index: 2000;
+        }
+        .auth-card { 
+            background: rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 30px; 
+            border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px);
+            width: 90%; max-width: 400px;
+            animation: fadeInLogin 1s ease forwards;
+            animation-delay: 3.5s; /* Aparece cuando el mundo termina de pasar */
+            opacity: 0;
+        }
+
+        @keyframes fadeInLogin {
+            to { opacity: 1; }
         }
 
         .google-btn {
@@ -108,14 +146,15 @@
 </head>
 <body>
 
+    <div id="intro-space">
+        <div class="earth-intro"></div>
+    </div>
+
     <div id="toast-container"></div>
     <div id="menu-overlay" onclick="toggleMenu()"></div>
 
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <div class="world-cup-logo">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/2026_FIFA_World_Cup_Logo.svg" width="60" alt="Logo WC 2026">
-            </div>
             <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 2.5rem;">PANINI 2026</h1>
             <p id="auth-status" style="margin-top: 10px; font-size: 0.9rem;">Cargando sistema...</p>
             <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()" style="display: none;">
@@ -227,6 +266,31 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // LÓGICA DE ANIMACIÓN INICIAL
+    function startIntro() {
+        const intro = document.getElementById('intro-space');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star-field';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.left = '50%';
+            star.style.top = '50%';
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 800 + Math.random() * 1000;
+            star.style.setProperty('--x', Math.cos(angle) * dist + 'px');
+            star.style.setProperty('--y', Math.sin(angle) * dist + 'px');
+            star.style.animationDelay = Math.random() * 4 + 's';
+            intro.appendChild(star);
+        }
+        setTimeout(() => {
+            intro.style.opacity = '0';
+            setTimeout(() => intro.style.visibility = 'hidden', 2000);
+        }, 4500);
+    }
+    startIntro();
 
     auth.onAuthStateChanged(user => {
         const authScreen = document.getElementById('auth-screen');
