@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Álbum Panini 2026</title>
+    
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/4/43/2026_FIFA_World_Cup_Logo.svg">
+    
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
@@ -54,45 +57,40 @@
             border-radius: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* Overlay para cerrar el menú al tocar fuera */
         #menu-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1050; display: none;
+            background: rgba(0,0,0,0.7); z-index: 1050; display: none;
         }
         #menu-overlay.active { display: block; }
 
-        .contact-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
-        .float-btn { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); text-decoration: none; }
-        .wa-color { background-color: #25d366; }
-        .ig-color { background: var(--instagram-gradient); }
-        
         nav {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(25px);
-            z-index: 1100; padding-top: 80px; border-right: 2px solid var(--world-cup-yellow);
-            box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+            z-index: 1200; padding-top: 20px; border-right: 2px solid var(--world-cup-yellow);
         }
         nav.active { left: 0; }
+        
+        .close-btn { 
+            text-align: right; padding: 10px 20px; cursor: pointer; color: var(--world-cup-yellow); font-size: 1.5rem; 
+        }
+
         nav a { display: block; padding: 18px 30px; color: white; text-decoration: none; font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.05); }
         nav a:hover { background: rgba(255, 235, 59, 0.1); color: var(--world-cup-yellow); }
 
-        .view { display: none; max-width: 1100px; margin: 90px auto 20px auto; padding: 0 20px; animation: slideUp 0.4s ease; }
+        .view { display: none; max-width: 1100px; margin: 90px auto 20px auto; padding: 0 20px; }
         .view.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
         .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
         .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
         .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; }
-        
-        #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; }
-        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 5px; }
+
+        .star-rating { color: var(--world-cup-yellow); cursor: pointer; font-size: 2.5rem; }
     </style>
 </head>
 <body>
 
-    <div id="toast-container"></div>
     <div id="menu-overlay" onclick="toggleMenu()"></div>
 
     <div class="auth-container" id="auth-screen">
@@ -108,13 +106,9 @@
 
     <div id="app">
         <div class="menu-toggle" onclick="toggleMenu()">☰ MENU</div>
-        
-        <div class="contact-buttons">
-            <a href="https://www.instagram.com/pablooib" target="_blank" class="float-btn ig-color"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" width="30"></a>
-            <a href="https://wa.me/50246199644" target="_blank" class="float-btn wa-color"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
-        </div>
 
         <nav id="sidebar">
+            <div class="close-btn" onclick="toggleMenu()">✕</div>
             <div style="padding: 20px; text-align: center;"><h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">PANINI 2026</h2></div>
             <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
             <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
@@ -126,77 +120,42 @@
         </nav>
 
         <div id="album-view" class="view active">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                <div class="card">
-                    <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow);">GRUPO A</h3>
-                    <div id="team-list" style="margin-top:15px;"></div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-                        <button onclick="changeGroup(-1)" class="buy-btn" style="background:rgba(255,255,255,0.1); color:white;">◄</button>
-                        <button onclick="changeGroup(1)" class="buy-btn">►</button>
-                    </div>
-                </div>
-                <div class="card">
-                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow);">SELECCIONA PAÍS</h2>
-                    <div class="sticker-grid" id="sticker-grid"></div>
+            <div class="card">
+                <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow);">GRUPO A</h3>
+                <div id="team-list" style="margin-top:15px;"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                    <button onclick="changeGroup(-1)" class="buy-btn" style="background:rgba(255,255,255,0.1); color:white;">◄</button>
+                    <button onclick="changeGroup(1)" class="buy-btn">►</button>
                 </div>
             </div>
-        </div>
-
-        <div id="special-card-view" class="view">
-            <div class="card" style="max-width:500px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA</h2>
-                <input type="text" id="playerName" placeholder="Nombre del Jugador" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:white;">
-                <input type="text" id="playerTeam" placeholder="Selección" style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:white;">
-                <button class="buy-btn" onclick="sendOrder('Carta Especial', 'A convenir')">CONSULTAR WHATSAPP</button>
-            </div>
-        </div>
-
-        <div id="stock-view" class="view">
-            <div class="card" style="max-width:600px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">EN STOCK</h2>
-                <div id="stock-list-container" style="margin-top:15px;"></div>
-            </div>
-        </div>
-
-        <div id="shop-view" class="view">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
-                <div class="card" style="text-align:center; background:white; color:black;">
-                    <h3 style="font-family:'Oswald';">ALBUM PASTA DURA</h3>
-                    <p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q 125.00</p>
-                    <button class="buy-btn" style="background:#4a148c; color:white;" onclick="sendOrder('Album Pasta Dura', '125.00')">COMPRAR</button>
-                </div>
-                <div class="card" style="text-align:center; background:white; color:black;">
-                    <h3 style="font-family:'Oswald';">ALBUM NORMAL</h3>
-                    <p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q 35.00</p>
-                    <button class="buy-btn" style="background:#004d3d; color:white;" onclick="sendOrder('Album Normal', '35.00')">COMPRAR</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="prices-view" class="view">
-             <div class="card" style="max-width:400px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">PRECIOS</h2>
-                <div id="dynamic-prices-container" style="line-height:2.5; margin-top:15px;"></div>
+            <div class="card">
+                <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow);">SELECCIONA PAÍS</h2>
+                <div class="sticker-grid" id="sticker-grid"></div>
             </div>
         </div>
 
         <div id="rating-view" class="view">
             <div class="card" style="text-align:center; max-width:400px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">CALIFÍCANOS</h2>
-                <div id="stars" style="font-size:2.5rem; margin:15px 0;">
-                    <span style="cursor:pointer" onclick="setRate(1)">☆</span>
-                    <span style="cursor:pointer" onclick="setRate(2)">☆</span>
-                    <span style="cursor:pointer" onclick="setRate(3)">☆</span>
-                    <span style="cursor:pointer" onclick="setRate(4)">☆</span>
-                    <span style="cursor:pointer" onclick="setRate(5)">☆</span>
+                <div id="stars-container" style="margin: 20px 0;">
+                    <span class="star-rating" onclick="setRate(1)">☆</span>
+                    <span class="star-rating" onclick="setRate(2)">☆</span>
+                    <span class="star-rating" onclick="setRate(3)">☆</span>
+                    <span class="star-rating" onclick="setRate(4)">☆</span>
+                    <span class="star-rating" onclick="setRate(5)">☆</span>
                 </div>
                 <button class="buy-btn" onclick="submitRating()">ENVIAR RESEÑA</button>
             </div>
         </div>
+        
+        <div id="special-card-view" class="view"><div class="card"><h2>Vista Carta Especial</h2></div></div>
+        <div id="stock-view" class="view"><div class="card"><h2>Vista Stock</h2></div></div>
+        <div id="shop-view" class="view"><div class="card"><h2>Tienda</h2></div></div>
+        <div id="prices-view" class="view"><div class="card"><h2>Precios</h2></div></div>
     </div>
 
 <script>
-    // Configuración Firebase (Se mantiene igual)
+    // Tu Configuración Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -210,55 +169,23 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    window.onload = () => {
-        if (window.location.href.includes("error") || !window.sessionStorage) {
-            window.localStorage.removeItem("firebase:previous_websocket_success");
-        }
-    };
-
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-
-    auth.getRedirectResult().then((result) => {
-        if (result.user) console.log("Redirección exitosa");
-    }).catch((error) => {
-        if (error.code === 'auth/internal-error') auth.signOut();
-    });
-
-    function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-            auth.signInWithRedirect(provider);
-        } else {
-            auth.signInWithPopup(provider).catch(() => auth.signInWithRedirect(provider));
-        }
-    }
-
-    auth.onAuthStateChanged(user => {
-        const authScreen = document.getElementById('auth-screen');
-        const app = document.getElementById('app');
-        const loginBtn = document.getElementById('loginBtn');
-        const statusTxt = document.getElementById('auth-status');
-
-        if(user) {
-            authScreen.style.display = 'none';
-            app.style.display = 'block';
-            initApp(user);
-        } else {
-            authScreen.style.display = 'flex';
-            app.style.display = 'none';
-            loginBtn.style.display = 'block';
-            statusTxt.innerText = "Inicia sesión para entrar al álbum";
-        }
-    });
-
-    function handleLogout() {
-        auth.signOut().then(() => {
-            window.location.reload();
+    // --- LÓGICA DE CALIFICACIÓN ---
+    let currentRating = 0;
+    function setRate(num) {
+        currentRating = num;
+        const stars = document.querySelectorAll('.star-rating');
+        stars.forEach((star, index) => {
+            star.innerText = index < num ? '★' : '☆';
         });
     }
 
-    // --- MEJORA: INTERACTIVIDAD DEL MENÚ ---
+    function submitRating() {
+        if(currentRating === 0) return alert("Por favor selecciona una estrella");
+        alert("¡Gracias por calificar con " + currentRating + " estrellas!");
+        showView('album-view');
+    }
+
+    // --- MANEJO DE MENÚ ---
     function toggleMenu() { 
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('menu-overlay');
@@ -268,46 +195,38 @@
 
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        // Cerrar menú automáticamente al seleccionar vista
-        toggleMenu(); 
+        const target = document.getElementById(id);
+        if(target) target.classList.add('active');
+        const sidebar = document.getElementById('sidebar');
+        if(sidebar.classList.contains('active')) toggleMenu();
     }
 
-    // --- LÓGICA DE DATOS (Se mantiene igual) ---
-    let myStickers = [];
-    let activeTeam = "";
+    // --- AUTH Y LÓGICA DE GRUPOS ---
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            renderGroup();
+        } else {
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('loginBtn').style.display = 'block';
+        }
+    });
+
+    function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider);
+    }
+
+    function handleLogout() {
+        auth.signOut().then(() => window.location.reload());
+    }
+
     let currentIdx = 0;
     const grupos = [
         {id: "A", paises: ["México", "Sudáfrica", "Corea del Sur", "República Checa"]},
-        {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
-        {id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},
-        {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Turquía"]}
+        {id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]}
     ];
-
-    function initApp(user) {
-        renderGroup();
-        db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-            if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
-        });
-        
-        db.collection("especiales").onSnapshot(snap => {
-            document.getElementById('stock-list-container').innerHTML = snap.docs.map(doc => `
-                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1)">
-                    <span>${doc.data().name}</span> <b style="color:var(--world-cup-yellow)">Q${doc.data().price}</b>
-                </div>
-            `).join('');
-        });
-
-        db.collection("config").doc("precios").onSnapshot(doc => {
-            if(doc.exists) {
-                document.getElementById('dynamic-prices-container').innerHTML = Object.entries(doc.data()).map(([n, p]) => `
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1)">
-                        <span>${n}</span> <b>Q${p}</b>
-                    </div>
-                `).join('');
-            }
-        });
-    }
 
     function renderGroup() {
         const g = grupos[currentIdx];
@@ -315,41 +234,17 @@
         const list = document.getElementById('team-list'); list.innerHTML = "";
         g.paises.forEach(p => {
             const d = document.createElement('div');
-            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald';";
-            d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
-            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
+            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05);";
+            d.onclick = () => { document.getElementById('current-team-title').innerText = p.toUpperCase(); };
+            d.innerHTML = `⚽ ${p.toUpperCase()}`;
             list.appendChild(d);
         });
     }
 
-    function renderStickers() {
-        const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
-        for(let i=1; i<=20; i++) {
-            const id = `${activeTeam}-${i}`;
-            const owned = myStickers.includes(id);
-            const s = document.createElement('div');
-            s.className = `sticker ${owned ? 'owned' : ''}`;
-            s.innerText = i;
-            s.onclick = () => {
-                const newCol = owned ? myStickers.filter(x => x !== id) : [...myStickers, id];
-                db.collection("usuarios").doc(auth.currentUser.uid).set({ coleccion: newCol }, {merge: true});
-            };
-            grid.appendChild(s);
-        }
+    function changeGroup(n) { 
+        currentIdx = (currentIdx + n + grupos.length) % grupos.length; 
+        renderGroup(); 
     }
-
-    function getIso(p) {
-        const codes = {"México":"mx", "Sudáfrica":"za", "Corea del Sur":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr"};
-        return codes[p] || "un";
-    }
-
-    async function sendOrder(t, p) {
-        const id = "PN-" + Math.floor(1000 + Math.random()*9000);
-        let msj = `¡Hola! 👋 Orden: *${t}*\nID: ${id}\nPrecio: Q${p}`;
-        window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msj)}`, '_blank');
-    }
-
-    function changeGroup(n) { currentIdx = (currentIdx + n + grupos.length) % grupos.length; renderGroup(); }
 </script>
 </body>
 </html>
