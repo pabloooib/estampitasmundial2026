@@ -132,14 +132,53 @@
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
-        .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
+        
+        /* Modificado para duplicados */
+        .sticker { 
+            aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 6px; display: flex; align-items: center; justify-content: center; 
+            font-size: 0.8rem; cursor: pointer; position: relative; overflow: visible;
+        }
         .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
+        .sticker .badge { 
+            position: absolute; top: -8px; right: -8px; background: #ff5252; color: white; 
+            font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-weight: 900; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
         .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; }
         
-        #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; }
-        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 5px; }
+        #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; display: flex; flex-direction: column; align-items: flex-end; pointer-events: none; }
+        .toast { 
+            background: white; color: black; padding: 12px 20px; border-radius: 10px; 
+            font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            pointer-events: auto;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100%) scale(0.5); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        
         .star { cursor: pointer; font-size: 2.5rem; transition: color 0.2s; }
         .star.active { color: var(--world-cup-yellow); }
+
+        /* NUEVOS ESTILOS SOLICITADOS */
+        .progress-container { margin-bottom: 15px; }
+        .progress-header { display: flex; justify-content: space-between; font-family: 'Oswald'; margin-bottom: 5px; font-size: 0.9rem; }
+        .progress-bar-bg { background: rgba(255,255,255,0.1); height: 12px; border-radius: 20px; overflow: hidden; }
+        .progress-bar-fill { background: var(--world-cup-yellow); height: 100%; width: 0%; transition: width 0.8s ease; }
+
+        /* Animación Pop de Carta */
+        @keyframes cardPop {
+            0% { transform: scale(0.2); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-animation { animation: cardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* Estilo para Ranking e Historial */
+        .list-item { 
+            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; 
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -176,12 +215,25 @@
             <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
             <a href="#" onclick="showView('stock-view')">💎 CARTAS EN STOCK</a>
             <a href="#" onclick="showView('shop-view')">🛒 TIENDA</a>
+            <a href="#" onclick="showView('ranking-view')">🏆 RANKING TOP</a>
+            <a href="#" onclick="showView('history-view')">📜 MIS PEDIDOS</a>
             <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
             <a href="#" onclick="showView('rating-view')">🌟 CALIFÍCANOS</a>
             <a href="#" onclick="handleLogout()" style="color: #ff5252; margin-top: 20px;">🚪 CERRAR SESIÓN</a>
         </nav>
 
         <div id="album-view" class="view active">
+            <div class="progress-container card">
+                <div class="progress-header">
+                    <span>PROGRESO TOTAL</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <p id="progress-text" style="font-size: 0.8rem; margin-top:5px; text-align:center; color:rgba(255,255,255,0.6)">Obtenidas: 0 / 960</p>
+            </div>
+
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="card">
                     <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow);">GRUPO A</h3>
@@ -217,6 +269,20 @@
         <div id="shop-view" class="view">
             <div id="shop-items-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
                 </div>
+        </div>
+
+        <div id="ranking-view" class="view">
+            <div class="card" style="max-width:600px; margin:auto;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">GLOBAL TOP</h2>
+                <div id="ranking-list" style="margin-top:15px;"></div>
+            </div>
+        </div>
+
+        <div id="history-view" class="view">
+            <div class="card" style="max-width:600px; margin:auto;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">MI HISTORIAL</h2>
+                <div id="history-list" style="margin-top:15px;"></div>
+            </div>
         </div>
 
         <div id="prices-view" class="view">
@@ -255,6 +321,24 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // Audio Context para sonidos ligeros
+    const playStickerSound = () => {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        } catch(e) { console.log("Audio no soportado"); }
+    };
 
     function startIntro() {
         const intro = document.getElementById('intro-space');
@@ -301,6 +385,7 @@
     }
 
     function handleLogout() {
+        localStorage.clear();
         auth.signOut().then(() => window.location.reload());
     }
 
@@ -312,7 +397,22 @@
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        if(id === 'ranking-view') loadRanking();
+        if(id === 'history-view') loadHistory();
         toggleMenu(); 
+    }
+
+    // SISTEMA DE NOTIFICACIONES (TOAST)
+    function showToast(msg) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerText = msg;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
     }
 
     let userRating = 0;
@@ -325,24 +425,25 @@
         });
     }
 
-    // CORRECCIÓN: Envío de Reseñas al Admin
     function submitRating() {
         if(userRating === 0) return alert("Por favor, selecciona una estrella antes de enviar.");
-        
         db.collection("mejoras").add({
             user: auth.currentUser.displayName || "Usuario Panini",
             rating: userRating,
             comment: "Calificación desde el álbum",
             date: new Date().toLocaleDateString()
         }).then(() => {
-            alert("¡Gracias por tu calificación de " + userRating + " estrellas!");
+            showToast("¡Gracias por calificar!");
             showView('album-view');
         });
     }
 
-    let myStickers = [];
+    // VARIABLES DE ESTADO LOCAL
+    let myStickers = {}; // Ahora es un objeto: { "México-1": 2 }
     let activeTeam = "";
     let currentIdx = 0;
+    const TOTAL_STICKERS = 960; 
+    
     const grupos = [
         {id: "A", paises: ["México", "Sudáfrica", "República de Corea", "República Checa"]},
         {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
@@ -359,14 +460,34 @@
     ];
 
     function initApp(user) {
+        // Carga desde localStorage primero (Offline Support)
+        const localData = localStorage.getItem(`album_2026_${user.uid}`);
+        if(localData) {
+            myStickers = JSON.parse(localData);
+            updateProgress();
+            renderGroup();
+        }
+
         renderGroup();
         
-        // ESCUCHA DE COLECCIÓN PERSONAL
+        // ESCUCHA DE COLECCIÓN PERSONAL (Firebase)
         db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-            if(doc.exists) { myStickers = doc.data().coleccion || []; if(activeTeam) renderStickers(); }
+            if(doc.exists) { 
+                const data = doc.data().coleccion;
+                // Migración: si viene como array, convertir a objeto
+                if(Array.isArray(data)) {
+                    myStickers = {};
+                    data.forEach(id => myStickers[id] = 1);
+                } else {
+                    myStickers = data || {}; 
+                }
+                localStorage.setItem(`album_2026_${user.uid}`, JSON.stringify(myStickers));
+                updateProgress();
+                if(activeTeam) renderStickers(); 
+            }
         });
 
-        // ESCUCHA DE CARTAS EN STOCK (ESPECIALES)
+        // ESCUCHA DE CARTAS EN STOCK
         db.collection("especiales").onSnapshot(snap => {
             document.getElementById('stock-list-container').innerHTML = snap.docs.map(doc => `
                 <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1)">
@@ -374,12 +495,10 @@
                 </div>`).join('');
         });
 
-        // ESCUCHA DE PRECIOS Y TIENDA DINÁMICA
+        // ESCUCHA DE PRECIOS Y TIENDA
         db.collection("config").doc("precios").onSnapshot(doc => {
             if(doc.exists) {
                 const p = doc.data();
-                
-                // Actualizar Vista de Precios
                 const pricesContainer = document.getElementById('dynamic-prices-container');
                 pricesContainer.innerHTML = "";
                 for (const [key, value] of Object.entries(p)) {
@@ -389,7 +508,6 @@
                         </div>`;
                 }
 
-                // Actualizar Vista de Tienda (Items principales)
                 const shopGrid = document.getElementById('shop-items-grid');
                 shopGrid.innerHTML = `
                     <div class="card" style="text-align:center; background:white; color:black;">
@@ -412,14 +530,43 @@
         });
     }
 
+    // SISTEMA DE PROGRESO Y LOGROS
+    function updateProgress() {
+        const ownedUnique = Object.keys(myStickers).length;
+        const percent = Math.floor((ownedUnique / TOTAL_STICKERS) * 100);
+        
+        document.getElementById('progress-bar-fill').style.width = percent + "%";
+        document.getElementById('progress-percent').innerText = percent + "%";
+        document.getElementById('progress-text').innerText = `Obtenidas: ${ownedUnique} / ${TOTAL_STICKERS}`;
+
+        // Checar Logros
+        const milestones = [50, 100, 200, 500];
+        milestones.forEach(m => {
+            if(ownedUnique === m && !localStorage.getItem('ach_'+m)) {
+                showToast(`🏆 ¡LOGRO DESBLOQUEADO: ${m} STICKERS!`);
+                localStorage.setItem('ach_'+m, 'true');
+            }
+        });
+
+        // Actualizar ranking en Firebase
+        db.collection("usuarios").doc(auth.currentUser.uid).set({
+            score: ownedUnique,
+            name: auth.currentUser.displayName || "Usuario"
+        }, {merge: true});
+    }
+
     function renderGroup() {
         const g = grupos[currentIdx];
         document.getElementById('grp-name').innerText = "GRUPO " + g.id;
         const list = document.getElementById('team-list'); list.innerHTML = "";
         g.paises.forEach(p => {
             const d = document.createElement('div');
-            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald';";
-            d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
+            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; display:flex; align-items:center;";
+            d.onclick = () => { 
+                activeTeam = p; 
+                document.getElementById('current-team-title').innerText = p.toUpperCase(); 
+                renderStickers(); 
+            };
             d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
             list.appendChild(d);
         });
@@ -429,16 +576,64 @@
         const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
         for(let i=1; i<=20; i++) {
             const id = `${activeTeam}-${i}`;
-            const owned = myStickers.includes(id);
+            const count = myStickers[id] || 0;
             const s = document.createElement('div');
-            s.className = `sticker ${owned ? 'owned' : ''}`;
-            s.innerText = i;
-            s.onclick = () => {
-                const newCol = owned ? myStickers.filter(x => x !== id) : [...myStickers, id];
-                db.collection("usuarios").doc(auth.currentUser.uid).set({ coleccion: newCol }, {merge: true});
+            s.className = `sticker ${count > 0 ? 'owned' : ''}`;
+            s.innerHTML = i;
+            
+            if(count > 1) {
+                const badge = document.createElement('div');
+                badge.className = 'badge';
+                badge.innerText = `x${count}`;
+                s.appendChild(badge);
+            }
+
+            s.onclick = (e) => {
+                // Click normal agrega, Click con Shift o largo podría quitar (Simplificado para UX)
+                toggleSticker(id, s);
             };
+
+            // Menú contextual para quitar (Click derecho o largo en móvil)
+            s.oncontextmenu = (e) => {
+                e.preventDefault();
+                removeSticker(id);
+            };
+
             grid.appendChild(s);
         }
+    }
+
+    function toggleSticker(id, element) {
+        if(!myStickers[id]) {
+            myStickers[id] = 1;
+            element.classList.add('pop-animation');
+            playStickerSound();
+            showToast("¡Sticker agregado!");
+        } else {
+            myStickers[id]++;
+            showToast(`¡Repetida agregada! (x${myStickers[id]})`);
+        }
+        saveToFirebase();
+        renderStickers();
+    }
+
+    function removeSticker(id) {
+        if(myStickers[id]) {
+            if(myStickers[id] > 1) myStickers[id]--;
+            else delete myStickers[id];
+            
+            showToast("Sticker eliminado");
+            saveToFirebase();
+            renderStickers();
+        }
+    }
+
+    function saveToFirebase() {
+        db.collection("usuarios").doc(auth.currentUser.uid).set({ 
+            coleccion: myStickers 
+        }, {merge: true});
+        localStorage.setItem(`album_2026_${auth.currentUser.uid}`, JSON.stringify(myStickers));
+        updateProgress();
     }
 
     function getIso(p) {
@@ -459,21 +654,56 @@
         return codes[p] || "un";
     }
 
-    // CORRECCIÓN: Envío de Pedidos al Admin
     async function sendOrder(t, p) {
         const id = "PN-" + Math.floor(1000 + Math.random()*9000);
-        
-        // Guardar en Firebase para el Admin
         db.collection("pedidos").add({
+            uid: auth.currentUser.uid,
             name: auth.currentUser.displayName || "Cliente",
             details: t,
             status: "pendiente",
+            price: p,
             date: new Date().toLocaleString()
         });
-
-        // Continuar con WhatsApp
+        showToast("Pedido registrado");
         let msj = `¡Hola! 👋 Orden: *${t}*\nID: ${id}\nPrecio: Q${p}`;
         window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msj)}`, '_blank');
+    }
+
+    function loadRanking() {
+        const list = document.getElementById('ranking-list');
+        list.innerHTML = "Cargando líderes...";
+        db.collection("usuarios").orderBy("score", "desc").limit(10).get().then(snap => {
+            list.innerHTML = "";
+            snap.forEach((doc, i) => {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="list-item">
+                        <span>#${i+1} ${d.name}</span>
+                        <b style="color:var(--world-cup-yellow)">${d.score} pts</b>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    function loadHistory() {
+        const list = document.getElementById('history-list');
+        list.innerHTML = "Cargando tus pedidos...";
+        db.collection("pedidos").where("uid", "==", auth.currentUser.uid).get().then(snap => {
+            list.innerHTML = snap.empty ? "No tienes pedidos aún." : "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="list-item" style="flex-direction:column; align-items:flex-start;">
+                        <div style="display:flex; justify-content:space-between; width:100%;">
+                            <b>${d.details}</b>
+                            <span>${d.price}</span>
+                        </div>
+                        <small style="color:rgba(255,255,255,0.5)">${d.date} - <span style="color:var(--world-cup-yellow)">${d.status}</span></small>
+                    </div>
+                `;
+            });
+        });
     }
 
     function changeGroup(n) { currentIdx = (currentIdx + n + grupos.length) % grupos.length; renderGroup(); }
