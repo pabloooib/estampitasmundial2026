@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Álbum Panini 2026</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
     <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2026_FIFA_World_Cup_Logo.svg/256px-2026_FIFA_World_Cup_Logo.svg.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
@@ -30,85 +29,32 @@
             color: white; min-height: 100vh; overflow-x: hidden;
         }
 
+        /* INTRO ANIMATION */
         #intro-space {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            pointer-events: none;
-            transition: opacity 2s ease, visibility 2s;
+            z-index: 3000; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; pointer-events: none; transition: opacity 2s ease, visibility 2s;
         }
+        .star-field { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: zoomStar 4s infinite ease-in; }
+        @keyframes zoomStar { 0% { transform: scale(0) translate(0, 0); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: scale(1.5) translate(var(--x), var(--y)); opacity: 0; } }
+        .earth-intro { width: 150px; height: 150px; background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); background-size: cover; filter: drop-shadow(0 0 30px rgba(0, 140, 255, 0.4)); animation: approachEarth 5s forwards ease-in-out; z-index: 3001; }
+        @keyframes approachEarth { 0% { transform: scale(0.05) rotate(0deg); opacity: 0; filter: brightness(0.5) blur(2px); } 30% { opacity: 1; filter: brightness(1) blur(0px); } 100% { transform: scale(25) rotate(15deg); opacity: 0; } }
 
-        .star-field {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            animation: zoomStar 4s infinite ease-in;
-        }
-
-        @keyframes zoomStar {
-            0% { transform: scale(0) translate(0, 0); opacity: 0; }
-            20% { opacity: 0.8; }
-            100% { transform: scale(1.5) translate(var(--x), var(--y)); opacity: 0; }
-        }
-
-        .earth-intro {
-            width: 150px;
-            height: 150px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png');
-            background-size: cover;
-            filter: drop-shadow(0 0 30px rgba(0, 140, 255, 0.4));
-            animation: approachEarth 5s forwards ease-in-out;
-            z-index: 3001;
-        }
-
-        @keyframes approachEarth {
-            0% { transform: scale(0.05) rotate(0deg); opacity: 0; filter: brightness(0.5) blur(2px); }
-            30% { opacity: 1; filter: brightness(1) blur(0px); }
-            100% { transform: scale(25) rotate(15deg); opacity: 0; }
-        }
-
+        /* AUTH SCREEN */
         .auth-container { 
             height: 100vh; display: flex; align-items: center; justify-content: center; 
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
             background-size: cover; position: fixed; width: 100%; top: 0; z-index: 2000;
         }
-        .auth-card { 
-            background: rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 30px; 
-            border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px);
-            width: 90%; max-width: 400px;
-            animation: fadeInLogin 1s ease forwards;
-            animation-delay: 3.5s;
-            opacity: 0;
-        }
+        .auth-card { background: rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px); width: 90%; max-width: 400px; animation: fadeInLogin 1s ease forwards; animation-delay: 3.5s; opacity: 0; }
+        @keyframes fadeInLogin { to { opacity: 1; } }
+        .google-btn { background: white; color: #333; border: none; padding: 14px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        @keyframes fadeInLogin {
-            to { opacity: 1; }
-        }
-
-        .google-btn {
-            background: white; color: #333; border: none; padding: 14px;
-            border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700;
-            margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-
+        /* INTERFACE ELEMENTS */
         #app { display: none; }
-
-        .menu-toggle { 
-            position: fixed; top: 20px; left: 20px; z-index: 1100; cursor: pointer; 
-            background: var(--world-cup-yellow); color: black; padding: 12px 18px; 
-            border-radius: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        #menu-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1050; display: none;
-        }
+        .menu-toggle { position: fixed; top: 20px; left: 20px; z-index: 1100; cursor: pointer; background: var(--world-cup-yellow); color: black; padding: 12px 18px; border-radius: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; display: none; }
         #menu-overlay.active { display: block; }
 
         .contact-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
@@ -132,59 +78,41 @@
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
-        
-        .sticker { 
-            aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); 
-            border-radius: 6px; display: flex; align-items: center; justify-content: center; 
-            font-size: 0.8rem; cursor: pointer; position: relative; overflow: visible;
-        }
+        .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; position: relative; }
         .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
-        .sticker .badge { 
-            position: absolute; top: -8px; right: -8px; background: #ff5252; color: white; 
-            font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-weight: 900; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
+        .sticker .badge { position: absolute; top: -8px; right: -8px; background: #ff5252; color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-weight: 900; }
 
         .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; }
         
         #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; display: flex; flex-direction: column; align-items: flex-end; pointer-events: none; }
-        .toast { 
-            background: white; color: black; padding: 12px 20px; border-radius: 10px; 
-            font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            pointer-events: auto;
-        }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(100%) scale(0.5); } to { opacity: 1; transform: translateX(0) scale(1); } }
-        
-        .star { cursor: pointer; font-size: 2.5rem; transition: color 0.2s; }
-        .star.active { color: var(--world-cup-yellow); }
+        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: toastIn 0.4s forwards; pointer-events: auto; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
 
-        .progress-container { margin-bottom: 15px; }
-        .progress-header { display: flex; justify-content: space-between; font-family: 'Oswald'; margin-bottom: 5px; font-size: 0.9rem; }
         .progress-bar-bg { background: rgba(255,255,255,0.1); height: 12px; border-radius: 20px; overflow: hidden; }
         .progress-bar-fill { background: var(--world-cup-yellow); height: 100%; width: 0%; transition: width 0.8s ease; }
 
-        @keyframes cardPop {
-            0% { transform: scale(0.2); opacity: 0; }
-            70% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .pop-animation { animation: cardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-        .list-item { 
-            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; 
-            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-        }
-
-        /* MUSIC PLAYER STYLES */
+        /* MUSIC PLAYER STYLES - INTEGRATED */
         .music-player {
             position: fixed; bottom: 20px; left: 20px; z-index: 1000;
             background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
             padding: 10px 15px; border-radius: 50px; display: flex; align-items: center;
             gap: 15px; border: 1px solid var(--world-cup-yellow);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
-        .music-info { font-family: 'Oswald'; font-size: 0.7rem; color: var(--world-cup-yellow); max-width: 100px; white-space: nowrap; overflow: hidden; }
+        .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; }
+        .music-btn:hover { color: var(--world-cup-yellow); }
+        .music-info { font-family: 'Oswald'; font-size: 0.7rem; color: var(--world-cup-yellow); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* LOGOUT BUTTON MOD */
+        .logout-btn {
+            background: rgba(255, 82, 82, 0.1) !important;
+            color: #ff5252 !important;
+            border: 1px solid #ff5252 !important;
+            margin: 20px 30px !important;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .logout-btn:hover { background: #ff5252 !important; color: white !important; }
     </style>
 </head>
 <body>
@@ -194,7 +122,9 @@
         <button class="music-btn" id="prevSong">⏮</button>
         <button class="music-btn" id="playPause">▶</button>
         <button class="music-btn" id="nextSong">⏭</button>
-        <div class="music-info" id="songTitle">Waka Waka</div>
+        <div class="music-info">
+            <span id="songTitle">Cargando...</span>
+        </div>
         <audio id="audioElement"></audio>
     </div>
 
@@ -208,7 +138,7 @@
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
             <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 2.5rem;">PANINI 2026</h1>
-            <p id="auth-status" style="margin-top: 10px; font-size: 0.9rem;">Cargando sistema...</p>
+            <p id="auth-status" style="margin-top: 10px; font-size: 0.9rem;">Bienvenido al Álbum Oficial</p>
             <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()" style="display: none;">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
                 Entrar con Google
@@ -234,12 +164,12 @@
             <a href="#" onclick="showView('history-view')">📜 MIS PEDIDOS</a>
             <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
             <a href="#" onclick="showView('rating-view')">🌟 CALIFÍCANOS</a>
-            <a href="#" onclick="handleLogout()" style="color: #ff5252; margin-top: 20px;">🚪 CERRAR SESIÓN</a>
+            <a href="#" onclick="handleLogout()" class="logout-btn">🚪 CERRAR SESIÓN</a>
         </nav>
 
         <div id="album-view" class="view active">
             <div class="progress-container card">
-                <div class="progress-header">
+                <div style="display: flex; justify-content: space-between; font-family: 'Oswald'; margin-bottom: 5px; font-size: 0.9rem;">
                     <span>PROGRESO TOTAL</span>
                     <span id="progress-percent">0%</span>
                 </div>
@@ -265,7 +195,7 @@
             </div>
         </div>
 
-        <!-- OTRAS VISTAS (Special, Stock, etc.) -->
+        <!-- OTRAS VISTAS -->
         <div id="special-card-view" class="view">
             <div class="card" style="max-width:500px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA</h2>
@@ -278,7 +208,7 @@
         <div id="stock-view" class="view">
             <div class="card" style="max-width:600px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">EN STOCK</h2>
-                <div id="stock-list-container" style="margin-top:15px;"></div>
+                <div id="stock-list-container" style="margin-top:15px; text-align:center;">Próximamente...</div>
             </div>
         </div>
 
@@ -295,7 +225,7 @@
 
         <div id="history-view" class="view">
             <div class="card" style="max-width:600px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">MI HISTORIAL</h2>
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">MIS PEDIDOS</h2>
                 <div id="history-list" style="margin-top:15px;"></div>
             </div>
         </div>
@@ -310,12 +240,12 @@
         <div id="rating-view" class="view">
             <div class="card" style="text-align:center; max-width:400px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">CALIFÍCANOS</h2>
-                <div id="stars" style="font-size:2.5rem; margin:15px 0;">
-                    <span class="star" onclick="setRate(1)">☆</span>
-                    <span class="star" onclick="setRate(2)">☆</span>
-                    <span class="star" onclick="setRate(3)">☆</span>
-                    <span class="star" onclick="setRate(4)">☆</span>
-                    <span class="star" onclick="setRate(5)">☆</span>
+                <div id="stars" style="font-size:2.5rem; margin:15px 0; color: white;">
+                    <span class="star" onclick="setRate(1)" style="cursor:pointer">☆</span>
+                    <span class="star" onclick="setRate(2)" style="cursor:pointer">☆</span>
+                    <span class="star" onclick="setRate(3)" style="cursor:pointer">☆</span>
+                    <span class="star" onclick="setRate(4)" style="cursor:pointer">☆</span>
+                    <span class="star" onclick="setRate(5)" style="cursor:pointer">☆</span>
                 </div>
                 <button class="buy-btn" onclick="submitRating()">ENVIAR RESEÑA</button>
             </div>
@@ -337,11 +267,11 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // --- MUSIC SYSTEM ---
+    // --- MUSIC SYSTEM (Actualizado con tus canciones) ---
     const playlist = [
+        { title: "We Are One (Ole Ola)", url: "we-are-one.mp3.mp3" },
         { title: "Waka Waka", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-        { title: "La Copa de la Vida", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-        { title: "We Are One", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+        { title: "La Copa de la Vida", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" }
     ];
     let currentSongIndex = 0;
     const audio = document.getElementById('audioElement');
@@ -354,8 +284,13 @@
     }
 
     playPauseBtn.onclick = () => {
-        if (audio.paused) { audio.play(); playPauseBtn.innerText = "⏸"; }
-        else { audio.pause(); playPauseBtn.innerText = "▶"; }
+        if (audio.paused) { 
+            audio.play().catch(e => showToast("Haz clic en cualquier parte para activar música")); 
+            playPauseBtn.innerText = "⏸"; 
+        } else { 
+            audio.pause(); 
+            playPauseBtn.innerText = "▶"; 
+        }
     };
 
     document.getElementById('nextSong').onclick = () => {
@@ -396,14 +331,14 @@
 
     function startIntro() {
         const intro = document.getElementById('intro-space');
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 100; i++) {
             const star = document.createElement('div');
             star.className = 'star-field';
-            const size = Math.random() * 3 + 'px';
+            const size = Math.random() * 2 + 'px';
             star.style.width = size; star.style.height = size;
             star.style.left = '50%'; star.style.top = '50%';
             const angle = Math.random() * Math.PI * 2;
-            const dist = 800 + Math.random() * 1000;
+            const dist = 600 + Math.random() * 800;
             star.style.setProperty('--x', Math.cos(angle) * dist + 'px');
             star.style.setProperty('--y', Math.sin(angle) * dist + 'px');
             star.style.animationDelay = Math.random() * 4 + 's';
@@ -421,6 +356,8 @@
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             initApp(user);
+            // Autoplay music upon login (if allowed by browser)
+            setTimeout(() => { audio.play().catch(() => {}); playPauseBtn.innerText = "⏸"; }, 1000);
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('loginBtn').style.display = 'block';
@@ -430,6 +367,12 @@
     function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider);
+    }
+
+    function handleLogout() { 
+        auth.signOut().then(() => {
+            location.reload();
+        });
     }
 
     function initApp(user) {
@@ -473,7 +416,6 @@
                 const b = document.createElement('div'); b.className = 'badge'; b.innerText = `x${count}`;
                 s.appendChild(b);
             }
-            // CLICK IZQUIERDO: SUMAR | CLICK DERECHO: RESTAR
             s.onclick = () => addSticker(id);
             s.oncontextmenu = (e) => { e.preventDefault(); removeSticker(id); };
             grid.appendChild(s);
@@ -524,7 +466,7 @@
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        toggleMenu();
+        if(window.innerWidth < 768) toggleMenu();
     }
 
     function getIso(p) {
@@ -555,7 +497,21 @@
         });
     }
 
-    function handleLogout() { auth.signOut().then(() => location.reload()); }
+    // STAR RATING LOGIC
+    let userRate = 0;
+    function setRate(r) {
+        userRate = r;
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((s, idx) => {
+            s.innerHTML = idx < r ? '★' : '☆';
+            s.style.color = idx < r ? 'var(--world-cup-yellow)' : 'white';
+        });
+    }
+
+    function submitRating() {
+        if(userRate === 0) return showToast("Selecciona una calificación");
+        showToast("¡Gracias por tu reseña!");
+    }
 </script>
 </body>
 </html>
