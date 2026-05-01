@@ -63,15 +63,36 @@
         .wa-color { background-color: #25d366; }
         .ig-color { background: var(--instagram-gradient); }
         
+        /* MEJORA DE MENÚ: Más compacto y limpio */
         nav {
-            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
+            position: fixed; top: 0; left: -320px; width: 280px; height: 100%;
             background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(25px);
-            z-index: 1100; padding-top: 80px; border-right: 2px solid var(--world-cup-yellow);
+            z-index: 1100; padding-top: 40px; border-right: 2px solid var(--world-cup-yellow);
             box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column;
         }
         nav.active { left: 0; }
-        nav a { display: block; padding: 18px 30px; color: white; text-decoration: none; font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        nav a:hover { background: rgba(255, 235, 59, 0.1); color: var(--world-cup-yellow); }
+        nav a { 
+            display: block; padding: 12px 25px; color: white; text-decoration: none; 
+            font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            font-size: 0.9rem; letter-spacing: 0.5px;
+        }
+        nav a:hover { background: rgba(255, 235, 59, 0.1); color: var(--world-cup-yellow); padding-left: 35px; }
+
+        /* PERFIL EN MENÚ */
+        .user-profile-mini {
+            padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 10px;
+        }
+        .profile-img-container {
+            width: 70px; height: 70px; margin: 0 auto 10px; position: relative;
+        }
+        #nav-user-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--world-cup-yellow); }
+        .edit-img-btn {
+            position: absolute; bottom: 0; right: 0; background: var(--world-cup-yellow);
+            width: 24px; height: 24px; border-radius: 50%; color: black; font-size: 0.7rem;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
 
         .view { display: none; max-width: 1100px; margin: 90px auto 20px auto; padding: 0 20px; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
@@ -92,41 +113,44 @@
         .progress-bar-bg { background: rgba(255,255,255,0.1); height: 12px; border-radius: 20px; overflow: hidden; }
         .progress-bar-fill { background: var(--world-cup-yellow); height: 100%; width: 0%; transition: width 0.8s ease; }
 
-        /* MUSIC PLAYER STYLES - INTEGRATED */
+        /* MUSIC PLAYER STYLES */
         .music-player {
             position: fixed; bottom: 20px; left: 20px; z-index: 1000;
             background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
             padding: 10px 15px; border-radius: 50px; display: flex; align-items: center;
-            gap: 15px; border: 1px solid var(--world-cup-yellow);
+            gap: 12px; border: 1px solid var(--world-cup-yellow);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; }
+        .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; }
         .music-btn:hover { color: var(--world-cup-yellow); }
-        .music-info { font-family: 'Oswald'; font-size: 0.7rem; color: var(--world-cup-yellow); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .music-info { font-family: 'Oswald'; font-size: 0.65rem; color: var(--world-cup-yellow); max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* LOGOUT BUTTON MOD */
         .logout-btn {
             background: rgba(255, 82, 82, 0.1) !important;
             color: #ff5252 !important;
             border: 1px solid #ff5252 !important;
-            margin: 20px 30px !important;
+            margin: 10px 25px !important;
             border-radius: 8px;
             text-align: center;
         }
         .logout-btn:hover { background: #ff5252 !important; color: white !important; }
+
+        /* Hide specific elements as requested */
+        #ranking-link-menu { display: none; }
     </style>
 </head>
-<body>
+<body onclick="enableAudio()">
 
     <!-- MUSIC PLAYER -->
     <div class="music-player">
         <button class="music-btn" id="prevSong">⏮</button>
         <button class="music-btn" id="playPause">▶</button>
         <button class="music-btn" id="nextSong">⏭</button>
+        <button class="music-btn" id="muteBtn">🔊</button>
         <div class="music-info">
             <span id="songTitle">Cargando...</span>
         </div>
-        <audio id="audioElement"></audio>
+        <audio id="audioElement" loop></audio>
     </div>
 
     <div id="intro-space">
@@ -156,17 +180,38 @@
         </div>
 
         <nav id="sidebar">
-            <div style="padding: 20px; text-align: center;"><h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">PANINI 2026</h2></div>
+            <div class="user-profile-mini" onclick="showView('profile-view')">
+                <div class="profile-img-container">
+                    <img id="nav-user-img" src="https://www.gstatic.com/images/branding/product/2x/avatar_square_blue_120dp.png">
+                    <div class="edit-img-btn"><i class="fas fa-camera"></i></div>
+                </div>
+                <div id="nav-user-name" style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 0.9rem;">Usuario</div>
+            </div>
+            <a href="#" onclick="showView('profile-view')">🧑 MI PERFIL</a>
             <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
             <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
             <a href="#" onclick="showView('stock-view')">💎 CARTAS EN STOCK</a>
             <a href="#" onclick="showView('shop-view')">🛒 TIENDA</a>
-            <a href="#" onclick="showView('ranking-view')">🏆 RANKING TOP</a>
             <a href="#" onclick="showView('history-view')">📜 MIS PEDIDOS</a>
             <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
             <a href="#" onclick="showView('rating-view')">🌟 CALIFÍCANOS</a>
             <a href="#" onclick="handleLogout()" class="logout-btn">🚪 CERRAR SESIÓN</a>
         </nav>
+
+        <!-- VISTA DE PERFIL -->
+        <div id="profile-view" class="view">
+            <div class="card" style="max-width:500px; margin:auto; text-align: center;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); margin-bottom: 20px;">MI PERFIL</h2>
+                <div style="position: relative; width: 150px; height: 150px; margin: 0 auto 20px;">
+                    <img id="profile-full-img" src="" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border: 4px solid var(--world-cup-yellow);">
+                </div>
+                <h3 id="profile-name-display" style="font-family:'Oswald'; margin-bottom: 10px;">Nombre</h3>
+                <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px;" id="profile-email-display"></p>
+                
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <button class="buy-btn" onclick="document.getElementById('imageUpload').click()">CAMBIAR FOTO</button>
+            </div>
+        </div>
 
         <div id="album-view" class="view active">
             <div class="progress-container card">
@@ -196,7 +241,6 @@
             </div>
         </div>
 
-        <!-- OTRAS VISTAS -->
         <div id="special-card-view" class="view">
             <div class="card" style="max-width:500px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA</h2>
@@ -217,12 +261,8 @@
             <div id="shop-items-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;"></div>
         </div>
 
-        <div id="ranking-view" class="view">
-            <div class="card" style="max-width:600px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">GLOBAL TOP</h2>
-                <div id="ranking-list" style="margin-top:15px;"></div>
-            </div>
-        </div>
+        <!-- Ranking view removed from logic but kept empty container if needed for No-Break -->
+        <div id="ranking-view" class="view"></div>
 
         <div id="history-view" class="view">
             <div class="card" style="max-width:600px; margin:auto;">
@@ -268,13 +308,16 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // --- MUSIC SYSTEM (Actualizado con tus canciones) ---
+    // --- MUSIC SYSTEM ---
     const playlist = [
         { title: "We Are One (Ole Ola)", url: "we-are-one.mp3.mp3" },
     ];
     let currentSongIndex = 0;
+    let isMuted = false;
+    let audioStarted = false;
     const audio = document.getElementById('audioElement');
     const playPauseBtn = document.getElementById('playPause');
+    const muteBtn = document.getElementById('muteBtn');
     const songTitleDisplay = document.getElementById('songTitle');
 
     function loadSong(index) {
@@ -282,29 +325,51 @@
         songTitleDisplay.innerText = playlist[index].title;
     }
 
-    playPauseBtn.onclick = () => {
+    // Solución para Autoplay por interacción
+    function enableAudio() {
+        if(!audioStarted) {
+            audio.play().then(() => {
+                audioStarted = true;
+                playPauseBtn.innerText = "⏸";
+            }).catch(e => console.log("Esperando interacción..."));
+        }
+    }
+
+    playPauseBtn.onclick = (e) => {
+        e.stopPropagation();
         if (audio.paused) { 
-            audio.play().catch(e => showToast("Haz clic en cualquier parte para activar música")); 
+            audio.play(); 
             playPauseBtn.innerText = "⏸"; 
+            audioStarted = true;
         } else { 
             audio.pause(); 
             playPauseBtn.innerText = "▶"; 
         }
     };
 
-    document.getElementById('nextSong').onclick = () => {
+    muteBtn.onclick = (e) => {
+        e.stopPropagation();
+        isMuted = !isMuted;
+        audio.muted = isMuted;
+        muteBtn.innerText = isMuted ? "🔇" : "🔊";
+    };
+
+    document.getElementById('nextSong').onclick = (e) => {
+        e.stopPropagation();
         currentSongIndex = (currentSongIndex + 1) % playlist.length;
         loadSong(currentSongIndex);
         audio.play();
         playPauseBtn.innerText = "⏸";
     };
 
-    document.getElementById('prevSong').onclick = () => {
+    document.getElementById('prevSong').onclick = (e) => {
+        e.stopPropagation();
         currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
         loadSong(currentSongIndex);
         audio.play();
         playPauseBtn.innerText = "⏸";
     };
+    
     loadSong(0);
 
     // --- CORE LOGIC ---
@@ -354,14 +419,55 @@
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
+            
+            // Perfil Info
+            document.getElementById('nav-user-name').innerText = user.displayName;
+            document.getElementById('profile-name-display').innerText = user.displayName;
+            document.getElementById('profile-email-display').innerText = user.email;
+            
             initApp(user);
-            // Autoplay music upon login (if allowed by browser)
-            setTimeout(() => { audio.play().catch(() => {}); playPauseBtn.innerText = "⏸"; }, 1000);
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('loginBtn').style.display = 'block';
         }
     });
+
+    function initApp(user) {
+        db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
+            if(doc.exists) { 
+                const data = doc.data();
+                myStickers = data.coleccion || {};
+                
+                // Cargar imagen de perfil personalizada o de Google
+                const userImg = data.profilePic || user.photoURL || 'https://www.gstatic.com/images/branding/product/2x/avatar_square_blue_120dp.png';
+                document.getElementById('nav-user-img').src = userImg;
+                document.getElementById('profile-full-img').src = userImg;
+
+                updateProgress();
+                if(activeTeam) renderStickers(); 
+            }
+        });
+        renderGroup();
+        loadConfig();
+    }
+
+    // GESTIÓN DE IMAGEN DE PERFIL
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            // Guardar en Firestore
+            db.collection("usuarios").doc(auth.currentUser.uid).set({
+                profilePic: base64Image
+            }, { merge: true }).then(() => {
+                showToast("Foto de perfil actualizada");
+            });
+        };
+        reader.readAsDataURL(file);
+    }
 
     function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -374,31 +480,19 @@
         });
     }
 
-    function initApp(user) {
-        db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-            if(doc.exists) { 
-                myStickers = doc.data().coleccion || {};
-                updateProgress();
-                if(activeTeam) renderStickers(); 
-            }
-        });
-        renderGroup();
-        loadConfig();
-    }
-
     function renderGroup() {
         const g = grupos[currentIdx];
         document.getElementById('grp-name').innerText = "GRUPO " + g.id;
         const list = document.getElementById('team-list'); list.innerHTML = "";
         g.paises.forEach(p => {
             const d = document.createElement('div');
-            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; display:flex; align-items:center;";
+            d.style.cssText = "padding:10px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; display:flex; align-items:center; font-size: 0.85rem;";
             d.onclick = () => { 
                 activeTeam = p; 
                 document.getElementById('current-team-title').innerText = p.toUpperCase(); 
                 renderStickers(); 
             };
-            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
+            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px; border-radius:2px"> ${p.toUpperCase()}`;
             list.appendChild(d);
         });
     }
@@ -464,12 +558,27 @@
 
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        const target = document.getElementById(id);
+        if(target) target.classList.add('active');
         if(window.innerWidth < 768) toggleMenu();
     }
 
+    // CORRECCIÓN DE BANDERAS - TODOS LOS PAÍSES MAPEADOS
     function getIso(p) {
-        const codes = { "México":"mx", "Brasil":"br", "Argentina":"ar", "España":"es", "Francia":"fr", "Alemania":"de", "Estados Unidos":"us", "Canadá":"ca", "Portugal":"pt", "Inglaterra":"gb-eng" };
+        const codes = { 
+            "México":"mx", "Sudáfrica":"za", "República de Corea":"kr", "República Checa":"cz",
+            "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch",
+            "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct",
+            "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Türkiye":"tr",
+            "Alemania":"de", "Curazao":"cw", "Costa de Marfil":"ci", "Ecuador":"ec",
+            "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al",
+            "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz",
+            "España":"es", "Uruguay":"uy", "Arabia Saudita":"sa", "Cabo Verde":"cv",
+            "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq",
+            "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo",
+            "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm",
+            "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa"
+        };
         return codes[p] || "un";
     }
 
@@ -496,7 +605,6 @@
         });
     }
 
-    // STAR RATING LOGIC
     let userRate = 0;
     function setRate(r) {
         userRate = r;
