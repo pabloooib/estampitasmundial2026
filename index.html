@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Álbum Panini 2026</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
     <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2026_FIFA_World_Cup_Logo.svg/256px-2026_FIFA_World_Cup_Logo.svg.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
@@ -30,6 +29,15 @@
             color: white; min-height: 100vh; overflow-x: hidden;
         }
 
+        /* LOADER INICIAL */
+        #loader-global {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--world-cup-blue); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 5000;
+        }
+        .spinner { width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.1); border-top-color: var(--world-cup-yellow); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         /* INTRO ANIMATION */
         #intro-space {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -52,6 +60,10 @@
         @keyframes fadeInLogin { to { opacity: 1; } }
         .google-btn { background: white; color: #333; border: none; padding: 14px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
+        /* PERFIL DE USUARIO EN MENU */
+        .user-info-sidebar { display: flex; align-items: center; gap: 10px; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .user-info-sidebar img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--world-cup-yellow); }
+
         /* INTERFACE ELEMENTS */
         #app { display: none; }
         .menu-toggle { position: fixed; top: 20px; left: 20px; z-index: 1100; cursor: pointer; background: var(--world-cup-yellow); color: black; padding: 12px 18px; border-radius: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
@@ -66,33 +78,41 @@
         nav {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(25px);
-            z-index: 1100; padding-top: 80px; border-right: 2px solid var(--world-cup-yellow);
+            z-index: 1100; padding-top: 20px; border-right: 2px solid var(--world-cup-yellow);
             box-shadow: 10px 0 20px rgba(0,0,0,0.5);
         }
         nav.active { left: 0; }
         nav a { display: block; padding: 18px 30px; color: white; text-decoration: none; font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        nav a:hover { background: rgba(255, 235, 59, 0.1); color: var(--world-cup-yellow); }
+        nav a:hover { background: rgba(255, 235, 59, 0.1); color: var(--world-cup-yellow); padding-left: 40px; }
 
         .view { display: none; max-width: 1100px; margin: 90px auto 20px auto; padding: 0 20px; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
-        .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; position: relative; }
-        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
-        .sticker .badge { position: absolute; top: -8px; right: -8px; background: #ff5252; color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-weight: 900; }
+        .card:hover { border-color: var(--world-cup-yellow); transform: translateY(-5px); }
 
-        .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; }
+        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
+        .sticker { 
+            aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 6px; display: flex; align-items: center; justify-content: center; 
+            font-size: 0.8rem; cursor: pointer; position: relative; 
+        }
+        .sticker:active { transform: scale(0.9); }
+        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; box-shadow: 0 0 15px rgba(255,235,59,0.3); }
+        .sticker .badge { position: absolute; top: -8px; right: -8px; background: #ff5252; color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-weight: 900; z-index: 5; }
+
+        .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; font-weight: 900; }
+        .buy-btn:hover { filter: brightness(1.2); }
         
         #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; display: flex; flex-direction: column; align-items: flex-end; pointer-events: none; }
         .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: toastIn 0.4s forwards; pointer-events: auto; }
         @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
 
         .progress-bar-bg { background: rgba(255,255,255,0.1); height: 12px; border-radius: 20px; overflow: hidden; }
-        .progress-bar-fill { background: var(--world-cup-yellow); height: 100%; width: 0%; transition: width 0.8s ease; }
+        .progress-bar-fill { background: var(--world-cup-yellow); height: 100%; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* MUSIC PLAYER STYLES - INTEGRATED */
+        /* MUSIC PLAYER */
         .music-player {
             position: fixed; bottom: 20px; left: 20px; z-index: 1000;
             background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
@@ -102,37 +122,36 @@
         }
         .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; }
         .music-btn:hover { color: var(--world-cup-yellow); }
-        .music-info { font-family: 'Oswald'; font-size: 0.7rem; color: var(--world-cup-yellow); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .music-info { font-family: 'Oswald'; font-size: 0.7rem; color: var(--world-cup-yellow); max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* LOGOUT BUTTON MOD */
-        .logout-btn {
-            background: rgba(255, 82, 82, 0.1) !important;
-            color: #ff5252 !important;
-            border: 1px solid #ff5252 !important;
-            margin: 20px 30px !important;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .logout-btn:hover { background: #ff5252 !important; color: white !important; }
+        .logout-btn { background: rgba(255, 82, 82, 0.1) !important; color: #ff5252 !important; border: 1px solid #ff5252 !important; margin: 20px 30px !important; border-radius: 8px; text-align: center; }
+        
+        /* RANKING TABLE */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; color: var(--world-cup-yellow); font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        /* PACK ANIMATION */
+        .pack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-top: 20px; }
+        .pack-card { background: var(--world-cup-yellow); color: black; font-weight: 900; padding: 15px 5px; border-radius: 8px; text-align: center; animation: flipIn 0.6s backwards; }
+        @keyframes flipIn { from { transform: rotateY(90deg); opacity: 0; } to { transform: rotateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- MUSIC PLAYER -->
+    <!-- LOADER -->
+    <div id="loader-global"><div class="spinner"></div><p style="margin-top:10px; font-family:'Oswald';">CARGANDO...</p></div>
+
     <div class="music-player">
         <button class="music-btn" id="prevSong">⏮</button>
         <button class="music-btn" id="playPause">▶</button>
         <button class="music-btn" id="nextSong">⏭</button>
-        <div class="music-info">
-            <span id="songTitle">Cargando...</span>
-        </div>
+        <input type="range" id="volControl" min="0" max="1" step="0.1" value="0.5" style="width:50px; accent-color:var(--world-cup-yellow);">
+        <div class="music-info"><span id="songTitle">Cargando...</span></div>
         <audio id="audioElement"></audio>
     </div>
 
-    <div id="intro-space">
-        <div class="earth-intro"></div>
-    </div>
-
+    <div id="intro-space"><div class="earth-intro"></div></div>
     <div id="toast-container"></div>
     <div id="menu-overlay" onclick="toggleMenu()"></div>
 
@@ -156,14 +175,16 @@
         </div>
 
         <nav id="sidebar">
-            <div style="padding: 20px; text-align: center;"><h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">PANINI 2026</h2></div>
+            <div class="user-info-sidebar" id="sidebar-user">
+                <img src="" id="user-img-side" alt="User">
+                <span id="user-name-side" style="font-family:'Oswald';">Usuario</span>
+            </div>
             <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
+            <a href="#" onclick="showView('pack-view')">📦 ABRIR SOBRE</a>
             <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
-            <a href="#" onclick="showView('stock-view')">💎 CARTAS EN STOCK</a>
             <a href="#" onclick="showView('shop-view')">🛒 TIENDA</a>
             <a href="#" onclick="showView('ranking-view')">🏆 RANKING TOP</a>
             <a href="#" onclick="showView('history-view')">📜 MIS PEDIDOS</a>
-            <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
             <a href="#" onclick="showView('rating-view')">🌟 CALIFÍCANOS</a>
             <a href="#" onclick="handleLogout()" class="logout-btn">🚪 CERRAR SESIÓN</a>
         </nav>
@@ -174,9 +195,7 @@
                     <span>PROGRESO TOTAL</span>
                     <span id="progress-percent">0%</span>
                 </div>
-                <div class="progress-bar-bg">
-                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
-                </div>
+                <div class="progress-bar-bg"><div id="progress-bar-fill" class="progress-bar-fill"></div></div>
                 <p id="progress-text" style="font-size: 0.8rem; margin-top:5px; text-align:center; color:rgba(255,255,255,0.6)">Obtenidas: 0 / 960</p>
             </div>
 
@@ -196,7 +215,15 @@
             </div>
         </div>
 
-        <!-- OTRAS VISTAS -->
+        <div id="pack-view" class="view">
+            <div class="card" style="text-align:center;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOBRE ALEATORIO</h2>
+                <p style="margin:10px 0;">¡Recibe 5 láminas al azar!</p>
+                <button class="buy-btn" onclick="openPack()" id="btn-pack">ABRIR SOBRE</button>
+                <div id="pack-results" class="pack-grid"></div>
+            </div>
+        </div>
+
         <div id="special-card-view" class="view">
             <div class="card" style="max-width:500px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA</h2>
@@ -206,35 +233,24 @@
             </div>
         </div>
 
-        <div id="stock-view" class="view">
-            <div class="card" style="max-width:600px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">EN STOCK</h2>
-                <div id="stock-list-container" style="margin-top:15px; text-align:center;">Próximamente...</div>
-            </div>
-        </div>
-
         <div id="shop-view" class="view">
             <div id="shop-items-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;"></div>
         </div>
 
         <div id="ranking-view" class="view">
-            <div class="card" style="max-width:600px; margin:auto;">
+            <div class="card">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">GLOBAL TOP</h2>
-                <div id="ranking-list" style="margin-top:15px;"></div>
+                <table>
+                    <thead><tr><th>#</th><th>Usuario</th><th>Láminas</th></tr></thead>
+                    <tbody id="ranking-list"></tbody>
+                </table>
             </div>
         </div>
 
         <div id="history-view" class="view">
-            <div class="card" style="max-width:600px; margin:auto;">
+            <div class="card">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">MIS PEDIDOS</h2>
                 <div id="history-list" style="margin-top:15px;"></div>
-            </div>
-        </div>
-
-        <div id="prices-view" class="view">
-             <div class="card" style="max-width:400px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">PRECIOS</h2>
-                <div id="dynamic-prices-container" style="line-height:2.5; margin-top:15px;"></div>
             </div>
         </div>
 
@@ -268,11 +284,10 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // --- MUSIC SYSTEM (Actualizado con tus canciones) ---
+    // --- MUSIC SYSTEM ---
     const playlist = [
-        { title: "We Are One (Ole Ola)", url: "we-are-one.mp3.mp3" },
-        { title: "Waka Waka", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-        { title: "La Copa de la Vida", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" }
+        { title: "We Are One (Ole Ola)", url: "we-are-one.mp3" },
+        { title: "Waka Waka", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }
     ];
     let currentSongIndex = 0;
     const audio = document.getElementById('audioElement');
@@ -283,30 +298,11 @@
         audio.src = playlist[index].url;
         songTitleDisplay.innerText = playlist[index].title;
     }
-
-    playPauseBtn.onclick = () => {
-        if (audio.paused) { 
-            audio.play().catch(e => showToast("Haz clic en cualquier parte para activar música")); 
-            playPauseBtn.innerText = "⏸"; 
-        } else { 
-            audio.pause(); 
-            playPauseBtn.innerText = "▶"; 
-        }
-    };
-
-    document.getElementById('nextSong').onclick = () => {
-        currentSongIndex = (currentSongIndex + 1) % playlist.length;
-        loadSong(currentSongIndex);
-        audio.play();
-        playPauseBtn.innerText = "⏸";
-    };
-
-    document.getElementById('prevSong').onclick = () => {
-        currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
-        loadSong(currentSongIndex);
-        audio.play();
-        playPauseBtn.innerText = "⏸";
-    };
+    audio.onended = () => { currentSongIndex = (currentSongIndex + 1) % playlist.length; loadSong(currentSongIndex); audio.play(); };
+    playPauseBtn.onclick = () => { audio.paused ? (audio.play(), playPauseBtn.innerText = "⏸") : (audio.pause(), playPauseBtn.innerText = "▶"); };
+    document.getElementById('nextSong').onclick = () => { currentSongIndex = (currentSongIndex + 1) % playlist.length; loadSong(currentSongIndex); audio.play(); playPauseBtn.innerText = "⏸"; };
+    document.getElementById('prevSong').onclick = () => { currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length; loadSong(currentSongIndex); audio.play(); playPauseBtn.innerText = "⏸"; };
+    document.getElementById('volControl').oninput = (e) => audio.volume = e.target.value;
     loadSong(0);
 
     // --- CORE LOGIC ---
@@ -332,7 +328,7 @@
 
     function startIntro() {
         const intro = document.getElementById('intro-space');
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
             const star = document.createElement('div');
             star.className = 'star-field';
             const size = Math.random() * 2 + 'px';
@@ -342,23 +338,20 @@
             const dist = 600 + Math.random() * 800;
             star.style.setProperty('--x', Math.cos(angle) * dist + 'px');
             star.style.setProperty('--y', Math.sin(angle) * dist + 'px');
-            star.style.animationDelay = Math.random() * 4 + 's';
             intro.appendChild(star);
         }
-        setTimeout(() => {
-            intro.style.opacity = '0';
-            setTimeout(() => intro.style.visibility = 'hidden', 2000);
-        }, 4500);
+        setTimeout(() => { intro.style.opacity = '0'; setTimeout(() => intro.style.visibility = 'hidden', 2000); }, 4500);
     }
-    startIntro();
 
     auth.onAuthStateChanged(user => {
+        document.getElementById('loader-global').style.display = 'none';
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
+            document.getElementById('user-img-side').src = user.photoURL;
+            document.getElementById('user-name-side').innerText = user.displayName;
+            startIntro();
             initApp(user);
-            // Autoplay music upon login (if allowed by browser)
-            setTimeout(() => { audio.play().catch(() => {}); playPauseBtn.innerText = "⏸"; }, 1000);
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('loginBtn').style.display = 'block';
@@ -370,11 +363,7 @@
         auth.signInWithPopup(provider);
     }
 
-    function handleLogout() { 
-        auth.signOut().then(() => {
-            location.reload();
-        });
-    }
+    function handleLogout() { auth.signOut().then(() => location.reload()); }
 
     function initApp(user) {
         db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
@@ -386,6 +375,27 @@
         });
         renderGroup();
         loadConfig();
+        loadRanking();
+        loadHistory();
+    }
+
+    // CORRECCIÓN: Banderas dinámicas
+    function getIso(p) {
+        const codes = { 
+            "México":"mx", "Sudáfrica":"za", "República de Corea":"kr", "República Checa":"cz",
+            "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch",
+            "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct",
+            "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Türkiye":"tr",
+            "Alemania":"de", "Curazao":"cw", "Costa de Marfil":"ci", "Ecuador":"ec",
+            "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al",
+            "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz",
+            "España":"es", "Uruguay":"uy", "Arabia Saudita":"sa", "Cabo Verde":"cv",
+            "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq",
+            "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo",
+            "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm",
+            "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa"
+        };
+        return codes[p] || "un";
     }
 
     function renderGroup() {
@@ -395,11 +405,7 @@
         g.paises.forEach(p => {
             const d = document.createElement('div');
             d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; display:flex; align-items:center;";
-            d.onclick = () => { 
-                activeTeam = p; 
-                document.getElementById('current-team-title').innerText = p.toUpperCase(); 
-                renderStickers(); 
-            };
+            d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
             d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
             list.appendChild(d);
         });
@@ -423,21 +429,28 @@
         }
     }
 
-    function addSticker(id) {
-        myStickers[id] = (myStickers[id] || 0) + 1;
-        saveData();
-        showToast("Sticker añadido");
+    async function addSticker(id) {
+        try {
+            myStickers[id] = (myStickers[id] || 0) + 1;
+            await saveData();
+            showToast("Sticker añadido");
+        } catch(e) { console.error(e); }
     }
 
-    function removeSticker(id) {
+    async function removeSticker(id) {
         if (myStickers[id] > 1) myStickers[id]--;
         else delete myStickers[id];
-        saveData();
+        await saveData();
         showToast("Sticker eliminado");
     }
 
     function saveData() {
-        db.collection("usuarios").doc(auth.currentUser.uid).set({ coleccion: myStickers }, { merge: true });
+        const countOwned = Object.keys(myStickers).length;
+        return db.collection("usuarios").doc(auth.currentUser.uid).set({ 
+            coleccion: myStickers, 
+            nombre: auth.currentUser.displayName,
+            totalOwned: countOwned 
+        }, { merge: true });
     }
 
     function changeGroup(dir) {
@@ -453,33 +466,63 @@
         document.getElementById('progress-text').innerText = `Obtenidas: ${owned} / ${TOTAL_STICKERS}`;
     }
 
-    function showToast(m) {
-        const t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
-        document.getElementById('toast-container').appendChild(t);
-        setTimeout(() => t.remove(), 2500);
+    // --- MEJORA: ABRIR SOBRES ---
+    function openPack() {
+        const results = document.getElementById('pack-results');
+        results.innerHTML = "";
+        const allPaises = grupos.flatMap(g => g.paises);
+        const newBatch = [];
+        for(let i=0; i<5; i++) {
+            const pais = allPaises[Math.floor(Math.random() * allPaises.length)];
+            const num = Math.floor(Math.random() * 20) + 1;
+            const id = `${pais}-${num}`;
+            newBatch.push(id);
+            myStickers[id] = (myStickers[id] || 0) + 1;
+            const div = document.createElement('div');
+            div.className = 'pack-card';
+            div.style.animationDelay = (i * 0.1) + 's';
+            div.innerHTML = `<small style="font-size:0.5rem">${pais}</small><br>${num}`;
+            results.appendChild(div);
+        }
+        saveData();
+        showToast("¡Sobres agregados!");
     }
 
-    function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('menu-overlay').classList.toggle('active');
-    }
-
-    function showView(id) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(window.innerWidth < 768) toggleMenu();
-    }
-
-    function getIso(p) {
-        const codes = { "México":"mx", "Brasil":"br", "Argentina":"ar", "España":"es", "Francia":"fr", "Alemania":"de", "Estados Unidos":"us", "Canadá":"ca", "Portugal":"pt", "Inglaterra":"gb-eng" };
-        return codes[p] || "un";
+    // --- MEJORA: RANKING ---
+    function loadRanking() {
+        db.collection("usuarios").orderBy("totalOwned", "desc").limit(10).onSnapshot(snap => {
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = "";
+            snap.docs.forEach((doc, i) => {
+                const u = doc.data();
+                list.innerHTML += `<tr><td>${i+1}</td><td>${u.nombre || 'Anónimo'}</td><td>${u.totalOwned || 0}</td></tr>`;
+            });
+        });
     }
 
     async function sendOrder(item, price) {
         const orderId = "ORD-" + Math.floor(Math.random()*9999);
         const msg = `Hola, mi pedido es: ${item} (Precio: Q${price}). ID: ${orderId}`;
         window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msg)}`);
-        db.collection("pedidos").add({ item, price, user: auth.currentUser.displayName, date: new Date() });
+        db.collection("pedidos").add({ 
+            userId: auth.currentUser.uid,
+            item, price, 
+            user: auth.currentUser.displayName, 
+            date: new Date().toLocaleString() 
+        });
+    }
+
+    function loadHistory() {
+        db.collection("pedidos").where("userId", "==", auth.currentUser.uid).onSnapshot(snap => {
+            const list = document.getElementById('history-list');
+            list.innerHTML = snap.empty ? "No hay pedidos" : "";
+            snap.forEach(doc => {
+                const p = doc.data();
+                list.innerHTML += `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); font-size:0.8rem;">
+                    <b>${p.item}</b> - Q${p.price}<br><small>${p.date}</small>
+                </div>`;
+            });
+        });
     }
 
     function loadConfig() {
@@ -498,12 +541,10 @@
         });
     }
 
-    // STAR RATING LOGIC
     let userRate = 0;
     function setRate(r) {
         userRate = r;
-        const stars = document.querySelectorAll('.star');
-        stars.forEach((s, idx) => {
+        document.querySelectorAll('.star').forEach((s, idx) => {
             s.innerHTML = idx < r ? '★' : '☆';
             s.style.color = idx < r ? 'var(--world-cup-yellow)' : 'white';
         });
@@ -511,7 +552,25 @@
 
     function submitRating() {
         if(userRate === 0) return showToast("Selecciona una calificación");
+        db.collection("ratings").add({ user: auth.currentUser.displayName, rate: userRate, date: new Date() });
         showToast("¡Gracias por tu reseña!");
+    }
+
+    function showToast(m) {
+        const t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+    }
+
+    function toggleMenu() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('menu-overlay').classList.toggle('active');
+    }
+
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(window.innerWidth < 768) toggleMenu();
     }
 </script>
 </body>
