@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Álbum Panini 2026 - Oficial</title>
+    <title>Álbum Panini 2026</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
     <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2026_FIFA_World_Cup_Logo.svg/256px-2026_FIFA_World_Cup_Logo.svg.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
@@ -29,130 +30,117 @@
             color: white; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* LOADER / INTRO */
-        #loading-screen {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: var(--world-cup-blue);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5000;
-        }
-        .spinner { width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.1); border-top-color: var(--world-cup-yellow); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
+        /* INTRO ANIMATION */
         #intro-space {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
-            z-index: 3000; display: none; align-items: center; justify-content: center;
-            overflow: hidden; pointer-events: none; transition: opacity 2s ease;
+            z-index: 3000; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; pointer-events: none; transition: opacity 2s ease, visibility 2s;
         }
         .star-field { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: zoomStar 4s infinite ease-in; }
         @keyframes zoomStar { 0% { transform: scale(0) translate(0, 0); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: scale(1.5) translate(var(--x), var(--y)); opacity: 0; } }
-        .earth-intro { width: 150px; height: 150px; background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); background-size: cover; animation: approachEarth 5s forwards ease-in-out; z-index: 3001; }
-        @keyframes approachEarth { 0% { transform: scale(0.05) rotate(0deg); opacity: 0; } 100% { transform: scale(25) rotate(15deg); opacity: 0; } }
+        .earth-intro { width: 150px; height: 150px; background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); background-size: cover; filter: drop-shadow(0 0 30px rgba(0, 140, 255, 0.4)); animation: approachEarth 5s forwards ease-in-out; z-index: 3001; }
+        @keyframes approachEarth { 0% { transform: scale(0.05) rotate(0deg); opacity: 0; filter: brightness(0.5) blur(2px); } 30% { opacity: 1; filter: brightness(1) blur(0px); } 100% { transform: scale(25) rotate(15deg); opacity: 0; } }
 
-        /* AUTH */
+        /* AUTH SCREEN */
         .auth-container { 
             height: 100vh; display: flex; align-items: center; justify-content: center; 
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
             background-size: cover; position: fixed; width: 100%; top: 0; z-index: 2000;
         }
-        .auth-card { background: rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px); width: 90%; max-width: 400px; }
+        .auth-card { background: rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); text-align: center; backdrop-filter: blur(20px); width: 90%; max-width: 400px; animation: fadeInLogin 1s ease forwards; animation-delay: 3.5s; opacity: 0; }
+        @keyframes fadeInLogin { to { opacity: 1; } }
         .google-btn { background: white; color: #333; border: none; padding: 14px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        /* USER PROFILE HEADER */
-        .user-profile { display: flex; align-items: center; gap: 10px; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .user-profile img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--world-cup-yellow); }
-        .user-profile span { font-family: 'Oswald'; font-size: 0.9rem; }
-
-        /* INTERFACE */
+        /* INTERFACE ELEMENTS */
         #app { display: none; }
         .menu-toggle { position: fixed; top: 20px; left: 20px; z-index: 1100; cursor: pointer; background: var(--world-cup-yellow); color: black; padding: 12px 18px; border-radius: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; display: none; }
         #menu-overlay.active { display: block; }
 
+        .contact-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+        .float-btn { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); text-decoration: none; }
+        .wa-color { background-color: #25d366; }
+        .ig-color { background: var(--instagram-gradient); }
+        
         nav {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(25px);
-            z-index: 1100; padding-top: 20px; border-right: 2px solid var(--world-cup-yellow);
+            z-index: 1100; padding-top: 80px; border-right: 2px solid var(--world-cup-yellow);
+            box-shadow: 10px 0 20px rgba(0,0,0,0.5);
         }
         nav.active { left: 0; }
-        nav a { display: block; padding: 15px 30px; color: white; text-decoration: none; font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        nav a:hover { background: rgba(255, 235, 59, 0.1); color: var(--world-cup-yellow); padding-left: 40px; }
+        nav a { display: block; padding: 18px 30px; color: white; text-decoration: none; font-family: 'Oswald'; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        nav a:hover { background: rgba(255, 235, 59, 0.1); color: var(--world-cup-yellow); }
 
         .view { display: none; max-width: 1100px; margin: 90px auto 20px auto; padding: 0 20px; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .card:hover { border-color: var(--world-cup-yellow); transform: translateY(-5px); }
+        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
+        .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; position: relative; }
+        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
+        .sticker .badge { position: absolute; top: -8px; right: -8px; background: #ff5252; color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-weight: 900; }
 
-        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 15px; }
-        .sticker { 
-            aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); 
-            border-radius: 6px; display: flex; align-items: center; justify-content: center; 
-            font-size: 0.8rem; cursor: pointer; position: relative; overflow: hidden;
-        }
-        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; transform: scale(1.05); box-shadow: 0 5px 15px rgba(255,235,59,0.3); }
-        .sticker:active { transform: scale(0.9); }
-        .sticker .badge { position: absolute; top: 2px; right: 2px; background: #ff5252; color: white; font-size: 0.6rem; padding: 1px 4px; border-radius: 4px; }
+        .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; }
+        
+        #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; display: flex; flex-direction: column; align-items: flex-end; pointer-events: none; }
+        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: toastIn 0.4s forwards; pointer-events: auto; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
 
-        .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; font-weight: bold; }
-        .buy-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
+        .progress-bar-bg { background: rgba(255,255,255,0.1); height: 12px; border-radius: 20px; overflow: hidden; }
+        .progress-bar-fill { background: var(--world-cup-yellow); height: 100%; width: 0%; transition: width 0.8s ease; }
 
-        /* SOBRES ANIMATION */
-        .pack-opening-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; margin-top: 20px;
-        }
-        .revealed-sticker {
-            animation: flipIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            background: var(--world-cup-yellow); color: black; padding: 20px 10px; border-radius: 10px;
-            text-align: center; font-weight: 900; font-family: 'Oswald';
-        }
-        @keyframes flipIn { from { transform: rotateY(90deg); opacity: 0; } to { transform: rotateY(0); opacity: 1; } }
-
-        /* PROGRESS */
-        .progress-bar-bg { background: rgba(255,255,255,0.1); height: 15px; border-radius: 20px; overflow: hidden; position: relative; }
-        .progress-bar-fill { background: linear-gradient(90deg, var(--world-cup-yellow), #ffc107); height: 100%; width: 0%; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-        /* MUSIC */
+        /* MUSIC PLAYER STYLES - INTEGRATED */
         .music-player {
             position: fixed; bottom: 20px; left: 20px; z-index: 1000;
             background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
-            padding: 8px 15px; border-radius: 50px; display: flex; align-items: center;
-            gap: 12px; border: 1px solid var(--world-cup-yellow);
+            padding: 10px 15px; border-radius: 50px; display: flex; align-items: center;
+            gap: 15px; border: 1px solid var(--world-cup-yellow);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1rem; }
-        .vol-slider { width: 50px; accent-color: var(--world-cup-yellow); }
+        .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; }
+        .music-btn:hover { color: var(--world-cup-yellow); }
+        .music-info { font-family: 'Oswald'; font-size: 0.7rem; color: var(--world-cup-yellow); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* TABLES */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { text-align: left; color: var(--world-cup-yellow); font-family: 'Oswald'; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-
-        #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; }
-        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: toastIn 0.4s forwards; }
-        @keyframes toastIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-
-        @media (max-width: 768px) {
-            .view { margin-top: 80px; padding: 0 15px; }
-            .menu-toggle { top: 15px; left: 15px; padding: 10px 15px; font-size: 0.8rem; }
-            .music-player { left: 50%; transform: translateX(-50%); bottom: 10px; width: 90%; justify-content: center; }
-            nav { width: 85%; }
+        /* LOGOUT BUTTON MOD */
+        .logout-btn {
+            background: rgba(255, 82, 82, 0.1) !important;
+            color: #ff5252 !important;
+            border: 1px solid #ff5252 !important;
+            margin: 20px 30px !important;
+            border-radius: 8px;
+            text-align: center;
         }
+        .logout-btn:hover { background: #ff5252 !important; color: white !important; }
     </style>
 </head>
 <body>
 
-    <div id="loading-screen"><div class="spinner"></div><p style="margin-top:15px; font-family:'Oswald';">CARGANDO MUNDIAL...</p></div>
+    <!-- MUSIC PLAYER -->
+    <div class="music-player">
+        <button class="music-btn" id="prevSong">⏮</button>
+        <button class="music-btn" id="playPause">▶</button>
+        <button class="music-btn" id="nextSong">⏭</button>
+        <div class="music-info">
+            <span id="songTitle">Cargando...</span>
+        </div>
+        <audio id="audioElement"></audio>
+    </div>
 
-    <div id="intro-space"><div class="earth-intro"></div></div>
+    <div id="intro-space">
+        <div class="earth-intro"></div>
+    </div>
 
     <div id="toast-container"></div>
     <div id="menu-overlay" onclick="toggleMenu()"></div>
 
-    <div class="auth-container" id="auth-screen" style="display:none;">
+    <div class="auth-container" id="auth-screen">
         <div class="auth-card">
             <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 2.5rem;">PANINI 2026</h1>
-            <p style="margin-top: 10px;">Ingresa para gestionar tu colección</p>
-            <button class="google-btn" onclick="loginWithGoogle()">
+            <p id="auth-status" style="margin-top: 10px; font-size: 0.9rem;">Bienvenido al Álbum Oficial</p>
+            <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()" style="display: none;">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
                 Entrar con Google
             </button>
@@ -161,30 +149,35 @@
 
     <div id="app">
         <div class="menu-toggle" onclick="toggleMenu()">☰ MENU</div>
+        
+        <div class="contact-buttons">
+            <a href="https://www.instagram.com/pablooib" target="_blank" class="float-btn ig-color"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" width="30"></a>
+            <a href="https://wa.me/50246199644" target="_blank" class="float-btn wa-color"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
+        </div>
 
         <nav id="sidebar">
-            <div class="user-profile" id="user-display">
-                <img id="user-photo" src="" alt="">
-                <span id="user-name">Usuario</span>
-            </div>
-            <a href="#" onclick="showView('album-view')">📔 MI ÁLBUM</a>
-            <a href="#" onclick="showView('pack-view')">📦 ABRIR SOBRES</a>
+            <div style="padding: 20px; text-align: center;"><h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">PANINI 2026</h2></div>
+            <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
+            <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
+            <a href="#" onclick="showView('stock-view')">💎 CARTAS EN STOCK</a>
             <a href="#" onclick="showView('shop-view')">🛒 TIENDA</a>
             <a href="#" onclick="showView('ranking-view')">🏆 RANKING TOP</a>
             <a href="#" onclick="showView('history-view')">📜 MIS PEDIDOS</a>
+            <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
             <a href="#" onclick="showView('rating-view')">🌟 CALIFÍCANOS</a>
-            <a href="#" onclick="handleLogout()" style="color: #ff5252; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px;">🚪 CERRAR SESIÓN</a>
+            <a href="#" onclick="handleLogout()" class="logout-btn">🚪 CERRAR SESIÓN</a>
         </nav>
 
-        <!-- VIEW: ALBUM -->
         <div id="album-view" class="view active">
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; font-family: 'Oswald'; margin-bottom: 8px;">
-                    <span>PROGRESO MUNDIAL</span>
+            <div class="progress-container card">
+                <div style="display: flex; justify-content: space-between; font-family: 'Oswald'; margin-bottom: 5px; font-size: 0.9rem;">
+                    <span>PROGRESO TOTAL</span>
                     <span id="progress-percent">0%</span>
                 </div>
-                <div class="progress-bar-bg"><div id="progress-bar-fill" class="progress-bar-fill"></div></div>
-                <p id="progress-text" style="font-size: 0.8rem; margin-top:8px; text-align:center; opacity:0.7">0 / 960 Láminas</p>
+                <div class="progress-bar-bg">
+                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <p id="progress-text" style="font-size: 0.8rem; margin-top:5px; text-align:center; color:rgba(255,255,255,0.6)">Obtenidas: 0 / 960</p>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
@@ -192,74 +185,71 @@
                     <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow);">GRUPO A</h3>
                     <div id="team-list" style="margin-top:15px;"></div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-                        <button onclick="changeGroup(-1)" class="buy-btn" style="background:rgba(255,255,255,0.1); color:white;">ANTERIOR</button>
-                        <button onclick="changeGroup(1)" class="buy-btn">SIGUIENTE</button>
+                        <button onclick="changeGroup(-1)" class="buy-btn" style="background:rgba(255,255,255,0.1); color:white;">◄</button>
+                        <button onclick="changeGroup(1)" class="buy-btn">►</button>
                     </div>
                 </div>
                 <div class="card">
-                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow); padding-bottom:10px;">SELECCIONA PAÍS</h2>
+                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow);">SELECCIONA PAÍS</h2>
                     <div class="sticker-grid" id="sticker-grid"></div>
                 </div>
             </div>
         </div>
 
-        <!-- VIEW: SOBRES -->
-        <div id="pack-view" class="view">
-            <div class="card" style="text-align:center;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOBRE DE BIENVENIDA</h2>
-                <p style="margin:15px 0; opacity:0.8;">Obtén 5 láminas aleatorias para tu colección.</p>
-                <button class="buy-btn" id="open-pack-btn" onclick="openPack()" style="max-width:300px; margin:auto;">ABRIR SOBRE GRATIS</button>
-                <div id="pack-result" class="pack-opening-container"></div>
+        <!-- OTRAS VISTAS -->
+        <div id="special-card-view" class="view">
+            <div class="card" style="max-width:500px; margin:auto;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA</h2>
+                <input type="text" id="playerName" placeholder="Nombre del Jugador" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:white;">
+                <input type="text" id="playerTeam" placeholder="Selección" style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:white;">
+                <button class="buy-btn" onclick="sendOrder('Carta Especial', 'A convenir')">CONSULTAR WHATSAPP</button>
             </div>
         </div>
 
-        <!-- VIEW: TIENDA -->
+        <div id="stock-view" class="view">
+            <div class="card" style="max-width:600px; margin:auto;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">EN STOCK</h2>
+                <div id="stock-list-container" style="margin-top:15px; text-align:center;">Próximamente...</div>
+            </div>
+        </div>
+
         <div id="shop-view" class="view">
             <div id="shop-items-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;"></div>
         </div>
 
-        <!-- VIEW: RANKING -->
         <div id="ranking-view" class="view">
-            <div class="card">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">RANKING DE COLECCIONISTAS</h2>
-                <table id="ranking-table">
-                    <thead><tr><th>#</th><th>Usuario</th><th>Láminas</th><th>%</th></tr></thead>
-                    <tbody id="ranking-body"></tbody>
-                </table>
+            <div class="card" style="max-width:600px; margin:auto;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">GLOBAL TOP</h2>
+                <div id="ranking-list" style="margin-top:15px;"></div>
             </div>
         </div>
 
-        <!-- VIEW: HISTORIAL -->
         <div id="history-view" class="view">
-            <div class="card">
+            <div class="card" style="max-width:600px; margin:auto;">
                 <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">MIS PEDIDOS</h2>
                 <div id="history-list" style="margin-top:15px;"></div>
             </div>
         </div>
 
-        <!-- VIEW: RATING -->
-        <div id="rating-view" class="view">
-            <div class="card" style="text-align:center; max-width:400px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">CALIFÍCANOS</h2>
-                <div id="stars" style="font-size:3rem; margin:20px 0; color: white;">
-                    <span onclick="setRate(1)" style="cursor:pointer">☆</span>
-                    <span onclick="setRate(2)" style="cursor:pointer">☆</span>
-                    <span onclick="setRate(3)" style="cursor:pointer">☆</span>
-                    <span onclick="setRate(4)" style="cursor:pointer">☆</span>
-                    <span onclick="setRate(5)" style="cursor:pointer">☆</span>
-                </div>
-                <button class="buy-btn" onclick="submitRating()">GUARDAR RESEÑA</button>
+        <div id="prices-view" class="view">
+             <div class="card" style="max-width:400px; margin:auto;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">PRECIOS</h2>
+                <div id="dynamic-prices-container" style="line-height:2.5; margin-top:15px;"></div>
             </div>
         </div>
 
-        <!-- MUSIC PLAYER -->
-        <div class="music-player">
-            <button class="music-btn" onclick="prevSong()">⏮</button>
-            <button class="music-btn" id="playPause" onclick="togglePlay()">▶</button>
-            <button class="music-btn" onclick="nextSong()">⏭</button>
-            <div style="font-size:0.7rem; font-family:'Oswald'; color:var(--world-cup-yellow); min-width:80px;" id="songTitle">FIFA 2026</div>
-            <input type="range" class="vol-slider" min="0" max="1" step="0.1" value="0.5" oninput="audio.volume = this.value">
-            <audio id="audioElement" onended="nextSong()"></audio>
+        <div id="rating-view" class="view">
+            <div class="card" style="text-align:center; max-width:400px; margin:auto;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">CALIFÍCANOS</h2>
+                <div id="stars" style="font-size:2.5rem; margin:15px 0; color: white;">
+                    <span class="star" onclick="setRate(1)" style="cursor:pointer">☆</span>
+                    <span class="star" onclick="setRate(2)" style="cursor:pointer">☆</span>
+                    <span class="star" onclick="setRate(3)" style="cursor:pointer">☆</span>
+                    <span class="star" onclick="setRate(4)" style="cursor:pointer">☆</span>
+                    <span class="star" onclick="setRate(5)" style="cursor:pointer">☆</span>
+                </div>
+                <button class="buy-btn" onclick="submitRating()">ENVIAR RESEÑA</button>
+            </div>
         </div>
     </div>
 
@@ -278,12 +268,52 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // APP STATE
+    // --- MUSIC SYSTEM (Actualizado con tus canciones) ---
+    const playlist = [
+        { title: "We Are One (Ole Ola)", url: "we-are-one.mp3.mp3" },
+        { title: "Waka Waka", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+        { title: "La Copa de la Vida", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" }
+    ];
+    let currentSongIndex = 0;
+    const audio = document.getElementById('audioElement');
+    const playPauseBtn = document.getElementById('playPause');
+    const songTitleDisplay = document.getElementById('songTitle');
+
+    function loadSong(index) {
+        audio.src = playlist[index].url;
+        songTitleDisplay.innerText = playlist[index].title;
+    }
+
+    playPauseBtn.onclick = () => {
+        if (audio.paused) { 
+            audio.play().catch(e => showToast("Haz clic en cualquier parte para activar música")); 
+            playPauseBtn.innerText = "⏸"; 
+        } else { 
+            audio.pause(); 
+            playPauseBtn.innerText = "▶"; 
+        }
+    };
+
+    document.getElementById('nextSong').onclick = () => {
+        currentSongIndex = (currentSongIndex + 1) % playlist.length;
+        loadSong(currentSongIndex);
+        audio.play();
+        playPauseBtn.innerText = "⏸";
+    };
+
+    document.getElementById('prevSong').onclick = () => {
+        currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+        loadSong(currentSongIndex);
+        audio.play();
+        playPauseBtn.innerText = "⏸";
+    };
+    loadSong(0);
+
+    // --- CORE LOGIC ---
     let myStickers = {};
     let activeTeam = "";
     let currentIdx = 0;
-    const TOTAL_STICKERS = 960;
-    let userRate = 0;
+    const TOTAL_STICKERS = 960; 
 
     const grupos = [
         {id: "A", paises: ["México", "Sudáfrica", "República de Corea", "República Checa"]},
@@ -300,37 +330,38 @@
         {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
     ];
 
-    // MUSIC SYSTEM
-    const playlist = [
-        { title: "We Are One", url: "we-are-one.mp3" },
-
-    let songIdx = 0;
-    const audio = document.getElementById('audioElement');
-
-    function loadSong(i) {
-        audio.src = playlist[i].url;
-        document.getElementById('songTitle').innerText = playlist[i].title;
+    function startIntro() {
+        const intro = document.getElementById('intro-space');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star-field';
+            const size = Math.random() * 2 + 'px';
+            star.style.width = size; star.style.height = size;
+            star.style.left = '50%'; star.style.top = '50%';
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 600 + Math.random() * 800;
+            star.style.setProperty('--x', Math.cos(angle) * dist + 'px');
+            star.style.setProperty('--y', Math.sin(angle) * dist + 'px');
+            star.style.animationDelay = Math.random() * 4 + 's';
+            intro.appendChild(star);
+        }
+        setTimeout(() => {
+            intro.style.opacity = '0';
+            setTimeout(() => intro.style.visibility = 'hidden', 2000);
+        }, 4500);
     }
-    function togglePlay() {
-        if(audio.paused) { audio.play(); document.getElementById('playPause').innerText = "⏸"; }
-        else { audio.pause(); document.getElementById('playPause').innerText = "▶"; }
-    }
-    function nextSong() { songIdx = (songIdx + 1) % playlist.length; loadSong(songIdx); audio.play(); }
-    function prevSong() { songIdx = (songIdx - 1 + playlist.length) % playlist.length; loadSong(songIdx); audio.play(); }
+    startIntro();
 
-    // AUTH & INITIALIZATION
     auth.onAuthStateChanged(user => {
-        document.getElementById('loading-screen').style.display = 'none';
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            document.getElementById('user-name').innerText = user.displayName;
-            document.getElementById('user-photo').src = user.photoURL || 'https://via.placeholder.com/40';
-            startIntro();
             initApp(user);
+            // Autoplay music upon login (if allowed by browser)
+            setTimeout(() => { audio.play().catch(() => {}); playPauseBtn.innerText = "⏸"; }, 1000);
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('app').style.display = 'none';
+            document.getElementById('loginBtn').style.display = 'block';
         }
     });
 
@@ -339,223 +370,89 @@
         auth.signInWithPopup(provider);
     }
 
-    function handleLogout() { auth.signOut().then(() => location.reload()); }
+    function handleLogout() { 
+        auth.signOut().then(() => {
+            location.reload();
+        });
+    }
 
     function initApp(user) {
         db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-            if(doc.exists) {
+            if(doc.exists) { 
                 myStickers = doc.data().coleccion || {};
-                updateProgressUI();
-                if(activeTeam) renderStickers();
-            } else {
-                db.collection("usuarios").doc(user.uid).set({ 
-                    nombre: user.displayName, 
-                    coleccion: {}, 
-                    lastPack: null 
-                });
+                updateProgress();
+                if(activeTeam) renderStickers(); 
             }
         });
         renderGroup();
-        loadShop();
-        loadRanking();
-        loadHistory(user.uid);
-        loadSong(0);
-    }
-
-    // CORE ALBUM FUNCTIONS
-    function getIso(p) {
-        const m = { 
-            "México":"mx", "Sudáfrica":"za", "República de Corea":"kr", "República Checa":"cz",
-            "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch",
-            "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct",
-            "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Türkiye":"tr",
-            "Alemania":"de", "Curazao":"cw", "Costa de Marfil":"ci", "Ecuador":"ec",
-            "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al",
-            "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz",
-            "España":"es", "Uruguay":"uy", "Arabia Saudita":"sa", "Cabo Verde":"cv",
-            "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq",
-            "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo",
-            "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm",
-            "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa"
-        };
-        return m[p] || "un";
+        loadConfig();
     }
 
     function renderGroup() {
         const g = grupos[currentIdx];
         document.getElementById('grp-name').innerText = "GRUPO " + g.id;
-        const list = document.getElementById('team-list');
-        list.innerHTML = "";
+        const list = document.getElementById('team-list'); list.innerHTML = "";
         g.paises.forEach(p => {
-            const div = document.createElement('div');
-            div.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; font-family:'Oswald';";
-            div.onclick = () => { 
+            const d = document.createElement('div');
+            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; display:flex; align-items:center;";
+            d.onclick = () => { 
                 activeTeam = p; 
-                document.getElementById('current-team-title').innerText = p.toUpperCase();
+                document.getElementById('current-team-title').innerText = p.toUpperCase(); 
                 renderStickers(); 
             };
-            div.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" style="width:25px; margin-right:15px; border-radius:2px;"> ${p.toUpperCase()}`;
-            list.appendChild(div);
+            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px"> ${p.toUpperCase()}`;
+            list.appendChild(d);
         });
     }
 
     function renderStickers() {
-        const grid = document.getElementById('sticker-grid');
-        grid.innerHTML = "";
+        const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
         for(let i=1; i<=20; i++) {
             const id = `${activeTeam}-${i}`;
             const count = myStickers[id] || 0;
             const s = document.createElement('div');
             s.className = `sticker ${count > 0 ? 'owned' : ''}`;
             s.innerHTML = i;
-            if(count > 1) s.innerHTML += `<div class="badge">x${count}</div>`;
-            s.onclick = () => updateSticker(id, 1);
-            s.oncontextmenu = (e) => { e.preventDefault(); updateSticker(id, -1); };
+            if(count > 1) {
+                const b = document.createElement('div'); b.className = 'badge'; b.innerText = `x${count}`;
+                s.appendChild(b);
+            }
+            s.onclick = () => addSticker(id);
+            s.oncontextmenu = (e) => { e.preventDefault(); removeSticker(id); };
             grid.appendChild(s);
         }
     }
 
-    async function updateSticker(id, val) {
-        try {
-            if(val > 0) myStickers[id] = (myStickers[id] || 0) + 1;
-            else {
-                if(myStickers[id] > 1) myStickers[id]--;
-                else delete myStickers[id];
-            }
-            await db.collection("usuarios").doc(auth.currentUser.uid).update({ 
-                coleccion: myStickers,
-                totalOwned: Object.keys(myStickers).length 
-            });
-            showToast(val > 0 ? "¡Lámina pegada!" : "Lámina removida");
-        } catch(e) { console.error(e); }
+    function addSticker(id) {
+        myStickers[id] = (myStickers[id] || 0) + 1;
+        saveData();
+        showToast("Sticker añadido");
     }
 
-    function updateProgressUI() {
+    function removeSticker(id) {
+        if (myStickers[id] > 1) myStickers[id]--;
+        else delete myStickers[id];
+        saveData();
+        showToast("Sticker eliminado");
+    }
+
+    function saveData() {
+        db.collection("usuarios").doc(auth.currentUser.uid).set({ coleccion: myStickers }, { merge: true });
+    }
+
+    function changeGroup(dir) {
+        currentIdx = (currentIdx + dir + grupos.length) % grupos.length;
+        renderGroup();
+    }
+
+    function updateProgress() {
         const owned = Object.keys(myStickers).length;
-        const perc = ((owned / TOTAL_STICKERS) * 100).toFixed(1);
+        const perc = Math.floor((owned / TOTAL_STICKERS) * 100);
         document.getElementById('progress-bar-fill').style.width = perc + "%";
         document.getElementById('progress-percent').innerText = perc + "%";
-        document.getElementById('progress-text').innerText = `${owned} / ${TOTAL_STICKERS} Láminas`;
+        document.getElementById('progress-text').innerText = `Obtenidas: ${owned} / ${TOTAL_STICKERS}`;
     }
 
-    // FEATURE: SOBRES ALEATORIOS
-    async function openPack() {
-        const btn = document.getElementById('open-pack-btn');
-        const container = document.getElementById('pack-result');
-        btn.disabled = true;
-        btn.innerText = "ABRIENDO...";
-        container.innerHTML = "";
-
-        const allCountries = grupos.flatMap(g => g.paises);
-        const newStickers = [];
-
-        for(let i=0; i<5; i++) {
-            const randomCountry = allCountries[Math.floor(Math.random() * allCountries.length)];
-            const randomNumber = Math.floor(Math.random() * 20) + 1;
-            const stickerId = `${randomCountry}-${randomNumber}`;
-            newStickers.push(stickerId);
-            
-            myStickers[stickerId] = (myStickers[stickerId] || 0) + 1;
-        }
-
-        await db.collection("usuarios").doc(auth.currentUser.uid).update({ coleccion: myStickers });
-
-        newStickers.forEach((id, index) => {
-            setTimeout(() => {
-                const div = document.createElement('div');
-                div.className = "revealed-sticker";
-                div.innerHTML = `<small style="font-size:0.5rem">${id.split('-')[0]}</small><br>${id.split('-')[1]}`;
-                container.appendChild(div);
-            }, index * 300);
-        });
-
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerText = "ABRIR OTRO SOBRE";
-            showToast("¡5 Láminas nuevas añadidas!");
-        }, 1800);
-    }
-
-    // FEATURE: RANKING
-    function loadRanking() {
-        db.collection("usuarios").orderBy("totalOwned", "desc").limit(10).onSnapshot(snap => {
-            const tbody = document.getElementById('ranking-body');
-            tbody.innerHTML = "";
-            snap.docs.forEach((doc, i) => {
-                const data = doc.data();
-                const total = data.totalOwned || 0;
-                tbody.innerHTML += `<tr>
-                    <td>${i+1}</td>
-                    <td>${data.nombre}</td>
-                    <td>${total}</td>
-                    <td>${((total/TOTAL_STICKERS)*100).toFixed(1)}%</td>
-                </tr>`;
-            });
-        });
-    }
-
-    // FEATURE: TIENDA E HISTORIAL
-    function loadShop() {
-        db.collection("config").doc("precios").onSnapshot(doc => {
-            if(!doc.exists) return;
-            const grid = document.getElementById('shop-items-grid');
-            grid.innerHTML = "";
-            Object.entries(doc.data()).forEach(([name, price]) => {
-                grid.innerHTML += `<div class="card" style="text-align:center;">
-                    <h3 style="font-family:'Oswald'">${name}</h3>
-                    <p style="font-size:1.8rem; color:var(--world-cup-yellow); margin:15px 0;">Q${price}</p>
-                    <button class="buy-btn" onclick="processOrder('${name}', ${price})">COMPRAR YA</button>
-                </div>`;
-            });
-        });
-    }
-
-    async function processOrder(item, price) {
-        const order = {
-            userId: auth.currentUser.uid,
-            userName: auth.currentUser.displayName,
-            item,
-            price,
-            date: new Date().toLocaleString(),
-            status: 'Pendiente'
-        };
-        await db.collection("pedidos").add(order);
-        window.open(`https://wa.me/50246199644?text=Hola! Quiero comprar: ${item} (Q${price})`);
-        showToast("Pedido registrado en tu historial");
-    }
-
-    function loadHistory(uid) {
-        db.collection("pedidos").where("userId", "==", uid).onSnapshot(snap => {
-            const container = document.getElementById('history-list');
-            container.innerHTML = snap.empty ? "<p>No tienes pedidos aún.</p>" : "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                container.innerHTML += `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); font-size:0.8rem;">
-                    <strong>${d.item}</strong> - Q${d.price} <br>
-                    <small style="opacity:0.6">${d.date} | Estado: ${d.status}</small>
-                </div>`;
-            });
-        });
-    }
-
-    // RATING
-    function setRate(r) {
-        userRate = r;
-        const stars = document.querySelectorAll('#stars span');
-        stars.forEach((s, i) => s.innerHTML = i < r ? '★' : '☆');
-    }
-
-    async function submitRating() {
-        if(userRate === 0) return showToast("Elige una estrella");
-        await db.collection("resenas").add({
-            user: auth.currentUser.displayName,
-            rating: userRate,
-            date: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast("¡Gracias por tu apoyo!");
-    }
-
-    // UTILS
     function showToast(m) {
         const t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
         document.getElementById('toast-container').appendChild(t);
@@ -573,28 +470,48 @@
         if(window.innerWidth < 768) toggleMenu();
     }
 
-    function changeGroup(dir) {
-        currentIdx = (currentIdx + dir + grupos.length) % grupos.length;
-        renderGroup();
+    function getIso(p) {
+        const codes = { "México":"mx", "Brasil":"br", "Argentina":"ar", "España":"es", "Francia":"fr", "Alemania":"de", "Estados Unidos":"us", "Canadá":"ca", "Portugal":"pt", "Inglaterra":"gb-eng" };
+        return codes[p] || "un";
     }
 
-    function startIntro() {
-        const space = document.getElementById('intro-space');
-        space.style.display = 'flex';
-        for (let i = 0; i < 50; i++) {
-            const star = document.createElement('div');
-            star.className = 'star-field';
-            const size = Math.random() * 2 + 'px';
-            star.style.width = size; star.style.height = size;
-            star.style.left = '50%'; star.style.top = '50%';
-            const angle = Math.random() * Math.PI * 2;
-            const dist = 500 + Math.random() * 500;
-            star.style.setProperty('--x', Math.cos(angle) * dist + 'px');
-            star.style.setProperty('--y', Math.sin(angle) * dist + 'px');
-            star.style.animationDelay = Math.random() * 2 + 's';
-            space.appendChild(star);
-        }
-        setTimeout(() => { space.style.opacity = '0'; setTimeout(() => space.remove(), 2000); }, 4000);
+    async function sendOrder(item, price) {
+        const orderId = "ORD-" + Math.floor(Math.random()*9999);
+        const msg = `Hola, mi pedido es: ${item} (Precio: Q${price}). ID: ${orderId}`;
+        window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msg)}`);
+        db.collection("pedidos").add({ item, price, user: auth.currentUser.displayName, date: new Date() });
+    }
+
+    function loadConfig() {
+        db.collection("config").doc("precios").onSnapshot(doc => {
+            if(doc.exists) {
+                const p = doc.data();
+                const container = document.getElementById('shop-items-grid');
+                container.innerHTML = "";
+                Object.entries(p).forEach(([name, price]) => {
+                    container.innerHTML += `<div class="card" style="background:white; color:black; text-align:center;">
+                        <h3>${name}</h3><p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q${price}</p>
+                        <button class="buy-btn" onclick="sendOrder('${name}', '${price}')">COMPRAR</button>
+                    </div>`;
+                });
+            }
+        });
+    }
+
+    // STAR RATING LOGIC
+    let userRate = 0;
+    function setRate(r) {
+        userRate = r;
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((s, idx) => {
+            s.innerHTML = idx < r ? '★' : '☆';
+            s.style.color = idx < r ? 'var(--world-cup-yellow)' : 'white';
+        });
+    }
+
+    function submitRating() {
+        if(userRate === 0) return showToast("Selecciona una calificación");
+        showToast("¡Gracias por tu reseña!");
     }
 </script>
 </body>
