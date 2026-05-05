@@ -230,6 +230,98 @@ nav a.active {
     border-radius: 10px;
     margin-bottom: 10px;
 }
+        /* ===== MEJORAS PRO ===== */
+* {
+    transition: transform 0.2s ease, opacity 0.2s ease, background 0.3s ease;
+}
+
+.sticker {
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed rgba(255,255,255,0.2);
+}
+
+.sticker:hover {
+    transform: scale(1.08);
+}
+
+.sticker.owned {
+    background: linear-gradient(145deg, #ffeb3b, #ffd600);
+    box-shadow: 0 0 12px rgba(255,235,59,0.6);
+}
+
+.sticker .badge {
+    background: #ff1744;
+    box-shadow: 0 0 8px rgba(255,0,0,0.6);
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+.sticker.pop {
+    animation: pop 0.25s ease;
+}
+
+nav a.active {
+    background: rgba(255,235,59,0.15);
+    color: var(--world-cup-yellow);
+    border-left: 4px solid var(--world-cup-yellow);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.stat-box {
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.filter-btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    background: var(--world-cup-yellow);
+    color: black;
+}
+
+.team-progress {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.team-progress-fill {
+    height: 100%;
+    background: var(--world-cup-yellow);
+}
+
+.history-card {
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
     </style>
 </head>
 <body onclick="enableAudio()">
@@ -713,6 +805,201 @@ nav a.active {
         if(userRate === 0) return showToast("Selecciona una calificación");
         showToast("¡Gracias por tu reseña!");
     }
+
+    /* ===== LOCAL STORAGE ===== */
+function saveLocal() {
+    localStorage.setItem("stickers_backup", JSON.stringify(myStickers));
+}
+
+function loadLocal() {
+    const data = localStorage.getItem("stickers_backup");
+    if(data) myStickers = JSON.parse(data);
+}
+
+/* ===== FILTROS ===== */
+let currentFilter = "all";
+
+setTimeout(()=>{
+    const container = document.querySelector("#album-view .card");
+
+    const filters = document.createElement("div");
+    filters.className = "filters";
+    filters.innerHTML = `
+        <button class="filter-btn active" onclick="setFilter('all')">Todos</button>
+        <button class="filter-btn" onclick="setFilter('missing')">Faltantes</button>
+        <button class="filter-btn" onclick="setFilter('repeated')">Repetidos</button>
+    `;
+
+    container.appendChild(filters);
+},1000);
+
+function setFilter(f){
+    currentFilter = f;
+
+    document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+    event.target.classList.add("active");
+
+    renderStickers();
+}
+
+/* ===== OVERRIDE renderStickers ===== */
+const oldRender = renderStickers;
+renderStickers = function(){
+    oldRender();
+
+    document.querySelectorAll(".sticker").forEach(s=>{
+        const num = s.innerText;
+        const id = `${activeTeam}-${num}`;
+        const count = myStickers[id] || 0;
+
+        if(currentFilter === "missing" && count > 0) s.style.display = "none";
+        else if(currentFilter === "repeated" && count <= 1) s.style.display = "none";
+        else s.style.display = "flex";
+    });
+
+    renderTeamMessage();
+};
+
+/* ===== ANIMACION POP ===== */
+const oldAdd = addSticker;
+addSticker = function(id){
+    oldAdd(id);
+
+    const num = id.split("-")[1];
+
+    const el = [...document.querySelectorAll(".sticker")]
+        .find(s => s.innerText == num);
+
+    if(el){
+        el.classList.add("pop");
+        setTimeout(()=> el.classList.remove("pop"),300);
+    }
+
+    saveLocal();
+};
+
+/* ===== PROGRESS ===== */
+const oldProgress = updateProgress;
+updateProgress = function(){
+    oldProgress();
+
+    const faltan = TOTAL_STICKERS - Object.keys(myStickers).length;
+    document.getElementById("progress-text").innerText =
+        `Te faltan ${faltan} stickers`;
+};
+
+/* ===== STATS ===== */
+function renderStats(){
+    const total = Object.keys(myStickers).length;
+    const repetidos = Object.values(myStickers).filter(x=>x>1).length;
+
+    let stats = document.querySelector(".stats");
+    if(stats) stats.remove();
+
+    const container = document.querySelector("#album-view .card");
+
+    stats = document.createElement("div");
+    stats.className = "stats";
+    stats.innerHTML = `
+        <div class="stat-box">Únicos<br><b>${total}</b></div>
+        <div class="stat-box">Repetidos<br><b>${repetidos}</b></div>
+        <div class="stat-box">Total<br><b>${total + repetidos}</b></div>
+    `;
+
+    container.appendChild(stats);
+}
+
+/* ===== MENSAJE POR PAIS ===== */
+function renderTeamMessage(){
+    if(!activeTeam) return;
+
+    let owned = 0;
+    for(let i=1;i<=20;i++){
+        if(myStickers[`${activeTeam}-${i}`]) owned++;
+    }
+
+    const faltan = 20 - owned;
+
+    let msg = document.getElementById("team-msg");
+
+    if(!msg){
+        msg = document.createElement("p");
+        msg.id = "team-msg";
+        msg.style.textAlign = "center";
+        msg.style.fontSize = "0.8rem";
+        document.getElementById("current-team-title").after(msg);
+    }
+
+    msg.innerText = `Te faltan ${faltan} stickers para completar este país`;
+}
+
+/* ===== PROGRESO POR PAIS ===== */
+const oldRenderGroup = renderGroup;
+renderGroup = function(){
+    oldRenderGroup();
+
+    const items = document.querySelectorAll("#team-list div");
+
+    items.forEach((d,i)=>{
+        const p = grupos[currentIdx].paises[i];
+
+        let owned = 0;
+        for(let j=1;j<=20;j++){
+            if(myStickers[`${p}-${j}`]) owned++;
+        }
+
+        const percent = (owned/20)*100;
+
+        const bar = document.createElement("div");
+        bar.className = "team-progress";
+        bar.innerHTML = `<div class="team-progress-fill" style="width:${percent}%"></div>`;
+
+        d.appendChild(bar);
+    });
+};
+
+/* ===== HISTORIAL ===== */
+function renderHistoryUI(){
+    const list = document.getElementById("history-list");
+    const data = JSON.parse(localStorage.getItem("orders") || "[]");
+
+    list.innerHTML = data.map(o=>`
+        <div class="history-card">
+            <b>${o.product}</b><br>
+            <small>${o.date}</small>
+        </div>
+    `).join("");
+}
+
+/* ===== GUARDAR PEDIDOS ===== */
+const oldOrder = sendOrder;
+sendOrder = function(p,price){
+    oldOrder(p,price);
+
+    const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+    orders.push({product:p, date:new Date().toLocaleString()});
+    localStorage.setItem("orders", JSON.stringify(orders));
+};
+
+/* ===== MENU ACTIVO ===== */
+const oldShowView = showView;
+showView = function(viewId){
+    oldShowView(viewId);
+
+    document.querySelectorAll("nav a").forEach(a=>a.classList.remove("active"));
+
+    const active = [...document.querySelectorAll("nav a")]
+        .find(a=>a.getAttribute("onclick")?.includes(viewId));
+
+    if(active) active.classList.add("active");
+};
+
+/* ===== INIT ===== */
+setTimeout(()=>{
+    loadLocal();
+    renderStats();
+    renderHistoryUI();
+},1500);
 
     /* ===== LOCAL STORAGE ===== */
 function saveLocal() {
