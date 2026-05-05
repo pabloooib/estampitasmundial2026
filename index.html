@@ -330,7 +330,10 @@ nav a.active {
                 </div>
                 <div class="card">
                     <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow);">SELECCIONA PAÍS</h2>
+                    <input type="text" id="searchSticker" placeholder="Buscar sticker (ej: 5)"
+                    style="width:100%; padding:8px; border-radius:10px; border:none; margin-bottom:10px;">
                     <div class="sticker-grid" id="sticker-grid"></div>
+                    
                 </div>
             </div>
         </div>
@@ -908,6 +911,14 @@ setTimeout(()=>{
     renderStats();
     renderHistoryUI();
 },1500);
+
+    document.getElementById("searchSticker").addEventListener("input", function(){
+    const val = this.value.toLowerCase();
+
+    document.querySelectorAll(".sticker").forEach(s=>{
+        s.style.display = s.innerText.includes(val) ? "flex" : "none";
+    });
+});
 </script>
 </body>
 </html>
