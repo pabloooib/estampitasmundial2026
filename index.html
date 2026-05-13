@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Álbum Panini 2026</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
+    <title>Álbum Panini 2026 - Selección</title>
     <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2026_FIFA_World_Cup_Logo.svg/256px-2026_FIFA_World_Cup_Logo.svg.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
@@ -22,7 +20,7 @@
             --instagram-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s ease; }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
         body { 
             font-family: 'Roboto', sans-serif; 
@@ -52,7 +50,7 @@
         @keyframes fadeInLogin { to { opacity: 1; } }
         .google-btn { background: white; color: #333; border: none; padding: 14px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        /* INTERFACE ELEMENTS */
+        /* INTERFACE */
         #app { display: none; }
         .menu-toggle { position: fixed; top: 20px; left: 20px; z-index: 1100; cursor: pointer; background: var(--world-cup-yellow); color: black; padding: 12px 18px; border-radius: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; display: none; }
@@ -63,7 +61,6 @@
         .wa-color { background-color: #25d366; }
         .ig-color { background: var(--instagram-gradient); }
         
-        /* MEJORA DE MENÚ: Más compacto y limpio */
         nav {
             position: fixed; top: 0; left: -320px; width: 280px; height: 100%;
             background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(25px);
@@ -79,79 +76,65 @@
         }
         nav a:hover { background: rgba(255, 235, 59, 0.1); color: var(--world-cup-yellow); padding-left: 35px; }
 
-        /* PERFIL EN MENÚ */
-        .user-profile-mini {
-            padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 10px;
-        }
-        .profile-img-container {
-            width: 70px; height: 70px; margin: 0 auto 10px; position: relative;
-        }
+        .user-profile-mini { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; }
+        .profile-img-container { width: 70px; height: 70px; margin: 0 auto 10px; position: relative; }
         #nav-user-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--world-cup-yellow); }
-        .edit-img-btn {
-            position: absolute; bottom: 0; right: 0; background: var(--world-cup-yellow);
-            width: 24px; height: 24px; border-radius: 50%; color: black; font-size: 0.7rem;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-        }
 
         .view { display: none; max-width: 1100px; margin: 90px auto 20px auto; padding: 0 20px; animation: slideUp 0.4s ease; }
         .view.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; }
-        .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; position: relative; }
-        .sticker.owned { background: var(--world-cup-yellow); color: black; font-weight: 900; border: none; }
-        .sticker .badge { position: absolute; top: -8px; right: -8px; background: #ff5252; color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-weight: 900; }
-
-        .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; }
         
+        /* SELECTION SYSTEM STYLES */
+        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 12px; margin-top: 15px; }
+        .sticker { 
+            aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 8px; display: flex; align-items: center; justify-content: center; 
+            font-size: 0.9rem; cursor: pointer; position: relative; font-weight: bold;
+            overflow: hidden;
+        }
+        .sticker:hover { transform: translateY(-5px); border-color: var(--world-cup-yellow); background: rgba(255, 235, 59, 0.05); }
+        .sticker.selected { 
+            background: var(--world-cup-yellow); color: black; font-weight: 900; border: none;
+            box-shadow: 0 0 15px var(--world-cup-yellow);
+            animation: selectPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes selectPop { 0% { transform: scale(0.8); } 100% { transform: scale(1); } }
+
+        .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-family: 'Oswald'; text-transform: uppercase; font-weight: 900; }
+        .buy-btn:disabled { background: #555; color: #888; cursor: not-allowed; }
+
+        /* FLOATING ACTION FOOTER */
+        .selection-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(15px); padding: 15px 20px; display: flex; justify-content: center;
+            border-top: 2px solid var(--world-cup-yellow); transform: translateY(100%);
+            transition: transform 0.4s ease; z-index: 1000;
+        }
+        .selection-footer.visible { transform: translateY(0); }
+
         #toast-container { position: fixed; bottom: 85px; right: 20px; z-index: 10000; display: flex; flex-direction: column; align-items: flex-end; pointer-events: none; }
-        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: toastIn 0.4s forwards; pointer-events: auto; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        .toast { background: white; color: black; padding: 12px 20px; border-radius: 10px; font-family: 'Oswald'; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: toastIn 0.4s forwards; }
 
-        .progress-bar-bg { background: rgba(255,255,255,0.1); height: 12px; border-radius: 20px; overflow: hidden; }
-        .progress-bar-fill { background: var(--world-cup-yellow); height: 100%; width: 0%; transition: width 0.8s ease; }
-
-        /* MUSIC PLAYER STYLES */
         .music-player {
             position: fixed; bottom: 20px; left: 20px; z-index: 1000;
             background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
             padding: 10px 15px; border-radius: 50px; display: flex; align-items: center;
             gap: 12px; border: 1px solid var(--world-cup-yellow);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; }
-        .music-btn:hover { color: var(--world-cup-yellow); }
-        .music-info { font-family: 'Oswald'; font-size: 0.65rem; color: var(--world-cup-yellow); max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        .logout-btn {
-            background: rgba(255, 82, 82, 0.1) !important;
-            color: #ff5252 !important;
-            border: 1px solid #ff5252 !important;
-            margin: 10px 25px !important;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .logout-btn:hover { background: #ff5252 !important; color: white !important; }
-
-        /* Hide specific elements as requested */
-        #ranking-link-menu { display: none; }
+        .music-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem; }
+        .logout-btn { background: rgba(255, 82, 82, 0.1) !important; color: #ff5252 !important; border: 1px solid #ff5252 !important; margin: 10px 25px !important; text-align: center; }
     </style>
 </head>
 <body onclick="enableAudio()">
 
-    <!-- MUSIC PLAYER -->
     <div class="music-player">
-
-        <button class="music-btn" id="prevSong">⏮</button>
         <button class="music-btn" id="playPause">▶</button>
-        <button class="music-btn" id="nextSong">⏭</button>
-        <button class="music-btn" id="muteBtn">🔊</button>
-        <div class="music-info">
-            <span id="songTitle">Cargando...</span>
+        <div class="music-info" style="font-family:'Oswald'; font-size:0.65rem; color:var(--world-cup-yellow);">
+            <span id="songTitle">We Are One</span>
         </div>
-        <audio id="audioElement" loop></audio>
+        <audio id="audioElement" loop src="we-are-one.mp3.mp3"></audio>
     </div>
 
     <div id="intro-space">
@@ -164,10 +147,8 @@
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
             <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 2.5rem;">PANINI 2026</h1>
-            <p id="auth-status" style="margin-top: 10px; font-size: 0.9rem;">Bienvenido al Álbum Oficial</p>
             <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()" style="display: none;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                Entrar con Google
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Entrar con Google
             </button>
         </div>
     </div>
@@ -176,54 +157,26 @@
         <div class="menu-toggle" onclick="toggleMenu()">☰ MENU</div>
         
         <div class="contact-buttons">
-            <a href="https://www.instagram.com/pablooib" target="_blank" class="float-btn ig-color"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" width="30"></a>
             <a href="https://wa.me/50246199644" target="_blank" class="float-btn wa-color"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
         </div>
 
         <nav id="sidebar">
-            <div class="user-profile-mini" onclick="showView('profile-view')">
-                <div class="profile-img-container">
-                    <img id="nav-user-img" src="https://www.gstatic.com/images/branding/product/2x/avatar_square_blue_120dp.png">
-                    <div class="edit-img-btn"><i class="fas fa-camera"></i></div>
-                </div>
-                <div id="nav-user-name" style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 0.9rem;">Usuario</div>
+            <div class="user-profile-mini">
+                <div class="profile-img-container"><img id="nav-user-img" src=""></div>
+                <div id="nav-user-name" style="font-family:'Oswald'; color:var(--world-cup-yellow);">Usuario</div>
             </div>
+            <a href="#" onclick="showView('album-view')">📋 CARTAS QUE QUIERO SOLICITAR</a>
             <a href="#" onclick="showView('profile-view')">🧑 MI PERFIL</a>
-            <a href="#" onclick="showView('album-view')">📔 MI PROGRESO</a>
-            <a href="#" onclick="showView('special-card-view')">⭐ CARTA ESPECIAL</a>
-            <a href="#" onclick="showView('stock-view')">💎 CARTAS EN STOCK</a>
-            <a href="#" onclick="showView('shop-view')">🛒 TIENDA</a>
             <a href="#" onclick="showView('history-view')">📜 MIS PEDIDOS</a>
             <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
-            <a href="#" onclick="showView('rating-view')">🌟 CALIFÍCANOS</a>
             <a href="#" onclick="handleLogout()" class="logout-btn">🚪 CERRAR SESIÓN</a>
         </nav>
 
-        <!-- VISTA DE PERFIL -->
-        <div id="profile-view" class="view">
-            <div class="card" style="max-width:500px; margin:auto; text-align: center;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); margin-bottom: 20px;">MI PERFIL</h2>
-                <div style="position: relative; width: 150px; height: 150px; margin: 0 auto 20px;">
-                    <img id="profile-full-img" src="" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border: 4px solid var(--world-cup-yellow);">
-                </div>
-                <h3 id="profile-name-display" style="font-family:'Oswald'; margin-bottom: 10px;">Nombre</h3>
-                <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px;" id="profile-email-display"></p>
-                
-                <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-                <button class="buy-btn" onclick="document.getElementById('imageUpload').click()">CAMBIAR FOTO</button>
-            </div>
-        </div>
-
+        <!-- CARTAS QUE QUIERO SOLICITAR -->
         <div id="album-view" class="view active">
-            <div class="progress-container card">
-                <div style="display: flex; justify-content: space-between; font-family: 'Oswald'; margin-bottom: 5px; font-size: 0.9rem;">
-                    <span>PROGRESO TOTAL</span>
-                    <span id="progress-percent">0%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
-                </div>
-                <p id="progress-text" style="font-size: 0.8rem; margin-top:5px; text-align:center; color:rgba(255,255,255,0.6)">Obtenidas: 0 / 960</p>
+            <div class="card" style="border-left: 5px solid var(--world-cup-yellow);">
+                <h2 style="font-family:'Oswald'; letter-spacing: 1px;">CARTAS QUE QUIERO SOLICITAR</h2>
+                <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">Selecciona las cartas que necesitas y presiona el botón de pedido.</p>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
@@ -236,34 +189,22 @@
                     </div>
                 </div>
                 <div class="card">
-                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow);">SELECCIONA PAÍS</h2>
+                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow); text-transform: uppercase;">SELECCIONA PAÍS</h2>
                     <div class="sticker-grid" id="sticker-grid"></div>
                 </div>
             </div>
         </div>
 
-        <div id="special-card-view" class="view">
-            <div class="card" style="max-width:500px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">SOLICITAR CARTA</h2>
-                <input type="text" id="playerName" placeholder="Nombre del Jugador" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:white;">
-                <input type="text" id="playerTeam" placeholder="Selección" style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:white;">
-                <button class="buy-btn" onclick="sendOrder('Carta Especial', 'A convenir')">CONSULTAR WHATSAPP</button>
+        <div id="profile-view" class="view">
+            <div class="card" style="max-width:500px; margin:auto; text-align: center;">
+                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">MI PERFIL</h2>
+                <img id="profile-full-img" src="" style="width:150px; height:150px; border-radius:50%; object-fit:cover; border: 4px solid var(--world-cup-yellow); margin: 20px 0;">
+                <h3 id="profile-name-display" style="font-family:'Oswald';">Nombre</h3>
+                <p id="profile-email-display" style="opacity: 0.6; margin-bottom: 20px;"></p>
+                <input type="file" id="imageUpload" style="display: none;" onchange="handleImageUpload(event)">
+                <button class="buy-btn" onclick="document.getElementById('imageUpload').click()">CAMBIAR FOTO</button>
             </div>
         </div>
-
-        <div id="stock-view" class="view">
-            <div class="card" style="max-width:600px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow); text-align:center;">EN STOCK</h2>
-                <div id="stock-list-container" style="margin-top:15px; text-align:center;">Próximamente...</div>
-            </div>
-        </div>
-
-        <div id="shop-view" class="view">
-            <div id="shop-items-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;"></div>
-        </div>
-
-        <!-- Ranking view removed from logic but kept empty container if needed for No-Break -->
-        <div id="ranking-view" class="view"></div>
 
         <div id="history-view" class="view">
             <div class="card" style="max-width:600px; margin:auto;">
@@ -278,24 +219,17 @@
                 <div id="dynamic-prices-container" style="line-height:2.5; margin-top:15px;"></div>
             </div>
         </div>
+    </div>
 
-        <div id="rating-view" class="view">
-            <div class="card" style="text-align:center; max-width:400px; margin:auto;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">CALIFÍCANOS</h2>
-                <div id="stars" style="font-size:2.5rem; margin:15px 0; color: white;">
-                    <span class="star" onclick="setRate(1)" style="cursor:pointer">☆</span>
-                    <span class="star" onclick="setRate(2)" style="cursor:pointer">☆</span>
-                    <span class="star" onclick="setRate(3)" style="cursor:pointer">☆</span>
-                    <span class="star" onclick="setRate(4)" style="cursor:pointer">☆</span>
-                    <span class="star" onclick="setRate(5)" style="cursor:pointer">☆</span>
-                </div>
-                <button class="buy-btn" onclick="submitRating()">ENVIAR RESEÑA</button>
-            </div>
-        </div>
+    <!-- SELECTION FOOTER -->
+    <div id="selection-footer" class="selection-footer">
+        <button class="buy-btn" style="max-width: 400px;" onclick="sendWhatsAppOrder()">
+            SOLICITAR <span id="selected-count">0</span> CARTAS POR WHATSAPP
+        </button>
     </div>
 
 <script>
-    // FIREBASE CONFIG
+    const WHATSAPP_NUMBER = "50246199644";
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -309,75 +243,9 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // --- MUSIC SYSTEM ---
-    const playlist = [
-        { title: "We Are One (Ole Ola)", url: "we-are-one.mp3.mp3" },
-    ];
-    let currentSongIndex = 0;
-    let isMuted = false;
-    let audioStarted = false;
-    const audio = document.getElementById('audioElement');
-    const playPauseBtn = document.getElementById('playPause');
-    const muteBtn = document.getElementById('muteBtn');
-    const songTitleDisplay = document.getElementById('songTitle');
-
-    function loadSong(index) {
-        audio.src = playlist[index].url;
-        songTitleDisplay.innerText = playlist[index].title;
-    }
-
-    // Solución para Autoplay por interacción
-    function enableAudio() {
-        if(!audioStarted) {
-            audio.play().then(() => {
-                audioStarted = true;
-                playPauseBtn.innerText = "⏸";
-            }).catch(e => console.log("Esperando interacción..."));
-        }
-    }
-
-    playPauseBtn.onclick = (e) => {
-        e.stopPropagation();
-        if (audio.paused) { 
-            audio.play(); 
-            playPauseBtn.innerText = "⏸"; 
-            audioStarted = true;
-        } else { 
-            audio.pause(); 
-            playPauseBtn.innerText = "▶"; 
-        }
-    };
-
-    muteBtn.onclick = (e) => {
-        e.stopPropagation();
-        isMuted = !isMuted;
-        audio.muted = isMuted;
-        muteBtn.innerText = isMuted ? "🔇" : "🔊";
-    };
-
-    document.getElementById('nextSong').onclick = (e) => {
-        e.stopPropagation();
-        currentSongIndex = (currentSongIndex + 1) % playlist.length;
-        loadSong(currentSongIndex);
-        audio.play();
-        playPauseBtn.innerText = "⏸";
-    };
-
-    document.getElementById('prevSong').onclick = (e) => {
-        e.stopPropagation();
-        currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
-        loadSong(currentSongIndex);
-        audio.play();
-        playPauseBtn.innerText = "⏸";
-    };
-    
-    loadSong(0);
-
-    // --- CORE LOGIC ---
-    let myStickers = {};
-    let activeTeam = "";
+    let selectedStickers = new Set();
     let currentIdx = 0;
-    const TOTAL_STICKERS = 960; 
+    let activeTeam = "";
 
     const grupos = [
         {id: "A", paises: ["México", "Sudáfrica", "República de Corea", "República Checa"]},
@@ -396,7 +264,7 @@
 
     function startIntro() {
         const intro = document.getElementById('intro-space');
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
             const star = document.createElement('div');
             star.className = 'star-field';
             const size = Math.random() * 2 + 'px';
@@ -409,10 +277,7 @@
             star.style.animationDelay = Math.random() * 4 + 's';
             intro.appendChild(star);
         }
-        setTimeout(() => {
-            intro.style.opacity = '0';
-            setTimeout(() => intro.style.visibility = 'hidden', 2000);
-        }, 4500);
+        setTimeout(() => { intro.style.opacity = '0'; setTimeout(() => intro.style.visibility = 'hidden', 2000); }, 4500);
     }
     startIntro();
 
@@ -420,66 +285,20 @@
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            
-            // Perfil Info
             document.getElementById('nav-user-name').innerText = user.displayName;
             document.getElementById('profile-name-display').innerText = user.displayName;
             document.getElementById('profile-email-display').innerText = user.email;
             
-            initApp(user);
+            const userImg = user.photoURL || 'https://www.gstatic.com/images/branding/product/2x/avatar_square_blue_120dp.png';
+            document.getElementById('nav-user-img').src = userImg;
+            document.getElementById('profile-full-img').src = userImg;
+            
+            renderGroup();
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('loginBtn').style.display = 'block';
         }
     });
-
-    function initApp(user) {
-        db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-            if(doc.exists) { 
-                const data = doc.data();
-                myStickers = data.coleccion || {};
-                
-                // Cargar imagen de perfil personalizada o de Google
-                const userImg = data.profilePic || user.photoURL || 'https://www.gstatic.com/images/branding/product/2x/avatar_square_blue_120dp.png';
-                document.getElementById('nav-user-img').src = userImg;
-                document.getElementById('profile-full-img').src = userImg;
-
-                updateProgress();
-                if(activeTeam) renderStickers(); 
-            }
-        });
-        renderGroup();
-        loadConfig();
-    }
-
-    // GESTIÓN DE IMAGEN DE PERFIL
-    function handleImageUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const base64Image = e.target.result;
-            // Guardar en Firestore
-            db.collection("usuarios").doc(auth.currentUser.uid).set({
-                profilePic: base64Image
-            }, { merge: true }).then(() => {
-                showToast("Foto de perfil actualizada");
-            });
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider);
-    }
-
-    function handleLogout() { 
-        auth.signOut().then(() => {
-            location.reload();
-        });
-    }
 
     function renderGroup() {
         const g = grupos[currentIdx];
@@ -487,13 +306,13 @@
         const list = document.getElementById('team-list'); list.innerHTML = "";
         g.paises.forEach(p => {
             const d = document.createElement('div');
-            d.style.cssText = "padding:10px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; display:flex; align-items:center; font-size: 0.85rem;";
+            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'Oswald'; display:flex; align-items:center;";
             d.onclick = () => { 
                 activeTeam = p; 
-                document.getElementById('current-team-title').innerText = p.toUpperCase(); 
+                document.getElementById('current-team-title').innerText = p; 
                 renderStickers(); 
             };
-            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="20" style="margin-right:10px; border-radius:2px"> ${p.toUpperCase()}`;
+            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="22" style="margin-right:12px; border-radius:3px"> ${p.toUpperCase()}`;
             list.appendChild(d);
         });
     }
@@ -501,36 +320,49 @@
     function renderStickers() {
         const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
         for(let i=1; i<=20; i++) {
-            const id = `${activeTeam}-${i}`;
-            const count = myStickers[id] || 0;
+            const id = `${activeTeam} #${i}`;
             const s = document.createElement('div');
-            s.className = `sticker ${count > 0 ? 'owned' : ''}`;
+            s.className = `sticker ${selectedStickers.has(id) ? 'selected' : ''}`;
             s.innerHTML = i;
-            if(count > 1) {
-                const b = document.createElement('div'); b.className = 'badge'; b.innerText = `x${count}`;
-                s.appendChild(b);
-            }
-            s.onclick = () => addSticker(id);
-            s.oncontextmenu = (e) => { e.preventDefault(); removeSticker(id); };
+            s.onclick = () => toggleSticker(id);
             grid.appendChild(s);
         }
     }
 
-    function addSticker(id) {
-        myStickers[id] = (myStickers[id] || 0) + 1;
-        saveData();
-        showToast("Sticker añadido");
+    function toggleSticker(id) {
+        if(selectedStickers.has(id)) selectedStickers.delete(id);
+        else selectedStickers.add(id);
+        
+        renderStickers();
+        updateSelectionFooter();
     }
 
-    function removeSticker(id) {
-        if (myStickers[id] > 1) myStickers[id]--;
-        else delete myStickers[id];
-        saveData();
-        showToast("Sticker eliminado");
+    function updateSelectionFooter() {
+        const footer = document.getElementById('selection-footer');
+        const countSpan = document.getElementById('selected-count');
+        countSpan.innerText = selectedStickers.size;
+        
+        if(selectedStickers.size > 0) footer.classList.add('visible');
+        else footer.classList.remove('visible');
     }
 
-    function saveData() {
-        db.collection("usuarios").doc(auth.currentUser.uid).set({ coleccion: myStickers }, { merge: true });
+    function sendWhatsAppOrder() {
+        if(selectedStickers.size === 0) return;
+        
+        const listaCartas = Array.from(selectedStickers).join('\n- ');
+        const mensaje = `Hola, quiero solicitar estas cartas:\n- ${listaCartas}`;
+        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
+        
+        window.open(url, '_blank');
+        
+        // Guardar registro opcional en DB
+        db.collection("pedidos").add({
+            usuario: auth.currentUser.displayName,
+            cartas: Array.from(selectedStickers),
+            fecha: new Date()
+        });
+        
+        showToast("Redirigiendo a WhatsApp...");
     }
 
     function changeGroup(dir) {
@@ -538,18 +370,15 @@
         renderGroup();
     }
 
-    function updateProgress() {
-        const owned = Object.keys(myStickers).length;
-        const perc = Math.floor((owned / TOTAL_STICKERS) * 100);
-        document.getElementById('progress-bar-fill').style.width = perc + "%";
-        document.getElementById('progress-percent').innerText = perc + "%";
-        document.getElementById('progress-text').innerText = `Obtenidas: ${owned} / ${TOTAL_STICKERS}`;
+    function getIso(p) {
+        const codes = { "México":"mx", "Sudáfrica":"za", "República de Corea":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Türkiye":"tr", "Alemania":"de", "Curazao":"cw", "Costa de Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia Saudita":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
+        return codes[p] || "un";
     }
 
-    function showToast(m) {
-        const t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
-        document.getElementById('toast-container').appendChild(t);
-        setTimeout(() => t.remove(), 2500);
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(window.innerWidth < 768) toggleMenu();
     }
 
     function toggleMenu() {
@@ -557,69 +386,23 @@
         document.getElementById('menu-overlay').classList.toggle('active');
     }
 
-    function showView(id) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        const target = document.getElementById(id);
-        if(target) target.classList.add('active');
-        if(window.innerWidth < 768) toggleMenu();
+    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    function handleLogout() { auth.signOut().then(() => location.reload()); }
+    function showToast(m) {
+        const t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 2500);
     }
 
-    // CORRECCIÓN DE BANDERAS - TODOS LOS PAÍSES MAPEADOS
-    function getIso(p) {
-        const codes = { 
-            "México":"mx", "Sudáfrica":"za", "República de Corea":"kr", "República Checa":"cz",
-            "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch",
-            "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct",
-            "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Türkiye":"tr",
-            "Alemania":"de", "Curazao":"cw", "Costa de Marfil":"ci", "Ecuador":"ec",
-            "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al",
-            "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz",
-            "España":"es", "Uruguay":"uy", "Arabia Saudita":"sa", "Cabo Verde":"cv",
-            "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq",
-            "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo",
-            "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm",
-            "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa"
-        };
-        return codes[p] || "un";
-    }
-
-    async function sendOrder(item, price) {
-        const orderId = "ORD-" + Math.floor(Math.random()*9999);
-        const msg = `Hola, mi pedido es: ${item} (Precio: Q${price}). ID: ${orderId}`;
-        window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msg)}`);
-        db.collection("pedidos").add({ item, price, user: auth.currentUser.displayName, date: new Date() });
-    }
-
-    function loadConfig() {
-        db.collection("config").doc("precios").onSnapshot(doc => {
-            if(doc.exists) {
-                const p = doc.data();
-                const container = document.getElementById('shop-items-grid');
-                container.innerHTML = "";
-                Object.entries(p).forEach(([name, price]) => {
-                    container.innerHTML += `<div class="card" style="background:white; color:black; text-align:center;">
-                        <h3>${name}</h3><p style="font-size:1.5rem; font-weight:900; margin:10px 0;">Q${price}</p>
-                        <button class="buy-btn" onclick="sendOrder('${name}', '${price}')">COMPRAR</button>
-                    </div>`;
-                });
-            }
-        });
-    }
-
-    let userRate = 0;
-    function setRate(r) {
-        userRate = r;
-        const stars = document.querySelectorAll('.star');
-        stars.forEach((s, idx) => {
-            s.innerHTML = idx < r ? '★' : '☆';
-            s.style.color = idx < r ? 'var(--world-cup-yellow)' : 'white';
-        });
-    }
-
-    function submitRating() {
-        if(userRate === 0) return showToast("Selecciona una calificación");
-        showToast("¡Gracias por tu reseña!");
-    }
+    // Music Logic
+    const audio = document.getElementById('audioElement');
+    const playBtn = document.getElementById('playPause');
+    function enableAudio() { if(audio.paused) { audio.play(); playBtn.innerText = "⏸"; } }
+    playBtn.onclick = (e) => {
+        e.stopPropagation();
+        if(audio.paused) { audio.play(); playBtn.innerText = "⏸"; }
+        else { audio.pause(); playBtn.innerText = "▶"; }
+    };
 </script>
 </body>
 </html>
