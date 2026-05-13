@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOUVREIGN | FIFA 2026</title>
-    <!-- Favicon con logo Panini -->
+    <title>SOUVREIGN | Qatar & Beyond</title>
     <link rel="icon" type="image/jpg" href="panini.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
@@ -17,222 +17,200 @@
             --wc-purple: #4a148c;
             --wc-blue: #001b3a;
             --wc-cyan: #00e5ff;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-dark: rgba(0, 0, 0, 0.6);
+            --gold: #ffd700;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Poppins', sans-serif; background: #050510; color: #fff; overflow-x: hidden; }
 
-        /* --- ZOOM INTRO (MUNDO) --- */
+        /* --- INTRO & LOGIN --- */
         #intro-space {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: black; z-index: 5000; display: flex; align-items: center; justify-content: center;
-            transition: opacity 1s ease; pointer-events: none;
+            transition: opacity 1s; pointer-events: none;
         }
-        .earth-zoom {
-            width: 150px; height: 150px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png');
-            background-size: cover;
-            animation: superZoom 4s forwards ease-in;
-        }
-        @keyframes superZoom {
-            0% { transform: scale(0.1); opacity: 0; }
-            30% { opacity: 1; }
-            100% { transform: scale(40); opacity: 0; }
-        }
+        .earth-zoom { width: 150px; height: 150px; background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); background-size: cover; animation: superZoom 4s forwards ease-in; }
+        @keyframes superZoom { 0% { transform: scale(0.1); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(45); opacity: 0; } }
 
-        /* --- LOGIN AESTHETIC FULL BACKGROUND --- */
         .auth-container { 
             height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: url('FIFA-World-Cup-2026.jpg') no-repeat center center;
-            background-size: cover;
+            background: url('FIFA-World-Cup-2026.jpg') no-repeat center center; background-size: cover;
             position: fixed; width: 100%; top: 0; z-index: 2000;
-            display: none; /* Se activa tras el intro */
         }
-        .auth-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
         .auth-card { 
-            position: relative; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px);
-            padding: 50px; border-radius: 30px; text-align: center; width: 90%; max-width: 400px;
-            border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px);
+            padding: 50px; border-radius: 40px; text-align: center; width: 90%; max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .auth-card h1 { font-family: 'Oswald'; font-size: 2.5rem; margin-bottom: 30px; letter-spacing: 2px; }
-        
-        .google-btn { 
-            background: white; color: #333; border: none; padding: 15px 25px; border-radius: 50px; 
-            cursor: pointer; width: 100%; font-weight: 600; font-size: 1rem;
-            display: flex; align-items: center; justify-content: center; gap: 12px; 
-            transition: 0.3s;
+        .btn-google-clean {
+            background: #fff; color: #000; border: none; padding: 18px 30px; border-radius: 50px;
+            font-weight: 700; cursor: pointer; width: 100%; font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s;
         }
-        .google-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--wc-cyan); }
 
-        /* --- APP INTERFACE --- */
-        #app { display: none; }
-        .navbar {
-            position: fixed; top: 0; width: 100%; height: 70px;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 25px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+        /* --- SIDEBAR REORDENADO --- */
         .sidebar {
             position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
-            background: var(--wc-blue); z-index: 1500; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 80px 20px 20px; border-right: 1px solid var(--wc-cyan);
+            background: rgba(10, 10, 26, 0.98); z-index: 1500; transition: 0.5s;
+            padding: 40px 20px; display: flex; flex-direction: column;
         }
         .sidebar.active { left: 0; }
-        .nav-item { padding: 15px; color: #fff; text-decoration: none; display: block; border-radius: 10px; margin-bottom: 5px; font-weight: 400; }
-        .nav-item:hover { background: rgba(0, 229, 255, 0.1); color: var(--wc-cyan); }
+        .nav-item { padding: 15px; color: #fff; text-decoration: none; border-radius: 12px; margin-bottom: 10px; font-weight: 600; display: flex; align-items: center; gap: 15px; }
+        .nav-item:hover { background: var(--wc-cyan); color: #000; }
+        .ig-btn { margin-top: auto; color: #ff007f; text-decoration: none; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; padding: 15px; }
 
-        .ig-tag { position: absolute; bottom: 30px; left: 20px; font-size: 0.8rem; color: var(--wc-cyan); opacity: 0.7; }
-
-        /* --- CARDS & GRIDS --- */
-        .view { padding: 90px 20px 150px; max-width: 1200px; margin: auto; display: none; }
+        /* --- VISTA ALBUM MEJORADA --- */
+        .view { padding: 90px 20px 150px; max-width: 1100px; margin: auto; display: none; }
         .view.active { display: block; }
         
-        .card-glass { 
-            background: var(--glass); backdrop-filter: blur(10px); 
-            border-radius: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;
+        .group-header {
+            background: linear-gradient(90deg, var(--wc-purple), var(--wc-blue));
+            padding: 20px; border-radius: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
         }
-
-        .country-pill {
-            display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05);
-            padding: 10px 20px; border-radius: 50px; cursor: pointer; border: 1px solid transparent;
-            white-space: nowrap; transition: 0.3s;
+        .country-scroller { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; }
+        .country-card {
+            min-width: 140px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 18px;
+            text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.3s;
         }
-        .country-pill.active { border-color: var(--wc-cyan); background: rgba(0, 229, 255, 0.1); }
+        .country-card.active { background: #fff; color: #000; transform: scale(1.05); }
+        .country-card img { width: 40px; margin-bottom: 8px; border-radius: 4px; }
 
-        .sticker-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; }
         .stk { 
-            aspect-ratio: 1; background: rgba(255,255,255,0.05); border-radius: 12px;
+            aspect-ratio: 0.8; background: rgba(255,255,255,0.05); border-radius: 12px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; font-family: 'Oswald'; font-size: 1.2rem; transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
         }
-        .stk:hover { background: rgba(255,255,255,0.15); }
-        .stk.selected { background: var(--wc-cyan); color: #000; box-shadow: 0 0 15px var(--wc-cyan); transform: translateY(-5px); }
-        .stk small { font-size: 0.6rem; font-family: 'Poppins'; opacity: 0.7; }
+        .stk.selected { border-color: var(--wc-cyan); background: rgba(0, 229, 255, 0.2); }
+        .stk b { font-size: 1.4rem; font-family: 'Oswald'; }
 
-        /* --- PRECIOS PLAYERS --- */
-        .player-row {
-            display: flex; align-items: center; gap: 15px; margin-bottom: 15px;
-            padding: 15px; background: rgba(255,255,255,0.03); border-radius: 20px;
+        /* --- CARTAS ESPECIALES ESTÉTICAS --- */
+        .legend-card {
+            position: relative; border-radius: 25px; overflow: hidden; margin-bottom: 30px;
+            height: 450px; border: 2px solid var(--gold);
         }
-        .player-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--wc-cyan); object-fit: cover; }
+        .legend-card img { width: 100%; height: 100%; object-fit: cover; }
+        .legend-info {
+            position: absolute; bottom: 0; width: 100%; padding: 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+        .btn-add-special {
+            background: var(--gold); color: #000; border: none; padding: 10px 25px; 
+            border-radius: 50px; font-weight: 700; cursor: pointer; margin-top: 10px;
+        }
 
-        /* --- ORDER FOOTER --- */
-        .order-footer {
+        /* --- CARRITO / FOOTER --- */
+        .cart-footer {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%);
-            width: 90%; max-width: 450px; background: #fff; color: #000; padding: 25px;
-            border-radius: 30px; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000;
+            width: 90%; max-width: 500px; background: #fff; color: #000; padding: 25px;
+            border-radius: 30px; transition: 0.5s; z-index: 2000; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        .order-footer.visible { transform: translateX(-50%) translateY(0); }
-        textarea { width: 100%; border-radius: 15px; padding: 12px; margin: 15px 0; border: 1px solid #eee; resize: none; }
+        .cart-footer.visible { transform: translateX(-50%) translateY(0); }
+        
+        .toast-msg {
+            position: fixed; top: 85px; right: 20px; background: var(--wc-cyan); color: #000;
+            padding: 12px 25px; border-radius: 50px; font-weight: 700; z-index: 3000;
+            display: none; animation: slideDown 0.3s forwards;
+        }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- ZOOM INTRO -->
-    <div id="intro-space">
-        <div class="earth-zoom"></div>
-    </div>
+    <div id="intro-space"><div class="earth-zoom"></div></div>
 
-    <!-- LOGIN FULLSCREEN -->
     <div class="auth-container" id="auth-screen">
-        <div class="auth-overlay"></div>
         <div class="auth-card">
-            <h1>SOUVREIGN</h1>
-            <p style="margin-bottom: 20px; opacity: 0.8;">Colección Oficial 2026</p>
-            <button class="google-btn" onclick="loginWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20">
-                INICIAR SESIÓN CON GOOGLE
-            </button>
+            <h1 style="font-family:'Oswald'; font-size: 2.5rem; margin-bottom: 10px;">SOUVREIGN</h1>
+            <p style="margin-bottom: 30px; font-size: 0.9rem; opacity: 0.7;">2026 WORLD CUP COLLECTION</p>
+            <button class="btn-google-clean" onclick="loginWithGoogle()">INICIAR SESIÓN CON GOOGLE</button>
         </div>
     </div>
 
-    <!-- APP MAIN -->
-    <div id="app">
-        <nav class="navbar">
+    <div id="app" style="display:none;">
+        <nav style="position:fixed; top:0; width:100%; height:70px; display:flex; align-items:center; justify-content:space-between; padding:0 25px; background:rgba(5,5,16,0.8); backdrop-filter:blur(10px); z-index:1000; border-bottom:1px solid rgba(255,255,255,0.05);">
             <div onclick="toggleSidebar()" style="cursor:pointer; font-size:1.5rem;">☰</div>
-            <img src="panini.jpg" height="30" style="border-radius:5px;">
-            <img id="nav-avatar" src="" style="width:35px; height:35px; border-radius:50%; border:2px solid var(--wc-cyan);" onclick="showView('profile-view')">
+            <div style="font-family:'Oswald'; color:var(--wc-cyan); font-size:1.4rem;">SOUVREIGN</div>
+            <img id="nav-avatar" src="" style="width:38px; border-radius:50%; border:2px solid var(--wc-cyan);">
         </nav>
 
         <div class="sidebar" id="sidebar">
-            <a href="#" class="nav-item" onclick="showView('album-view')">🏆 ÁLBUM VIRTUAL</a>
-            <a href="#" class="nav-item" onclick="showView('prices-view')">💰 PRECIOS</a>
-            <a href="#" class="nav-item" onclick="showView('profile-view')">👤 MI PERFIL</a>
-            <div class="ig-tag">IG: pablooib</div>
-            <a href="#" class="nav-item" onclick="logout()" style="color:#ff5252; border-top:1px solid rgba(255,255,255,0.1); margin-top:20px;">CERRAR SESIÓN</a>
+            <a href="#" class="nav-item" onclick="showView('profile-view')"><i class="fa-solid fa-user"></i> MI PERFIL</a>
+            <a href="#" class="nav-item" onclick="showView('album-view')"><i class="fa-solid fa-clone"></i> PEDIR CARTAS</a>
+            <a href="#" class="nav-item" onclick="showView('prices-view')"><i class="fa-solid fa-star"></i> CARTAS ESPECIALES</a>
+            
+            <a href="https://instagram.com/pablooib" target="_blank" class="ig-btn">
+                <i class="fa-brands fa-instagram"></i> @pablooib
+            </a>
+            <a href="#" class="nav-item" onclick="logout()" style="color:#ff5252; margin-top:20px; border-top:1px solid rgba(255,255,255,0.1);"><i class="fa-solid fa-door-open"></i> CERRAR SESIÓN</a>
         </div>
 
         <div class="main-content">
-            <!-- VISTA ALBUM -->
+            <!-- PERFIL -->
+            <div id="profile-view" class="view">
+                <div style="text-align:center; padding:40px 20px; background:rgba(255,255,255,0.03); border-radius:30px;">
+                    <img id="profile-img" src="" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--wc-cyan); margin-bottom:20px;">
+                    <h2 id="profile-name" style="font-family:'Oswald'; font-size:2rem;">---</h2>
+                    <p id="profile-email" style="opacity:0.6; margin-bottom:30px;">---</p>
+                    <button onclick="logout()" style="background:none; color:#ff5252; border:1px solid #ff5252; padding:10px 25px; border-radius:50%; cursor:pointer;">CERRAR SESIÓN</button>
+                </div>
+            </div>
+
+            <!-- ALBUM -->
             <div id="album-view" class="view active">
-                <div class="card-glass" style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 id="group-title" style="font-family:'Oswald'; color:var(--wc-cyan);">GRUPO A</h2>
-                    <div style="display:flex; gap:10px;">
-                        <button onclick="changeGroup(-1)" style="background:none; border:1px solid #fff; color:#fff; padding:5px 15px; border-radius:10px;">◄</button>
-                        <button onclick="changeGroup(1)" style="background:none; border:1px solid #fff; color:#fff; padding:5px 15px; border-radius:10px;">►</button>
+                <div class="group-header">
+                    <h2 id="group-title" style="font-family:'Oswald';">GRUPO A</h2>
+                    <div style="display:flex; gap:15px;">
+                        <button onclick="changeGroup(-1)" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%;">◄</button>
+                        <button onclick="changeGroup(1)" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%;">►</button>
                     </div>
                 </div>
-
-                <div id="country-container" style="display:flex; gap:10px; overflow-x:auto; margin-bottom:20px; padding-bottom:10px;"></div>
-
-                <div class="card-glass">
-                    <h3 id="current-country-name" style="margin-bottom:20px; font-family:'Oswald'; letter-spacing:1px;">SELECCIONA PAÍS</h3>
+                <div class="country-scroller" id="country-scroller"></div>
+                <div style="margin-top:20px;">
+                    <h3 id="current-country-label" style="font-family:'Oswald'; color:var(--wc-cyan); margin-bottom:15px;">PAÍS</h3>
                     <div class="sticker-grid" id="sticker-grid"></div>
                 </div>
             </div>
 
-            <!-- VISTA PRECIOS -->
+            <!-- PRECIOS / ESPECIALES -->
             <div id="prices-view" class="view">
-                <div class="card-glass">
-                    <h2 style="font-family:'Oswald'; margin-bottom:25px; color:var(--wc-cyan);">CARTAS ESPECIALES</h2>
-                    
-                    <div class="player-row">
-                        <img src="imagenmessi.jpg" class="player-img" onerror="this.src='https://via.placeholder.com/60'">
-                        <div style="flex:1"><h4>LIONEL MESSI</h4><p style="font-size:0.7rem; opacity:0.6;">Argentina #17</p></div>
-                        <div style="font-weight:bold; color:var(--wc-cyan);">Q30.00</div>
-                    </div>
-
-                    <div class="player-row">
-                        <img src="cristianomundial.jpg" class="player-img" onerror="this.src='https://via.placeholder.com/60'">
-                        <div style="flex:1"><h4>CRISTIANO RONALDO</h4><p style="font-size:0.7rem; opacity:0.6;">Portugal #15</p></div>
-                        <div style="font-weight:bold; color:var(--wc-cyan);">Q30.00</div>
-                    </div>
-
-                    <div style="margin-top:20px; padding:15px; border-top:1px solid rgba(255,255,255,0.1);">
-                        <p style="display:flex; justify-content:space-between; margin-bottom:10px;">Normale <span>Q2.00</span></p>
-                        <p style="display:flex; justify-content:space-between; margin-bottom:10px;">Escudos (#1) <span>Q10.00</span></p>
-                        <p style="display:flex; justify-content:space-between;">Estadios (#13) <span>Q15.00</span></p>
+                <h2 style="font-family:'Oswald'; margin-bottom:30px; text-align:center; font-size:2rem;">COLECCIÓN DE LEYENDAS</h2>
+                
+                <div class="legend-card">
+                    <img src="imagenmessi.jpg" alt="Messi">
+                    <div class="legend-info">
+                        <h2 style="font-family:'Oswald';">LIONEL MESSI</h2>
+                        <p>Argentina #17 | Q30.00</p>
+                        <button class="btn-add-special" onclick="addToCart('Messi Argentina #17', 30)">AÑADIR AL CARRITO</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- VISTA PERFIL -->
-            <div id="profile-view" class="view">
-                <div class="card-glass" style="text-align:center;">
-                    <div style="position:relative; width:120px; margin:0 auto 20px;">
-                        <img id="profile-img" src="" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--wc-cyan);">
-                        <label for="upload" style="position:absolute; bottom:5px; right:5px; background:var(--wc-cyan); padding:8px; border-radius:50%; cursor:pointer; color:black; font-size:0.8rem;">📷</label>
-                        <input type="file" id="upload" style="display:none" onchange="previewImg(event)">
+                <div class="legend-card">
+                    <img src="cristianomundial.jpg" alt="CR7">
+                    <div class="legend-info">
+                        <h2 style="font-family:'Oswald';">CRISTIANO RONALDO</h2>
+                        <p>Portugal #15 | Q30.00</p>
+                        <button class="btn-add-special" onclick="addToCart('Cristiano Portugal #15', 30)">AÑADIR AL CARRITO</button>
                     </div>
-                    <h2 id="profile-name">Cargando...</h2>
-                    <p id="profile-email" style="opacity:0.5; margin-bottom:20px;">---</p>
                 </div>
             </div>
         </div>
 
-        <!-- FOOTER DINAMICO -->
-        <div id="order-footer" class="order-footer">
-            <h3 style="font-family:'Oswald';">RESUMEN DE PEDIDO</h3>
-            <p><span id="count-tag">0</span> cartas en total</p>
-            <textarea id="extra-notes" rows="3" placeholder="¿Necesitas otras cartas? Escríbelas aquí..."></textarea>
-            <button onclick="sendWhatsApp()" style="width:100%; background:#25d366; color:white; border:none; padding:18px; border-radius:20px; font-weight:bold; cursor:pointer;">ENVIAR A WHATSAPP</button>
+        <div id="toast" class="toast-msg">¡Añadido al carrito!</div>
+
+        <div id="cart-footer" class="cart-footer">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="font-family:'Oswald';">TU CARRITO</h3>
+                <span id="cart-count" style="background:var(--wc-blue); color:#fff; padding:5px 12px; border-radius:50px; font-weight:bold;">0</span>
+            </div>
+            <p style="font-size:0.8rem; margin-bottom:10px; opacity:0.7;">Resumen listo para enviar.</p>
+            <button onclick="sendOrder()" style="width:100%; background:#25d366; color:#fff; border:none; padding:18px; border-radius:20px; font-weight:bold; cursor:pointer; font-size:1rem;">
+                <i class="fa-brands fa-whatsapp"></i> ENVIAR PEDIDO POR WHATSAPP
+            </button>
         </div>
     </div>
 
 <script>
-    // Config Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -246,9 +224,9 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let selected = [];
-    let groupIdx = 0;
-    let currentCountry = "";
+    let cart = [];
+    let currentGroup = 0;
+    let activeCountry = "";
 
     const grupos = [
         {id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},
@@ -265,15 +243,12 @@
         {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
     ];
 
-    const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
+    const flagMap = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
 
-    // Manejo de Intro y Sesión
+    // Intro Sequence
     setTimeout(() => {
         document.getElementById('intro-space').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('intro-space').remove();
-            document.getElementById('auth-screen').style.display = 'flex';
-        }, 1000);
+        setTimeout(() => document.getElementById('intro-space').remove(), 1000);
     }, 4000);
 
     auth.onAuthStateChanged(user => {
@@ -289,28 +264,29 @@
     });
 
     function renderGroup() {
-        const g = grupos[groupIdx];
+        const g = grupos[currentGroup];
         document.getElementById('group-title').innerText = "GRUPO " + g.id;
-        const container = document.getElementById('country-container');
-        container.innerHTML = "";
+        const scroller = document.getElementById('country-scroller');
+        scroller.innerHTML = "";
         g.paises.forEach(p => {
-            const d = document.createElement('div');
-            d.className = `country-pill ${currentCountry === p ? 'active' : ''}`;
-            d.innerHTML = `<img src="https://flagcdn.com/w20/${flags[p]}.png"> ${p}`;
-            d.onclick = () => { currentCountry = p; renderGroup(); renderStickers(); };
-            container.appendChild(d);
+            const card = document.createElement('div');
+            card.className = `country-card ${activeCountry === p ? 'active' : ''}`;
+            card.innerHTML = `<img src="https://flagcdn.com/w80/${flagMap[p]}.png"> <p style="font-size:0.8rem; font-weight:bold;">${p}</p>`;
+            card.onclick = () => { activeCountry = p; renderGroup(); renderStickers(); };
+            scroller.appendChild(card);
         });
     }
 
     function renderStickers() {
-        document.getElementById('current-country-name').innerText = currentCountry.toUpperCase();
+        document.getElementById('current-country-label').innerText = activeCountry.toUpperCase();
         const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
         for(let i=1; i<=20; i++){
-            const id = `${currentCountry} #${i}`;
+            const id = `${activeCountry} #${i}`;
+            const isSel = cart.find(x => x.id === id);
             const s = document.createElement('div');
-            s.className = `stk ${selected.includes(id) ? 'selected' : ''}`;
-            s.innerHTML = `${i} <small>Q${getPrice(currentCountry, i)}</small>`;
-            s.onclick = () => toggleSticker(id);
+            s.className = `stk ${isSel ? 'selected' : ''}`;
+            s.innerHTML = `<b>${i}</b><small>Q${getPrice(activeCountry, i)}</small>`;
+            s.onclick = () => addToCart(id, getPrice(activeCountry, i));
             grid.appendChild(s);
         }
     }
@@ -323,26 +299,37 @@
         return 2;
     }
 
-    function toggleSticker(id) {
-        if(selected.includes(id)) selected = selected.filter(x => x !== id);
-        else selected.push(id);
-        renderStickers();
-        updateFooter();
+    function addToCart(id, price) {
+        const idx = cart.findIndex(x => x.id === id);
+        if(idx > -1) {
+            cart.splice(idx, 1);
+        } else {
+            cart.push({id, price});
+            showToast();
+        }
+        updateCartUI();
+        if(activeCountry) renderStickers();
     }
 
-    function updateFooter() {
-        const f = document.getElementById('order-footer');
-        document.getElementById('count-tag').innerText = selected.length;
-        if(selected.length > 0) f.classList.add('visible');
-        else f.classList.remove('visible');
+    function updateCartUI() {
+        const footer = document.getElementById('cart-footer');
+        document.getElementById('cart-count').innerText = cart.length;
+        if(cart.length > 0) footer.classList.add('visible');
+        else footer.classList.remove('visible');
     }
 
-    function sendWhatsApp() {
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 2000);
+    }
+
+    function sendOrder() {
         const user = auth.currentUser.displayName;
-        const notes = document.getElementById('extra-notes').value;
-        const text = `*SOUVREIGN 2026 - PEDIDO*%0A*Usuario:* ${user}%0A%0A*Cartas:*%0A${selected.join('%0A')}%0A%0A*Notas:* ${notes}`;
+        const items = cart.map(x => `• ${x.id} - Q${x.price}`).join('%0A');
+        const total = cart.reduce((s, x) => s + x.price, 0);
+        const text = `*SOUVREIGN 2026 - NUEVO PEDIDO*%0A*Cliente:* ${user}%0A%0A*Detalle:*%0A${items}%0A%0A*TOTAL ESTIMADO: Q${total}*`;
         window.open(`https://wa.me/50246199644?text=${text}`, '_blank');
-        db.collection("pedidos").add({ user, selected, notes, date: new Date() });
     }
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
@@ -351,17 +338,9 @@
         document.getElementById(id).classList.add('active');
         toggleSidebar();
     }
+    function changeGroup(d) { currentGroup = (currentGroup + d + grupos.length) % grupos.length; renderGroup(); }
     function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function logout() { auth.signOut().then(() => location.reload()); }
-    function previewImg(e) {
-        const reader = new FileReader();
-        reader.onload = () => { 
-            document.getElementById('profile-img').src = reader.result;
-            document.getElementById('nav-avatar').src = reader.result;
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    }
-    function changeGroup(d) { groupIdx = (groupIdx + d + grupos.length) % grupos.length; renderGroup(); }
 </script>
 </body>
 </html>
