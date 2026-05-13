@@ -17,7 +17,7 @@
             --world-cup-yellow: #ffeb3b;
             --glass: rgba(255, 255, 255, 0.08);
             --glass-border: rgba(255, 255, 255, 0.15);
-            --premium-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            --bg-dark: #001b3a;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -62,27 +62,31 @@
             background: var(--world-cup-yellow); box-shadow: 0 0 15px var(--world-cup-yellow);
         }
 
-        /* --- LISTADO POR GRUPOS Y BANDERAS --- */
-        .group-container { margin-bottom: 40px; animation: fadeIn 0.5s ease; }
-        .country-header {
-            display: flex; align-items: center; gap: 15px; margin: 20px 0;
-            padding: 10px; background: var(--glass); border-radius: 10px;
+        /* --- LISTADO POR GRUPOS --- */
+        .group-section-title {
+            font-family: 'Oswald'; font-size: 0.9rem; color: rgba(255,255,255,0.3);
+            margin: 40px 0 10px; letter-spacing: 2px; text-transform: uppercase;
         }
-        .flag-icon { width: 40px; height: 30px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .country-name { font-family: 'Oswald'; font-size: 1.4rem; letter-spacing: 1px; color: var(--world-cup-yellow); }
+        .country-header {
+            display: flex; align-items: center; gap: 15px; margin: 15px 0;
+            padding: 12px; background: var(--glass); border-radius: 12px;
+            border-left: 4px solid var(--world-cup-yellow);
+        }
+        .flag-icon { width: 35px; height: 25px; object-fit: cover; border-radius: 3px; }
+        .country-name { font-family: 'Oswald'; font-size: 1.3rem; letter-spacing: 1px; }
 
         .stickers-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+            gap: 10px; margin-bottom: 30px;
         }
         .sticker {
             background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            padding: 15px 5px; border-radius: 8px; text-align: center;
-            font-family: 'Oswald'; cursor: pointer; transition: 0.2s;
+            padding: 12px 5px; border-radius: 8px; text-align: center;
+            font-family: 'Oswald'; cursor: pointer; transition: 0.2s; font-size: 0.9rem;
         }
-        .sticker.selected { background: var(--world-cup-yellow); color: #000; font-weight: 900; transform: scale(1.05); }
+        .sticker.selected { background: var(--world-cup-yellow); color: #000; font-weight: 900; }
 
-        /* --- CARTAS EXTRA PREMIUM --- */
+        /* --- CARTAS EXTRA JPG --- */
         .extra-card-container {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 25px; margin-top: 20px;
@@ -90,7 +94,7 @@
         .extra-card {
             background: var(--glass); border-radius: 20px; overflow: hidden;
             border: 1px solid var(--glass-border); position: relative;
-            cursor: pointer; transition: 0.4s; aspect-ratio: 3/4.5;
+            cursor: pointer; transition: 0.4s; aspect-ratio: 3/4.2;
         }
         .extra-card:hover { transform: translateY(-10px); border-color: var(--world-cup-yellow); }
         .extra-card img { width: 100%; height: 100%; object-fit: cover; }
@@ -107,12 +111,12 @@
             background: linear-gradient(45deg, #f09433, #e54050, #962fbf, #4f5bd5);
             width: 50px; height: 50px; border-radius: 14px; display: flex;
             align-items: center; justify-content: center; transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
-        .insta-float:hover { transform: scale(1.1) rotate(5deg); }
         .insta-float svg { fill: white; width: 25px; }
 
         /* --- UI UTILS --- */
-        .view { display: none; padding: 100px 20px 80px; max-width: 1100px; margin: auto; }
+        .view { display: none; padding: 100px 20px 100px; max-width: 1100px; margin: auto; animation: fadeIn 0.4s ease; }
         .view.active { display: block; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1520; display: none; }
         .overlay.active { display: block; }
@@ -124,9 +128,9 @@
             transition: 0.4s; z-index: 1000; display: flex; justify-content: center;
         }
         .footer-action.visible { transform: translateY(0); }
-        .btn-order { background: var(--world-cup-yellow); color: #000; border: none; padding: 15px 50px; border-radius: 10px; font-family: 'Oswald'; font-weight: 700; width: 100%; max-width: 400px; }
+        .btn-order { background: var(--world-cup-yellow); color: #000; border: none; padding: 15px; border-radius: 10px; font-family: 'Oswald'; font-weight: 700; width: 100%; max-width: 400px; cursor: pointer; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         @media (max-width: 768px) {
             .stickers-grid { grid-template-columns: repeat(4, 1fr); }
@@ -142,55 +146,57 @@
             <div class="bar"></div>
             <div class="bar"></div>
         </div>
-        <img src="panini" alt="Panini" style="height: 35px;">
+        <!-- Logo Panini JPG -->
+        <img src="panini.jpg" alt="Panini" style="height: 35px;">
         <div style="width: 48px;"></div>
     </header>
 
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
     <nav id="sidebar">
-        <!-- Perfil primero en el menú como estaba originalmente -->
+        <!-- PRIORIDAD: Perfil primero en el menú -->
         <a href="#" class="nav-link" onclick="showView('profile-view', this)"><span>🧑</span> MI PERFIL</a>
         <a href="#" class="nav-link active-sec" onclick="showView('album-view', this)"><span>📋</span> LISTADO DE CARTAS</a>
         <a href="#" class="nav-link" onclick="showView('extras-view', this)"><span>🌟</span> CARTAS EXTRA</a>
         <div style="margin-top: 50px; padding: 0 35px;">
-            <button onclick="handleLogout()" style="width:100%; padding:12px; background:transparent; border:1px solid #ff5252; color:#ff5252; border-radius:8px; font-family:'Oswald';">CERRAR SESIÓN</button>
+            <button onclick="handleLogout()" style="width:100%; padding:12px; background:transparent; border:1px solid #ff5252; color:#ff5252; border-radius:8px; font-family:'Oswald'; cursor:pointer;">CERRAR SESIÓN</button>
         </div>
     </nav>
 
+    <!-- INSTAGRAM -->
     <a href="https://instagram.com/pablooib" target="_blank" class="insta-float">
         <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.266.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.267-.07-1.646-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.058-1.69-.072-4.949-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
     </a>
 
     <main>
-        <!-- VISTA PERFIL (RESTAURADA) -->
+        <!-- VISTA PERFIL -->
         <div id="profile-view" class="view">
             <h1 style="font-family:'Oswald'; font-size: 2rem;">MI PERFIL</h1>
             <div style="background:var(--glass); padding:30px; border-radius:20px; margin-top:20px; border:1px solid var(--glass-border);">
-                <p id="profile-name" style="font-size:1.2rem; font-weight:700;">Cargando usuario...</p>
-                <p id="profile-email" style="opacity:0.6;"></p>
+                <p id="profile-name" style="font-size:1.2rem; font-weight:700;">Usuario Panini</p>
+                <p id="profile-email" style="opacity:0.6;">pablo@souvreign.com</p>
             </div>
         </div>
 
-        <!-- VISTA ÁLBUM (GRUPOS Y BANDERAS RESTAURADOS) -->
+        <!-- VISTA ÁLBUM (GRUPOS Y BANDERAS) -->
         <div id="album-view" class="view active">
             <div id="groups-root"></div>
         </div>
 
-        <!-- VISTA EXTRAS (CORREGIDA IMÁGENES) -->
+        <!-- VISTA EXTRAS (IMÁGENES JPG) -->
         <div id="extras-view" class="view">
             <h1 style="font-family:'Oswald'; margin-bottom:20px;">EDICIÓN ESPECIAL</h1>
             <div class="extra-card-container">
                 <div class="extra-card" onclick="toggleSelection(this, 'MESSI LEGEND')">
-                    <img src="imagenmessi" alt="Messi">
+                    <img src="imagenmessi.jpg" alt="Messi">
                     <div class="card-label"><h3>MESSI GOLD</h3></div>
                 </div>
                 <div class="extra-card" onclick="toggleSelection(this, 'CR7 WORLD CUP')">
-                    <img src="imagencristianomundial" alt="Cristiano">
+                    <img src="imagencristianomundial.jpg" alt="Cristiano">
                     <div class="card-label"><h3>CR7 LEGACY</h3></div>
                 </div>
                 <div class="extra-card" onclick="toggleSelection(this, 'LOGO PANINI')">
-                    <img src="panini" alt="Panini" style="object-fit: contain; padding:40px; background:white;">
+                    <img src="panini.jpg" alt="Panini" style="object-fit: contain; padding:40px; background:white;">
                     <div class="card-label"><h3 style="color:#000">AUTHENTIC LOGO</h3></div>
                 </div>
             </div>
@@ -202,7 +208,6 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE PAÍSES Y GRUPOS
         const DATA = [
             { group: 'GRUPO A', country: 'ARGENTINA', flag: 'https://flagcdn.com/ar.svg', stickers: 19 },
             { group: 'GRUPO A', country: 'MÉXICO', flag: 'https://flagcdn.com/mx.svg', stickers: 19 },
@@ -222,13 +227,12 @@
                 if(item.group !== currentGroup) {
                     currentGroup = item.group;
                     const gTitle = document.createElement('h2');
-                    gTitle.style = "font-family:'Oswald'; margin: 40px 0 10px; color:rgba(255,255,255,0.4); font-size:1rem;";
+                    gTitle.className = 'group-section-title';
                     gTitle.innerText = currentGroup;
                     root.appendChild(gTitle);
                 }
 
                 const container = document.createElement('div');
-                container.className = 'group-container';
                 container.innerHTML = `
                     <div class="country-header">
                         <img src="${item.flag}" class="flag-icon">
@@ -267,29 +271,18 @@
             
             document.getElementById('total-count').innerText = selection.size;
             document.getElementById('footer-order').classList.toggle('visible', selection.size > 0);
-            if(navigator.vibrate) navigator.vibrate(10);
         }
 
         function sendWhatsApp() {
             const list = Array.from(selection).join(', ');
-            const url = `https://wa.me/50246199644?text=${encodeURIComponent("Hola! Quiero estas cartas: " + list)}`;
-            window.open(url, '_blank');
+            window.open(`https://wa.me/50246199644?text=${encodeURIComponent("Hola! Solicito: " + list)}`, '_blank');
         }
 
         function handleLogout() {
             firebase.auth().signOut().then(() => location.reload());
         }
 
-        // Simulación de Auth
-        document.addEventListener('DOMContentLoaded', () => {
-            initAlbum();
-            firebase.auth().onAuthStateChanged(user => {
-                if(user) {
-                    document.getElementById('profile-name').innerText = user.displayName || "Usuario Panini";
-                    document.getElementById('profile-email').innerText = user.email;
-                }
-            });
-        });
+        document.addEventListener('DOMContentLoaded', initAlbum);
     </script>
 </body>
 </html>
