@@ -2,280 +2,371 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOUVREIGN | Panini Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOUVREIGN | Panini Collector 2026</title>
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2026_FIFA_World_Cup_Logo.svg/256px-2026_FIFA_World_Cup_Logo.svg.png">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
     
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore-compat.js"></script>
 
     <style>
         :root { 
             --panini-red: #e31d1a; 
             --panini-yellow: #ffcf00;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --world-cup-blue: #001b3a;
+            --world-cup-purple: #4a148c;
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Roboto', sans-serif; background: #f4f4f4; color: #333; min-height: 100vh; overflow-x: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background: #f4f4f4;
+            color: #333; min-height: 100vh; overflow-x: hidden;
+        }
 
-        /* --- INTRO ESPACIAL --- */
+        /* --- INTRO ANIMATION (ZOOM) --- */
         #intro-space {
-            position: fixed; inset: 0;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
             z-index: 3000; display: flex; align-items: center; justify-content: center;
             overflow: hidden; pointer-events: none; transition: opacity 1.5s ease;
         }
-        .earth-intro { 
-            width: 150px; height: 150px; 
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); 
-            background-size: cover; animation: approachEarth 4s forwards cubic-bezier(0.7, 0, 0.3, 1); 
-        }
-        @keyframes approachEarth { 
-            0% { transform: scale(0.1); opacity: 0; } 
-            20% { opacity: 1; }
-            100% { transform: scale(30); opacity: 0; } 
-        }
+        .star-field { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: zoomStar 4s infinite ease-in; }
+        @keyframes zoomStar { 0% { transform: scale(0) translate(0, 0); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: scale(1.5) translate(var(--x), var(--y)); opacity: 0; } }
+        .earth-intro { width: 150px; height: 150px; background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); background-size: cover; filter: drop-shadow(0 0 30px rgba(0, 140, 255, 0.4)); animation: approachEarth 4.5s forwards ease-in-out; z-index: 3001; }
+        @keyframes approachEarth { 0% { transform: scale(0.05); opacity: 0; } 20% { opacity: 1; } 100% { transform: scale(30); opacity: 0; } }
 
-        /* --- LOGIN PANINI STYLE --- */
-        #login-screen {
-            height: 100vh; display: flex; align-items: center; justify-content: center;
-            background: var(--panini-red); /* Fondo corporativo Panini */
+        /* --- AUTH SCREEN (PANINI STYLE) --- */
+        .auth-container { 
+            height: 100vh; display: flex; align-items: center; justify-content: center; 
+            background: var(--panini-red);
             background-image: radial-gradient(circle at 20% 30%, #ff4d4d 0%, transparent 50%), 
                               radial-gradient(circle at 80% 70%, #b30000 0%, transparent 50%);
             position: fixed; width: 100%; top: 0; z-index: 2000;
             opacity: 0; visibility: hidden; transition: 1s;
         }
-        #login-screen.visible { opacity: 1; visibility: visible; }
+        .auth-container.visible { opacity: 1; visibility: visible; }
         
         .auth-card { 
-            background: white; padding: 2.5rem; border-radius: 20px; 
-            text-align: center; width: 90%; max-width: 380px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            background: white; padding: 3rem; border-radius: 20px; 
+            text-align: center; width: 90%; max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
             border-bottom: 8px solid var(--panini-yellow);
         }
-        
-        .logo-placeholder { width: 180px; margin-bottom: 20px; }
-
         .google-btn { 
-            background: #4285F4; color: white; border: none; padding: 14px; border-radius: 8px; 
-            cursor: pointer; width: 100%; font-weight: 700; margin-top: 20px; 
+            background: white; color: #333; border: 1px solid #ddd; padding: 14px; border-radius: 12px; 
+            cursor: pointer; width: 100%; font-weight: 700; margin-top: 25px; 
             display: flex; align-items: center; justify-content: center; gap: 12px; 
-            box-shadow: 0 4px 0 #2c5ba3; transition: 0.2s;
+            box-shadow: 0 4px 0 #eee;
         }
-        .google-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2c5ba3; }
+        .google-btn:active { transform: translateY(3px); box-shadow: none; }
 
-        /* --- APP CONTENT --- */
-        #app-content { display: none; background: #eee; min-height: 100vh; }
-        
-        .navbar-top { 
-            position: fixed; top: 0; width: 100%; height: 65px; 
-            background: white; display: flex; align-items: center; 
-            justify-content: space-between; padding: 0 20px; z-index: 1500; 
+        /* --- APP INTERFACE --- */
+        #app { display: none; background: #eee; min-height: 100vh; }
+        .navbar-top {
+            position: fixed; top: 0; width: 100%; height: 65px;
+            background: white; display: flex; align-items: center;
+            justify-content: space-between; padding: 0 20px; z-index: 1500;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
-        nav { 
-            position: fixed; top: 0; left: -100%; width: 280px; height: 100vh; 
-            background: white; z-index: 1550; padding: 80px 0; transition: 0.4s; 
-            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+        .menu-toggle { cursor: pointer; background: var(--panini-red); color: white; padding: 8px 15px; border-radius: 8px; font-weight: 900; font-size: 0.8rem; }
+
+        nav {
+            position: fixed; top: 0; left: -320px; width: 280px; height: 100%;
+            background: white; z-index: 1600; padding-top: 20px;
+            box-shadow: 10px 0 20px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column;
         }
         nav.active { left: 0; }
-        
-        .nav-link { padding: 15px 25px; color: #555; text-decoration: none; font-family: 'Oswald'; display: block; border-left: 5px solid transparent; }
-        .nav-link.active-sec { color: var(--panini-red); border-left-color: var(--panini-red); background: #fff5f5; }
+        nav a { 
+            padding: 15px 25px; color: #444; text-decoration: none; 
+            font-family: 'Oswald'; border-left: 5px solid transparent;
+        }
+        nav a:hover, nav a.active-link { background: #fff5f5; color: var(--panini-red); border-left-color: var(--panini-red); }
 
-        /* --- ALBUM --- */
-        .view { display: none; padding: 85px 15px 150px; max-width: 1200px; margin: auto; }
+        /* --- ALBUM STYLES --- */
+        .view { display: none; max-width: 1100px; margin: 80px auto 120px; padding: 0 15px; }
         .view.active { display: block; }
+        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
-        .group-header { font-family: 'Oswald'; background: var(--panini-red); color: white; padding: 10px 20px; border-radius: 8px; margin: 25px 0 15px; display: inline-block; }
-        
-        .countries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .country-card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .country-info { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 900; color: #222; }
-        
-        .stickers-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .sticker-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 15px; }
         .sticker { 
-            background: #f8f8f8; border: 1px solid #ddd; aspect-ratio: 1; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            border-radius: 4px; cursor: pointer; font-family: 'Oswald'; transition: 0.1s;
+            aspect-ratio: 1; background: #f8f8f8; border: 1px solid #ddd; 
+            border-radius: 6px; display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; font-size: 1rem; cursor: pointer; font-family: 'Oswald';
         }
-        .sticker.selected { background: var(--panini-yellow); border-color: orange; transform: scale(1.05); }
-        .sticker small { font-size: 0.55rem; color: #777; }
+        .sticker small { font-size: 0.55rem; color: #888; margin-top: 2px; }
+        .sticker.selected { 
+            background: var(--panini-yellow); border-color: orange; color: black;
+            transform: scale(1.05); box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
 
-        /* --- FOOTER --- */
-        .footer-action { 
-            position: fixed; bottom: 0; width: 100%; padding: 20px; 
-            background: white; border-top: 4px solid var(--panini-yellow); 
-            transform: translateY(100%); transition: 0.3s; z-index: 1000; text-align: center; 
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+        .selection-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: white;
+            padding: 20px; display: flex; flex-direction: column; align-items: center;
+            border-top: 4px solid var(--panini-yellow); transform: translateY(100%);
+            z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
         }
-        .footer-action.visible { transform: translateY(0); }
-        .btn-send { background: #25D366; color: white; border: none; padding: 12px 40px; border-radius: 50px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .selection-footer.visible { transform: translateY(0); }
+        .buy-btn { background: #25d366; color: white; border: none; padding: 15px 40px; border-radius: 50px; cursor: pointer; font-family: 'Oswald'; font-weight: 900; width: 100%; max-width: 400px; }
+
+        .group-btn { background: var(--panini-red); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-family: 'Oswald'; }
+        
+        #toast-container { position: fixed; top: 80px; right: 20px; z-index: 10000; }
+        .toast { background: #333; color: white; padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; animation: slideIn 0.3s forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
-<body>
+<body onclick="enableAudio()">
 
-    <div id="intro-space"><div class="earth-intro"></div></div>
+    <!-- INTRO ESPACIAL -->
+    <div id="intro-space">
+        <div class="earth-intro"></div>
+    </div>
 
-    <div id="login-screen">
+    <!-- PANTALLA LOGIN -->
+    <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <h1 style="font-family:'Oswald'; color:var(--panini-red); font-size: 2.5rem;">PANINI</h1>
-            <p style="font-weight: 700; color: #666; margin-bottom: 20px;">SOUVREIGN COLLECTOR</p>
-            <button class="google-btn" onclick="loginWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20" style="background:white; padding:2px; border-radius:2px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Panini_Group_logo.svg/1024px-Panini_Group_logo.svg.png" width="150" style="margin-bottom:10px;">
+            <h2 style="font-family:'Oswald'; color:var(--panini-red); margin-bottom: 5px;">SOUVREIGN</h2>
+            <p style="font-size: 0.8rem; color: #666; font-weight: bold;">GESTIÓN DE COLECCIONES 2026</p>
+            
+            <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20"> 
                 INGRESAR CON GOOGLE
             </button>
-            <p style="font-size: 0.7rem; margin-top: 20px; color: #999;">© 2026 Sistema de Gestión de Cromos</p>
         </div>
     </div>
 
-    <div id="app-content">
+    <!-- APP PRINCIPAL -->
+    <div id="app">
         <header class="navbar-top">
-            <div onclick="toggleMenu()" style="cursor:pointer; font-size:1.5rem; color:var(--panini-red);">☰</div>
+            <div class="menu-toggle" onclick="toggleMenu()">☰ MENU</div>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Panini_Group_logo.svg/1024px-Panini_Group_logo.svg.png" height="25">
-            <div id="user-avatar" style="width:35px; height:35px; background:var(--panini-yellow); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900;">JP</div>
+            <div id="nav-user-name" style="font-family:'Oswald'; font-size: 0.8rem; color: var(--panini-red);">USUARIO</div>
         </header>
 
         <nav id="sidebar">
-            <a href="#" class="nav-link active-sec" onclick="showView('album-view', this)">ÁLBUM VIRTUAL</a>
-            <a href="#" class="nav-link" onclick="showView('extras-view', this)">CARTAS ESPECIALES</a>
-            <div style="padding:20px; margin-top:20px;">
-                <button onclick="location.reload()" style="width:100%; padding:10px; border:1px solid #ccc; background:none; border-radius:5px;">Cerrar Sesión</button>
+            <div style="padding: 20px; text-align: center;">
+                <img id="nav-user-img" src="" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--panini-yellow);">
             </div>
+            <a href="#" onclick="showView('album-view')">📋 SOLICITAR CARTAS</a>
+            <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
+            <a href="#" onclick="handleLogout()" style="color: #ff5252; margin-top: auto; border-top: 1px solid #eee;">🚪 CERRAR SESIÓN</a>
         </nav>
 
-        <main>
-            <div id="album-view" class="view active"><div id="album-root"></div></div>
-            <div id="extras-view" class="view">
-                <h2 class="group-header">EXTRAS</h2>
-                <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                   <div style="width:150px; background:white; padding:10px; border-radius:10px; text-align:center; cursor:pointer;" onclick="toggleSelection(this, 'CRISTIANO EXTRA', 50)">
-                       <img src="cristianomundial.jpg" style="width:100%; border-radius:5px;">
-                       <p style="font-size:0.8rem; font-weight:700;">CR7 EXTRA (Q50)</p>
-                   </div>
+        <div id="album-view" class="view active">
+            <div class="card" style="border-left: 5px solid var(--panini-red); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 id="grp-name" style="font-family:'Oswald'; color:var(--panini-red);">GRUPO A</h2>
+                    <p style="font-size: 0.7rem; color: #888;">Toca un país y luego las cartas que necesitas.</p>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="changeGroup(-1)" class="group-btn">◄</button>
+                    <button onclick="changeGroup(1)" class="group-btn">►</button>
                 </div>
             </div>
-        </main>
 
-        <div id="footer-order" class="footer-action">
-            <p style="font-family:'Oswald'; font-size:1.2rem;">TOTAL DEL PEDIDO: <span style="color:var(--panini-red)">Q<span id="total-val">0.00</span></span></p>
-            <button class="btn-send" onclick="sendWhatsApp()">ENVIAR POR WHATSAPP</button>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                <div class="card">
+                    <div id="team-list"></div>
+                </div>
+                <div class="card">
+                    <h3 id="current-team-title" style="font-family:'Oswald'; color: var(--panini-red); border-bottom: 2px solid var(--panini-yellow); padding-bottom: 5px;">SELECCIONA UN PAÍS</h3>
+                    <div class="sticker-grid" id="sticker-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="prices-view" class="view">
+            <div class="card" style="max-width: 500px; margin: auto;">
+                <h2 style="font-family:'Oswald'; color: var(--panini-red); text-align: center; margin-bottom: 20px;">LISTA DE PRECIOS</h2>
+                <div id="price-list-content" style="line-height: 2; font-weight: bold;">
+                    <p>• Carta Normal: <span style="float:right">Q2.00</span></p>
+                    <p>• Escudo (#1): <span style="float:right">Q10.00</span></p>
+                    <p>• Estadio (#13): <span style="float:right">Q15.00</span></p>
+                    <hr style="margin: 10px 0; opacity: 0.2;">
+                    <p style="color: var(--panini-red)">• MESSI (Arg #17): <span style="float:right">Q30.00</span></p>
+                    <p style="color: var(--panini-red)">• CR7 (Por #15): <span style="float:right">Q30.00</span></p>
+                    <p style="color: var(--panini-red)">• MBAPPÉ (Fra #20): <span style="float:right">Q25.00</span></p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Configuración de Firebase - REEMPLAZAR CON TUS DATOS
-        const firebaseConfig = { apiKey: "AIza...", authDomain: "tu-proyecto.firebaseapp.com" };
-        firebase.initializeApp(firebaseConfig);
+    <!-- PIE DE SELECCIÓN -->
+    <div id="selection-footer" class="selection-footer">
+        <p style="font-family:'Oswald'; margin-bottom: 10px;">TOTAL ESTIMADO: <span style="color:var(--panini-red)">Q<span id="total-price">0.00</span></span></p>
+        <button class="buy-btn" onclick="sendWhatsAppOrder()">
+            SOLICITAR <span id="selected-count">0</span> CARTAS POR WHATSAPP
+        </button>
+    </div>
 
-        // --- MANEJO DE INTRO ---
+    <div id="toast-container"></div>
+    <audio id="audioElement" loop src="we-are-one.mp3"></audio>
+
+<script>
+    const WHATSAPP_NUMBER = "50246199644";
+    const firebaseConfig = {
+        apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
+        authDomain: "tiendaskin-bccba.firebaseapp.com",
+        projectId: "tiendaskin-bccba",
+        storageBucket: "tiendaskin-bccba.firebasestorage.app",
+        messagingSenderId: "280193902268",
+        appId: "1:280193902268:web:743d0e2172641be7a292b9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let selectedItems = [];
+    let currentIdx = 0;
+    let activeTeam = "";
+
+    const grupos = [
+        {id: "A", paises: ["México", "Sudáfrica", "República de Corea", "República Checa"]},
+        {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
+        {id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},
+        {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Türkiye"]},
+        {id: "E", paises: ["Alemania", "Curazao", "Costa de Marfil", "Ecuador"]},
+        {id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},
+        {id: "G", paises: ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"]},
+        {id: "H", paises: ["España", "Uruguay", "Arabia Saudita", "Cabo Verde"]},
+        {id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},
+        {id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},
+        {id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},
+        {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
+    ];
+
+    // --- SECUENCIA DE INICIO ---
+    function initSequence() {
+        const intro = document.getElementById('intro-space');
+        // Estrellas
+        for (let i = 0; i < 40; i++) {
+            const star = document.createElement('div');
+            star.className = 'star-field';
+            const size = Math.random() * 2 + 'px';
+            star.style.width = size; star.style.height = size;
+            star.style.left = '50%'; star.style.top = '50%';
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 500 + Math.random() * 500;
+            star.style.setProperty('--x', Math.cos(angle) * dist + 'px');
+            star.style.setProperty('--y', Math.sin(angle) * dist + 'px');
+            star.style.animationDelay = Math.random() * 2 + 's';
+            intro.appendChild(star);
+        }
+        
         setTimeout(() => {
-            document.getElementById('intro-space').style.opacity = '0';
-            document.getElementById('login-screen').classList.add('visible');
-            setTimeout(() => document.getElementById('intro-space').remove(), 1500);
-        }, 4000);
+            intro.style.opacity = '0';
+            document.getElementById('auth-screen').classList.add('visible');
+            setTimeout(() => intro.remove(), 1500);
+        }, 4200);
+    }
+    initSequence();
 
-        // --- LOGIN CORREGIDO ---
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then((result) => {
-                enterApp(result.user);
-            }).catch((error) => {
-                console.log("Error Firebase, entrando modo manual local...");
-                // ENTRADA DE EMERGENCIA SI NO HAY API KEY CONFIGURADA
-                enterApp({ displayName: "Jose Pablo", email: "jp@souvreign.com" });
-            });
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('nav-user-name').innerText = user.displayName.toUpperCase();
+            document.getElementById('nav-user-img').src = user.photoURL || 'https://www.gstatic.com/images/branding/product/2x/avatar_square_blue_120dp.png';
+            renderGroup();
         }
+    });
 
-        function enterApp(user) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-            document.getElementById('user-avatar').innerText = user.displayName.charAt(0);
-            renderAlbum();
+    function renderGroup() {
+        const g = grupos[currentIdx];
+        document.getElementById('grp-name').innerText = "GRUPO " + g.id;
+        const list = document.getElementById('team-list'); list.innerHTML = "";
+        g.paises.forEach(p => {
+            const d = document.createElement('div');
+            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid #eee; font-family:'Oswald'; display:flex; align-items:center;";
+            d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
+            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="22" style="margin-right:12px;"> ${p.toUpperCase()}`;
+            list.appendChild(d);
+        });
+    }
+
+    function renderStickers() {
+        const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
+        for(let i=1; i<=20; i++) {
+            const id = `${activeTeam} #${i}`;
+            const price = calculatePrice(activeTeam, i);
+            const isSelected = selectedItems.find(s => s.id === id);
+            
+            const s = document.createElement('div');
+            s.className = `sticker ${isSelected ? 'selected' : ''}`;
+            s.innerHTML = `${i} <small>Q${price}</small>`;
+            s.onclick = () => toggleSticker(id, price);
+            grid.appendChild(s);
         }
+    }
 
-        // --- LÓGICA DE ÁLBUM ---
-        const GROUPS = [
-            {id: "A", paises: ["México", "Sudáfrica", "República de Corea", "República Checa"], codes: ["mx","za","kr","cz"]},
-            {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"], codes: ["ca","ba","qa","ch"]},
-            {id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"], codes: ["br","ma","ht","gb-sct"]},
-            {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Türkiye"], codes: ["us","py","au","tr"]},
-            {id: "E", paises: ["Alemania", "Curazao", "Costa de Marfil", "Ecuador"], codes: ["de","cw","ci","ec"]},
-            {id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"], codes: ["nl","jp","tn","al"]},
-            {id: "G", paises: ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"], codes: ["be","eg","ir","nz"]},
-            {id: "H", paises: ["España", "Uruguay", "Arabia Saudita", "Cabo Verde"], codes: ["es","uy","sa","cv"]},
-            {id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"], codes: ["fr","sn","no","iq"]},
-            {id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"], codes: ["ar","at","dz","jo"]},
-            {id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"], codes: ["pt","co","uz","jm"]},
-            {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"], codes: ["gb-eng","hr","gh","pa"]}
-        ];
+    function calculatePrice(team, num) {
+        if(num === 1) return 10;
+        if(num === 13) return 15;
+        if(team === "Argentina" && num === 17) return 30; // Messi
+        if(team === "Portugal" && num === 15) return 30;  // CR7
+        if(team === "Francia" && num === 20) return 25;   // Mbappe
+        return 2;
+    }
 
-        let selection = [];
-        let total = 0;
+    function toggleSticker(id, price) {
+        const index = selectedItems.findIndex(s => s.id === id);
+        if(index > -1) selectedItems.splice(index, 1);
+        else selectedItems.push({id, price});
+        
+        renderStickers();
+        updateFooter();
+    }
 
-        function renderAlbum() {
-            const root = document.getElementById('album-root');
-            root.innerHTML = '';
-            GROUPS.forEach(g => {
-                const groupDiv = document.createElement('div');
-                groupDiv.innerHTML = `<h2 class="group-header">GRUPO ${g.id}</h2><div class="countries-grid"></div>`;
-                const grid = groupDiv.querySelector('.countries-grid');
+    function updateFooter() {
+        const footer = document.getElementById('selection-footer');
+        const count = selectedItems.length;
+        const total = selectedItems.reduce((sum, item) => sum + item.price, 0);
+        
+        document.getElementById('selected-count').innerText = count;
+        document.getElementById('total-price').innerText = total.toFixed(2);
+        
+        if(count > 0) footer.classList.add('visible');
+        else footer.classList.remove('visible');
+    }
 
-                g.paises.forEach((name, idx) => {
-                    const countryCard = document.createElement('div');
-                    countryCard.className = 'country-card';
-                    let stickersHtml = '';
-                    for(let i=1; i<=20; i++) {
-                        let price = 2;
-                        if(i === 1) price = 10;
-                        if(i === 13) price = 15;
-                        if(name === "Argentina") {
-                            if(i === 17) price = 30; // Messi
-                            if(i === 19) price = 10;
-                        }
-                        if(name === "Portugal" && i === 15) price = 30; // CR7
-                        if(name === "Francia") {
-                            if(i === 20) price = 25; // Mbappe
-                            if(i === 15) price = 10;
-                        }
-                        stickersHtml += `<div class="sticker" onclick="toggleSelection(this, '${name} #${i}', ${price})">${i}<small>Q${price}</small></div>`;
-                    }
-                    countryCard.innerHTML = `<div class="country-info"><img src="https://flagcdn.com/${g.codes[idx]}.svg" width="25"> ${name}</div><div class="stickers-row">${stickersHtml}</div>`;
-                    grid.appendChild(countryCard);
-                });
-                root.appendChild(groupDiv);
-            });
-        }
+    function sendWhatsAppOrder() {
+        const user = auth.currentUser.displayName;
+        const lista = selectedItems.map(s => `%0A• ${s.id} (Q${s.price})`).join('');
+        const total = selectedItems.reduce((sum, item) => sum + item.price, 0);
+        const msg = `*PEDIDO PANINI - SOUVREIGN*%0A*Cliente:* ${user}${lista}%0A%0A*TOTAL ESTIMADO: Q${total}*`;
+        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+        
+        db.collection("pedidos").add({ usuario: user, items: selectedItems, total, fecha: new Date() });
+        showToast("Abriendo WhatsApp...");
+    }
 
-        function toggleSelection(el, id, price) {
-            el.classList.toggle('selected');
-            if(el.classList.contains('selected')) {
-                selection.push({id, price});
-                total += price;
-            } else {
-                selection = selection.filter(s => s.id !== id);
-                total -= price;
-            }
-            document.getElementById('total-val').innerText = total.toFixed(2);
-            document.getElementById('footer-order').classList.toggle('visible', total > 0);
-        }
+    function getIso(p) {
+        const codes = { "México":"mx", "Sudáfrica":"za", "República de Corea":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Türkiye":"tr", "Alemania":"de", "Curazao":"cw", "Costa de Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia Saudita":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
+        return codes[p] || "un";
+    }
 
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-        function showView(id, link) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            toggleMenu();
-        }
-
-        function sendWhatsApp() {
-            const list = selection.map(s => `%0A• ${s.id} (Q${s.price})`).join('');
-            window.open(`https://wa.me/50246199644?text=PEDIDO PANINI SOUVREIGN:${list}%0A%0ATOTAL: Q${total}`, '_blank');
-        }
-    </script>
+    function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        toggleMenu();
+    }
+    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    function handleLogout() { auth.signOut().then(() => location.reload()); }
+    function showToast(m) {
+        const t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+    function changeGroup(dir) { currentIdx = (currentIdx + dir + grupos.length) % grupos.length; renderGroup(); }
+    function enableAudio() { const a = document.getElementById('audioElement'); if(a.paused) a.play(); }
+</script>
 </body>
 </html>
