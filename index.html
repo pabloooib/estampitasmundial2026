@@ -3,460 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Álbum Panini 2026 - Selección Premium</title>
+    <title>SOUVREIGN | Panini Digital 2026</title>
     
-    <!-- 1. FAVICON PROFESIONAL PERSONALIZADO -->
+    <!-- Fuentes y Recursos -->
     <link rel="icon" type="image/jpeg" href="imagenmundial.jpg">
-    <link rel="apple-touch-icon" href="imagenmundial.jpg">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
     
+    <!-- SDK Firebase (Versión Compat para estabilidad) -->
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore-compat.js"></script>
 
     <style>
         :root { 
-            --world-cup-green: #004d3d;
-            --world-cup-blue: #001b3a;
-            --world-cup-purple: #4a148c;
             --world-cup-yellow: #ffeb3b;
-            --premium-gold: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --premium-gold: #bf953f;
             --glass: rgba(255, 255, 255, 0.08);
             --glass-border: rgba(255, 255, 255, 0.15);
-            --safe-bottom: env(safe-area-inset-bottom);
+            --bg-dark: #001b3a;
+            --deep-blue: #000c1d;
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body { 
             font-family: 'Roboto', sans-serif; 
             background: radial-gradient(circle at top right, #1a0a2e, #001b3a, #000);
             color: white; min-height: 100vh; overflow-x: hidden;
-            line-height: 1.6;
         }
 
-        .view { display: none; padding: 20px; max-width: 1200px; margin: 80px auto 120px; animation: fadeInView 0.5s ease forwards; }
-        .view.active { display: block; }
-        @keyframes fadeInView { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- 1. NAVBAR & NAVIGATION PREMIUM --- */
+        .navbar-top {
+            position: fixed; top: 0; width: 100%; height: 70px;
+            background: rgba(0, 5, 15, 0.85); backdrop-filter: blur(20px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; z-index: 1500; border-bottom: 1px solid var(--glass-border);
+        }
 
-        /* 8. MEJORAS AESTHETIC & PROFUNDIDAD */
-        .card { 
-            background: var(--glass); 
-            border-radius: 24px; 
-            padding: 28px; 
-            backdrop-filter: blur(20px); 
-            border: 1px solid var(--glass-border); 
-            margin-bottom: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.02);
+        .menu-toggle {
+            cursor: pointer; display: flex; flex-direction: column; gap: 6px;
+            z-index: 1600; padding: 10px;
         }
-        .card:hover { border-color: rgba(255, 235, 59, 0.3); box-shadow: 0 20px 45px rgba(0,0,0,0.4); }
+        .bar { width: 28px; height: 3px; background: var(--world-cup-yellow); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-radius: 2px; }
+        .menu-active .bar:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+        .menu-active .bar:nth-child(2) { opacity: 0; transform: translateX(-10px); }
+        .menu-active .bar:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
 
-        /* INTRO ANIMATION */
-        #intro-space {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 3000; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; pointer-events: none; transition: opacity 1.5s ease;
-        }
-        .earth-intro { width: 150px; height: 150px; background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); background-size: cover; animation: approachEarth 5s forwards ease-in-out; }
-        @keyframes approachEarth { 0% { transform: scale(0.1) rotate(0deg); opacity: 0; filter: blur(5px); } 30% { opacity: 1; filter: blur(0px); } 100% { transform: scale(30) rotate(10deg); opacity: 0; } }
-
-        /* AUTH SCREEN */
-        .auth-container { 
-            height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
-            background-size: cover; position: fixed; width: 100%; top: 0; z-index: 2000;
-        }
-        .auth-card { background: rgba(0, 0, 0, 0.5); padding: 3.5rem; border-radius: 40px; border: 1px solid var(--glass-border); text-align: center; backdrop-filter: blur(30px); width: 90%; max-width: 400px; animation: fadeIn 1s ease forwards 3.5s; opacity: 0; }
-
-        /* 1. MUSIC PLAYER PREMIUM */
-        .music-player {
-            position: fixed; bottom: 30px; left: 30px; z-index: 1001;
-            background: rgba(0, 5, 15, 0.8); backdrop-filter: blur(20px);
-            padding: 10px 20px; border-radius: 100px; display: flex; align-items: center;
-            gap: 15px; border: 1px solid var(--glass-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: scale(1);
-        }
-        .music-player:hover { transform: scale(1.05); border-color: var(--world-cup-yellow); }
-        .music-btn {
-            background: var(--world-cup-yellow); color: #000; border: none;
-            width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
-            box-shadow: 0 0 15px rgba(255, 235, 59, 0.4);
-        }
-        .music-player.paused { opacity: 0.7; filter: grayscale(0.5); }
-        .music-player.paused .music-btn { background: #fff; box-shadow: none; }
-
-        /* 4. INPUT PREMIUM - CARTAS ESPECÍFICO */
-        .premium-input-group {
-            display: flex; flex-direction: column; gap: 15px; margin-top: 20px;
-        }
-        .custom-input {
-            background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border);
-            border-radius: 18px; padding: 18px 25px; color: white; font-size: 1.1rem;
-            outline: none; font-family: 'Roboto';
-        }
-        .custom-input:focus { 
-            border-color: var(--world-cup-yellow); background: rgba(255,255,255,0.1); 
-            box-shadow: 0 0 25px rgba(255, 235, 59, 0.15);
-        }
-        .custom-item-chip {
-            display: inline-flex; align-items: center; gap: 10px; background: var(--world-cup-yellow);
-            color: black; padding: 8px 18px; border-radius: 50px; font-weight: 700;
-            font-size: 0.85rem; margin: 5px; animation: popIn 0.3s ease;
-        }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* NAVIGATION & RESPONSIVE PRO */
-        .menu-toggle { 
-            position: fixed; top: 25px; left: 25px; z-index: 1100; cursor: pointer; 
-            background: var(--world-cup-yellow); color: black; padding: 12px 20px; 
-            border-radius: 14px; font-weight: 900; font-family: 'Oswald'; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
-        
         nav {
-            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
-            background: rgba(0, 5, 15, 0.98); backdrop-filter: blur(40px);
-            z-index: 1100; padding: 80px 0; border-right: 1px solid var(--glass-border);
+            position: fixed; top: 0; left: -100%; width: 320px; height: 100vh;
+            background: rgba(0, 8, 20, 0.98); backdrop-filter: blur(40px);
+            z-index: 1550; padding: 90px 0; transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 20px 0 50px rgba(0,0,0,0.5); border-right: 1px solid var(--glass-border);
+            display: flex; flex-direction: column;
         }
         nav.active { left: 0; }
-        nav a { padding: 20px 35px; color: #fff; text-decoration: none; font-family: 'Oswald'; display: block; letter-spacing: 1px; }
-        nav a:hover { background: rgba(255,235,59,0.1); color: var(--world-cup-yellow); }
 
-        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 12px; }
-        .sticker { aspect-ratio: 2/3; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; }
-        .sticker.selected { background: var(--world-cup-yellow); color: black; border: none; box-shadow: 0 0 15px rgba(255, 235, 59, 0.4); }
-
-        .selection-footer {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,5,15,0.95);
-            backdrop-filter: blur(25px); padding: 20px 20px calc(20px + var(--safe-bottom)); 
-            display: flex; justify-content: center; border-top: 1px solid var(--world-cup-yellow);
-            transform: translateY(100%); z-index: 1000;
+        .nav-link {
+            padding: 18px 35px; color: rgba(255,255,255,0.7); text-decoration: none;
+            font-family: 'Oswald'; display: flex; align-items: center; gap: 15px;
+            font-size: 1.1rem; letter-spacing: 1px; transition: 0.3s;
+            position: relative;
         }
-        .selection-footer.visible { transform: translateY(0); }
-        .buy-btn { background: var(--world-cup-yellow); color: black; border: none; padding: 18px; border-radius: 18px; cursor: pointer; width: 100%; font-family: 'Oswald'; font-weight: 900; text-transform: uppercase; }
+        .nav-link:hover, .nav-link.active-sec { color: var(--world-cup-yellow); background: rgba(255,235,59,0.05); }
+        .nav-link.active-sec::before {
+            content: ''; position: absolute; left: 0; top: 20%; height: 60%; 
+            width: 4px; background: var(--world-cup-yellow); border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 15px var(--world-cup-yellow);
+        }
+
+        /* --- 4. INSTAGRAM BUTTON --- */
+        .insta-float {
+            position: fixed; right: 25px; bottom: 25px; z-index: 1400;
+            background: linear-gradient(45deg, #f09433, #e54050, #962fbf, #4f5bd5);
+            width: 55px; height: 55px; border-radius: 18px; display: flex;
+            align-items: center; justify-content: center; text-decoration: none;
+            box-shadow: 0 10px 30px rgba(225, 48, 108, 0.4); transition: 0.4s;
+        }
+        .insta-float:hover { transform: scale(1.1) rotate(8deg); }
+        .insta-float svg { fill: white; width: 28px; height: 28px; }
+
+        /* --- 2 & 3. EXTRA CARDS PREMIUM --- */
+        .extra-card-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; margin-top: 30px;
+        }
+        .extra-card {
+            background: var(--glass); border-radius: 24px; overflow: hidden;
+            border: 1px solid var(--glass-border); position: relative;
+            cursor: pointer; transition: 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            aspect-ratio: 3/4;
+        }
+        .extra-card:hover { 
+            transform: translateY(-12px); border-color: var(--world-cup-yellow);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .extra-card img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: 0.8s ease; filter: brightness(0.9);
+        }
+        .extra-card:hover img { transform: scale(1.08); filter: brightness(1.1); }
+        
+        .extra-card.selected { border: 3px solid var(--world-cup-yellow); }
+        .extra-card.selected::after {
+            content: '✓'; position: absolute; top: 15px; right: 15px;
+            background: var(--world-cup-yellow); color: black;
+            width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 900;
+            animation: popIn 0.3s forwards;
+        }
+
+        .card-info {
+            padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            position: absolute; bottom: 0; width: 100%;
+        }
+        .card-info h3 { font-family: 'Oswald'; font-size: 1.4rem; color: #fff; }
+
+        /* --- 5. GRID DE STICKERS (ALBUM) --- */
+        .countries-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px; margin-top: 20px;
+        }
+        .sticker-item {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 15px; border-radius: 12px; text-align: center;
+            font-family: 'Oswald'; cursor: pointer; transition: 0.3s;
+        }
+        .sticker-item:hover { background: rgba(255,255,255,0.15); border-color: var(--world-cup-yellow); }
+        .sticker-item.selected { 
+            background: var(--world-cup-yellow); color: black; 
+            box-shadow: 0 0 15px rgba(255, 235, 59, 0.5); 
+        }
+
+        /* --- UI HELPERS --- */
+        .view { display: none; padding: 100px 20px 100px; max-width: 1200px; margin: auto; animation: fadeIn 0.5s ease; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            z-index: 1520; display: none;
+        }
+        .overlay.active { display: block; }
+
+        /* FOOTER DE ACCIÓN */
+        .action-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px;
+            background: rgba(0, 5, 15, 0.9); backdrop-filter: blur(15px);
+            border-top: 1px solid var(--world-cup-yellow); z-index: 1000;
+            display: flex; justify-content: center; transform: translateY(100%); transition: 0.4s;
+        }
+        .action-footer.visible { transform: translateY(0); }
+        .btn-send {
+            background: var(--world-cup-yellow); color: black; border: none;
+            padding: 15px 40px; border-radius: 12px; font-family: 'Oswald';
+            font-weight: 700; width: 100%; max-width: 400px; cursor: pointer;
+        }
 
         @media (max-width: 768px) {
-            .view { margin-top: 100px; padding: 15px; }
-            .music-player { bottom: auto; top: 25px; left: auto; right: 25px; padding: 8px 15px; }
-            #songTitle { display: none; }
-            .card { padding: 22px; }
+            nav { width: 85%; }
+            .navbar-top { padding: 0 15px; }
+            .countries-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
         }
     </style>
 </head>
-<body onclick="handleFirstClick()">
+<body>
 
-    <!-- INTRO -->
-    <div id="intro-space">
-        <div class="earth-intro"></div>
-    </div>
-
-    <div id="toast-container"></div>
-    <div id="menu-overlay" onclick="toggleMenu()"></div>
-
-    <!-- 1. MUSIC PLAYER (REFINADO) -->
-    <div class="music-player" id="playerContainer">
-        <button class="music-btn" id="playPause">▶</button>
-        <span id="songTitle" style="font-family:'Oswald'; font-size:0.75rem; color:var(--world-cup-yellow); letter-spacing:1px; font-weight:700;">WE ARE ONE</span>
-        <audio id="audioElement" loop src="we-are-one.mp3.mp3"></audio>
-    </div>
-
-    <!-- LOGIN -->
-    <div class="auth-container" id="auth-screen">
-        <div class="auth-card">
-            <h1 style="font-family:'Oswald'; color:var(--world-cup-yellow); font-size: 3rem; margin-bottom:10px;">PANINI 2026</h1>
-            <p style="opacity:0.6; margin-bottom:30px; font-size:0.9rem;">ÁLBUM OFICIAL DE COLECCIONISTA</p>
-            <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()" style="display: none;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> INICIAR SESIÓN
-            </button>
+    <!-- NAVBAR ESTRUCTURAL -->
+    <header class="navbar-top">
+        <div class="menu-toggle" onclick="toggleMenu()" id="menuBtn">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
         </div>
-    </div>
+        <img src="panini" alt="Panini" style="height: 35px;">
+        <div style="width: 48px;"></div>
+    </header>
 
-    <!-- MAIN APP -->
-    <div id="app">
-        <div class="menu-toggle" onclick="toggleMenu()">☰ MENU</div>
-        
-        <nav id="sidebar">
-            <div class="user-profile-mini" style="text-align:center; padding-bottom:20px;">
-                <img id="nav-user-img" src="" style="width:70px; height:70px; border-radius:50%; border:3px solid var(--world-cup-yellow);">
-                <div id="nav-user-name" style="font-family:'Oswald'; color:var(--world-cup-yellow); margin-top:10px;">Usuario</div>
-            </div>
-            <a href="#" onclick="showView('album-view')">📋 SOLICITAR CARTAS</a>
-            <a href="#" onclick="showView('extras-view')">🌟 CARTAS EXTRA</a>
-            <!-- 2. NUEVA OPCIÓN: CARTAS EN ESPECÍFICO -->
-            <a href="#" onclick="showView('specific-view')">🎯 CARTAS EN ESPECÍFICO</a>
-            <a href="#" onclick="showView('profile-view')">🧑 MI PERFIL</a>
-            <a href="#" onclick="handleLogout()" style="color:#ff5252;">🚪 CERRAR SESIÓN</a>
-        </nav>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-        <!-- VIEW: ALBUM REGULAR -->
+    <!-- NAVEGACIÓN -->
+    <nav id="sidebar">
+        <div style="padding: 0 35px 20px;">
+            <p style="font-family:'Oswald'; color:var(--world-cup-yellow); letter-spacing: 2px; font-size: 0.7rem;">SOUVREIGN OS</p>
+        </div>
+        <a href="#" class="nav-link active-sec" onclick="showView('album-view', this)">📋 LISTADO DE CARTAS</a>
+        <a href="#" class="nav-link" onclick="showView('extras-view', this)">🌟 CARTAS EXTRA</a>
+        <a href="#" class="nav-link" onclick="showView('profile-view', this)">🧑 MI PERFIL</a>
+        <div style="margin-top: auto; padding: 30px;">
+            <button onclick="logout()" style="width:100%; padding:12px; background:transparent; border:1px solid #ff5252; color:#ff5252; border-radius:8px; font-family:'Oswald'; cursor:pointer;">SALIR</button>
+        </div>
+    </nav>
+
+    <!-- INSTAGRAM FIJO -->
+    <a href="https://instagram.com/pablooib" target="_blank" class="insta-float">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.266.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.267-.07-1.646-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.058-1.69-.072-4.949-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    </a>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <!-- VISTA ÁLBUM -->
         <div id="album-view" class="view active">
-            <div class="card" style="border-left: 6px solid var(--world-cup-yellow);">
-                <h2 style="font-family:'Oswald'; font-size:1.8rem;">SELECCIÓN POR PAÍSES</h2>
-                <p style="font-size: 0.85rem; opacity:0.6;">Marca los números que te faltan de cada país.</p>
+            <h1 style="font-family:'Oswald'; font-size: 2.2rem; margin-bottom: 20px;">SELECCIÓN 2026</h1>
+            
+            <div id="album-container">
+                <!-- Se inyectan dinámicamente los países aquí -->
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                <div class="card">
-                    <h3 id="grp-name" style="font-family:'Oswald'; color:var(--world-cup-yellow); margin-bottom:20px;">GRUPO A</h3>
-                    <div id="team-list"></div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-                        <button onclick="changeGroup(-1)" class="buy-btn" style="background:rgba(255,255,255,0.05); color:white; border:1px solid var(--glass-border);">ANTERIOR</button>
-                        <button onclick="changeGroup(1)" class="buy-btn">SIGUIENTE</button>
+        </div>
+
+        <!-- VISTA CARTAS EXTRA -->
+        <div id="extras-view" class="view">
+            <h1 style="font-family:'Oswald'; font-size: 2.2rem; margin-bottom: 5px;">LEGENDARY CARDS</h1>
+            <p style="opacity: 0.6; margin-bottom: 30px;">Ediciones especiales de colección premium</p>
+            
+            <div class="extra-card-container">
+                <div class="extra-card" onclick="toggleExtra(this, 'Lionel Messi')">
+                    <img src="imagenmessi" alt="Messi">
+                    <div class="card-info">
+                        <h3>LIONEL MESSI</h3>
+                        <p style="color:var(--world-cup-yellow); font-size:0.8rem; font-weight:700;">GOLDEN LEGEND</p>
                     </div>
                 </div>
-                <div class="card">
-                    <h2 id="current-team-title" style="font-family:'Oswald'; border-bottom: 2px solid var(--world-cup-yellow); padding-bottom:10px; font-size:1.4rem;">SELECCIONA PAÍS</h2>
-                    <div class="sticker-grid" id="sticker-grid" style="margin-top:20px;"></div>
+
+                <div class="extra-card" onclick="toggleExtra(this, 'Cristiano Ronaldo')">
+                    <img src="imagencristianomundial" alt="CR7">
+                    <div class="card-info">
+                        <h3>CRISTIANO RONALDO</h3>
+                        <p style="color:var(--world-cup-yellow); font-size:0.8rem; font-weight:700;">WORLD ICON</p>
+                    </div>
+                </div>
+
+                <div class="extra-card" onclick="toggleExtra(this, 'Logo Panini')">
+                    <img src="panini" alt="Logo" style="object-fit: contain; background: white; padding: 40px;">
+                    <div class="card-info">
+                        <h3 style="color:#000">PANINI OFFICIAL</h3>
+                        <p style="color:#e54050; font-size:0.8rem; font-weight:700;">AUTHENTIC</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. VIEW: CARTAS EN ESPECÍFICO (NUEVA SECCIÓN) -->
-        <div id="specific-view" class="view">
-            <div class="card" style="border-left: 6px solid #ff4081; background: linear-gradient(to right, rgba(255,64,129,0.05), transparent);">
-                <h2 style="font-family:'Oswald'; font-size:1.8rem;">CARTAS ESPECÍFICAS</h2>
-                <p style="font-size: 0.85rem; opacity:0.6;">Solicita versiones especiales, cartas retro o jugadores personalizados.</p>
-            </div>
-            
-            <div class="card">
-                <div class="premium-input-group">
-                    <label style="font-family:'Oswald'; font-size:0.9rem; letter-spacing:1px;">¿QUÉ CARTA BUSCAS?</label>
-                    <input type="text" id="customStickerInput" class="custom-input" placeholder="Ej: Messi Edición Especial, Escudo Japón...">
-                    <button class="buy-btn" onclick="addCustomSticker()">AGREGAR A LA LISTA</button>
-                </div>
-                
-                <div id="custom-list-container" style="margin-top:30px;">
-                    <h4 style="font-family:'Oswald'; margin-bottom:15px; font-size:0.8rem; opacity:0.5;">TUS SOLICITUDES PERSONALIZADAS:</h4>
-                    <div id="custom-chips-area"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- OTRAS VISTAS -->
-        <div id="extras-view" class="view">
-            <div class="card">
-                <h2 style="font-family:'Oswald';">CARTAS EXTRA</h2>
-                <div class="extra-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top:20px;" id="extra-grid-container"></div>
-            </div>
-        </div>
-
+        <!-- VISTA PERFIL -->
         <div id="profile-view" class="view">
-            <div class="card" style="max-width:500px; margin:auto; text-align: center;">
-                <h2 style="font-family:'Oswald'; color:var(--world-cup-yellow);">MI PERFIL</h2>
-                <img id="profile-full-img" src="" style="width:120px; height:120px; border-radius:50%; border: 4px solid var(--world-cup-yellow); margin: 20px 0;">
-                <h3 id="profile-name-display" style="font-family:'Oswald';">Nombre</h3>
-                <button class="buy-btn" style="margin-top:20px;" onclick="showToast('Modo edición pronto disponible')">EDITAR PERFIL</button>
+            <h1 style="font-family:'Oswald';">MI PERFIL</h1>
+            <div id="user-stats" style="margin-top:20px; background:var(--glass); padding:20px; border-radius:15px;">
+                <p id="user-email">Cargando datos...</p>
             </div>
         </div>
+    </main>
+
+    <!-- FOOTER PARA PEDIDOS -->
+    <div id="footer-order" class="action-footer">
+        <button class="btn-send" onclick="sendOrder()">PEDIR SELECCIONADAS (<span id="total-selected">0</span>)</button>
     </div>
 
-    <!-- 4. FOOTER DINÁMICO -->
-    <div id="selection-footer" class="selection-footer">
-        <button class="buy-btn" style="max-width: 500px;" onclick="sendWhatsAppOrder()">
-            ENVIAR PEDIDO (<span id="selected-count">0</span> ITEMS) POR WHATSAPP
-        </button>
-    </div>
+    <script>
+        // --- CONFIGURACIÓN DE DATOS ---
+        const COUNTRIES = [
+            { name: 'ARGENTINA', stickers: 19 },
+            { name: 'PORTUGAL', stickers: 19 },
+            { name: 'BRASIL', stickers: 19 },
+            { name: 'ESPAÑA', stickers: 19 },
+            { name: 'ALEMANIA', stickers: 19 },
+            { name: 'FRANCIA', stickers: 19 }
+        ];
 
-<script>
-    const WHATSAPP_NUMBER = "50246199644";
-    const firebaseConfig = {
-        apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
-        authDomain: "tiendaskin-bccba.firebaseapp.com",
-        projectId: "tiendaskin-bccba",
-        storageBucket: "tiendaskin-bccba.firebasestorage.app",
-        messagingSenderId: "280193902268",
-        appId: "1:280193902268:web:743d0e2172641be7a292b9"
-    };
+        let selectedStickers = new Set();
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    let selectedStickers = new Set();
-    let customStickers = [];
-    let currentIdx = 0;
-    let activeTeam = "";
-
-    const cartasExtras = [
-        { id: "ESC-01", name: "Escudo Oro FIFA", icon: "🏆" },
-        { id: "LOG-26", name: "Logo Oficial 2026", icon: "⚽" },
-        { id: "EDIT-LM", name: "Edición Limitada Messi", icon: "🐐" }
-    ];
-
-    const grupos = [
-        {id: "A", paises: ["México", "Sudáfrica", "República de Corea", "República Checa"]},
-        {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
-        {id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},
-        {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
-    ];
-
-    // AUTH OBSERVER
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            document.getElementById('nav-user-name').innerText = user.displayName;
-            document.getElementById('nav-user-img').src = user.photoURL;
-            document.getElementById('profile-full-img').src = user.photoURL;
-            document.getElementById('profile-name-display').innerText = user.displayName;
-            renderGroup();
-            renderExtras();
-        } else {
-            document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('loginBtn').style.display = 'block';
-        }
-    });
-
-    // 1. MUSIC CONTROL LOGIC
-    const audio = document.getElementById('audioElement');
-    const playBtn = document.getElementById('playPause');
-    const playerContainer = document.getElementById('playerContainer');
-    
-    function togglePlay() {
-        if (audio.paused) {
-            audio.play();
-            playBtn.innerText = "⏸";
-            playerContainer.classList.remove('paused');
-        } else {
-            audio.pause();
-            playBtn.innerText = "▶";
-            playerContainer.classList.add('paused');
-        }
-    }
-    playBtn.onclick = (e) => { e.stopPropagation(); togglePlay(); };
-    function handleFirstClick() { if(audio.paused && !playerContainer.classList.contains('paused')) audio.play(); }
-
-    // 3 & 5. CUSTOM STICKERS LOGIC & WHATSAPP
-    function addCustomSticker() {
-        const input = document.getElementById('customStickerInput');
-        const val = input.value.trim();
-        if(val.length < 2) return;
-        
-        customStickers.push(val);
-        input.value = "";
-        renderCustomChips();
-        updateSelectionFooter();
-        showToast("Agregado a tu lista especial");
-    }
-
-    function renderCustomChips() {
-        const container = document.getElementById('custom-chips-area');
-        container.innerHTML = "";
-        customStickers.forEach((s, index) => {
-            const chip = document.createElement('div');
-            chip.className = 'custom-item-chip';
-            chip.innerHTML = `${s} <span onclick="removeCustom(${index})" style="cursor:pointer; margin-left:8px; opacity:0.6;">✕</span>`;
-            container.appendChild(chip);
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAlbum();
+            checkAuth();
         });
-    }
 
-    function removeCustom(index) {
-        customStickers.splice(index, 1);
-        renderCustomChips();
-        updateSelectionFooter();
-    }
-
-    function sendWhatsAppOrder() {
-        const regular = Array.from(selectedStickers);
-        let mensaje = `¡Hola! Quiero solicitar estos ítems para mi álbum:\n\n`;
-        
-        if(regular.length > 0) {
-            mensaje += `*CARTAS DEL ÁLBUM:*\n- ${regular.join('\n- ')}\n\n`;
+        function renderAlbum() {
+            const container = document.getElementById('album-container');
+            COUNTRIES.forEach(country => {
+                const section = document.createElement('div');
+                section.innerHTML = `
+                    <h2 style="font-family:'Oswald'; margin: 30px 0 15px; color: var(--world-cup-yellow); border-bottom: 1px solid var(--glass-border); padding-bottom: 5px;">${country.name}</h2>
+                    <div class="countries-grid">
+                        ${Array.from({length: country.stickers}, (_, i) => `
+                            <div class="sticker-item" onclick="toggleSticker(this, '${country.name} ${i+1}')">
+                                ${country.name.substring(0,3)} ${i+1}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(section);
+            });
         }
-        
-        if(customStickers.length > 0) {
-            mensaje += `*PEDIDOS ESPECIALES:*\n- ${customStickers.join('\n- ')}\n\n`;
+
+        // --- LÓGICA DE INTERACCIÓN ---
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+            document.getElementById('menuBtn').classList.toggle('menu-active');
         }
 
-        mensaje += `_Enviado desde el Álbum Digital 2026_`;
-        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`, '_blank');
-    }
-
-    // CORE RENDER FUNCTIONS
-    function renderGroup() {
-        const g = grupos[currentIdx];
-        document.getElementById('grp-name').innerText = "GRUPO " + g.id;
-        const list = document.getElementById('team-list'); list.innerHTML = "";
-        g.paises.forEach(p => {
-            const d = document.createElement('div');
-            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03); font-family:'Oswald';";
-            d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p; renderStickers(); };
-            d.innerHTML = `⚽ ${p.toUpperCase()}`;
-            list.appendChild(d);
-        });
-    }
-
-    function renderStickers() {
-        const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
-        for(let i=1; i<=20; i++) {
-            const id = `${activeTeam} #${i}`;
-            const s = document.createElement('div');
-            s.className = `sticker ${selectedStickers.has(id) ? 'selected' : ''}`;
-            s.innerText = i;
-            s.onclick = () => {
-                selectedStickers.has(id) ? selectedStickers.delete(id) : selectedStickers.add(id);
-                renderStickers();
-                updateSelectionFooter();
-            };
-            grid.appendChild(s);
+        function showView(viewId, link) {
+            if(window.innerWidth < 768) toggleMenu();
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active-sec'));
+            link.classList.add('active-sec');
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
-    }
 
-    function renderExtras() {
-        const container = document.getElementById('extra-grid-container');
-        cartasExtras.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'sticker';
-            div.style.width = "100%";
-            div.innerHTML = `<div style="text-align:center"><small>${item.name}</small></div>`;
-            div.onclick = () => {
-                selectedStickers.has(item.name) ? selectedStickers.delete(item.name) : selectedStickers.add(item.name);
-                updateSelectionFooter();
-            };
-            container.appendChild(div);
-        });
-    }
+        function toggleSticker(el, id) {
+            el.classList.toggle('selected');
+            if(selectedStickers.has(id)) selectedStickers.delete(id);
+            else selectedStickers.add(id);
+            updateFooter();
+        }
 
-    function updateSelectionFooter() {
-        const total = selectedStickers.size + customStickers.length;
-        document.getElementById('selected-count').innerText = total;
-        document.getElementById('selection-footer').classList.toggle('visible', total > 0);
-    }
+        function toggleExtra(el, id) {
+            el.classList.toggle('selected');
+            if(selectedStickers.has(id)) selectedStickers.delete(id);
+            else selectedStickers.add(id);
+            updateFooter();
+        }
 
-    // NAVIGATION UTILS
-    function showView(id) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(window.innerWidth < 768) toggleMenu();
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
+        function updateFooter() {
+            const total = selectedStickers.size;
+            document.getElementById('total-selected').innerText = total;
+            document.getElementById('footer-order').classList.toggle('visible', total > 0);
+        }
 
-    function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('menu-overlay').classList.toggle('active');
-    }
+        function sendOrder() {
+            const list = Array.from(selectedStickers).join(', ');
+            const text = encodeURIComponent(`¡Hola! Quisiera solicitar estas cartas: ${list}`);
+            window.open(`https://wa.me/50246199644?text=${text}`);
+        }
 
-    function changeGroup(dir) { 
-        currentIdx = (currentIdx + dir + grupos.length) % grupos.length; 
-        renderGroup(); 
-    }
+        // --- FIREBASE PLACEHOLDERS ---
+        function checkAuth() {
+            // Aquí integrarías tu auth.onAuthStateChanged
+            console.log("Sistema de autenticación activo");
+        }
 
-    function showToast(m) {
-        const t = document.createElement('div');
-        t.style.cssText = "position:fixed; top:20px; right:20px; background:var(--world-cup-yellow); color:black; padding:12px 25px; border-radius:10px; z-index:5000; font-family:'Oswald'; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.5);";
-        t.innerText = m; document.body.appendChild(t);
-        setTimeout(() => t.remove(), 3000);
-    }
-
-    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function handleLogout() { auth.signOut().then(() => location.reload()); }
-
-    setTimeout(() => { 
-        const intro = document.getElementById('intro-space');
-        if(intro) { intro.style.opacity = '0'; setTimeout(()=>intro.remove(), 1500); }
-    }, 4000);
-</script>
+        function logout() {
+            // firebase.auth().signOut()
+            alert("Sesión cerrada");
+            location.reload();
+        }
+    </script>
 </body>
 </html>
