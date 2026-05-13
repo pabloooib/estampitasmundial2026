@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOUVREIGN | Panini Collector 2026</title>
-    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/2026_FIFA_World_Cup_Logo.svg/256px-2026_FIFA_World_Cup_Logo.svg.png">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
+    <title>SOUVREIGN | World Cup 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
@@ -13,128 +12,107 @@
 
     <style>
         :root { 
-            --panini-red: #e31d1a; 
-            --panini-yellow: #ffcf00;
-            --world-cup-blue: #001b3a;
-            --world-cup-purple: #4a148c;
+            --wc-purple: #4a148c;
+            --wc-blue: #001b3a;
+            --wc-gold: #ffd700;
+            --wc-cyan: #00e5ff;
+            --glass: rgba(255, 255, 255, 0.95);
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            background: #f4f4f4;
-            color: #333; min-height: 100vh; overflow-x: hidden;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background: #0a0a1a; color: #fff; overflow-x: hidden; }
 
-        /* --- INTRO ANIMATION (ZOOM) --- */
-        #intro-space {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
-            z-index: 3000; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; pointer-events: none; transition: opacity 1.5s ease;
-        }
-        .star-field { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: zoomStar 4s infinite ease-in; }
-        @keyframes zoomStar { 0% { transform: scale(0) translate(0, 0); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: scale(1.5) translate(var(--x), var(--y)); opacity: 0; } }
-        .earth-intro { width: 150px; height: 150px; background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); background-size: cover; filter: drop-shadow(0 0 30px rgba(0, 140, 255, 0.4)); animation: approachEarth 4.5s forwards ease-in-out; z-index: 3001; }
-        @keyframes approachEarth { 0% { transform: scale(0.05); opacity: 0; } 20% { opacity: 1; } 100% { transform: scale(30); opacity: 0; } }
-
-        /* --- AUTH SCREEN (PANINI STYLE) --- */
+        /* --- LOGIN AESTHETIC --- */
         .auth-container { 
             height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: var(--panini-red);
-            background-image: radial-gradient(circle at 20% 30%, #ff4d4d 0%, transparent 50%), 
-                              radial-gradient(circle at 80% 70%, #b30000 0%, transparent 50%);
+            background: linear-gradient(135deg, var(--wc-blue) 0%, var(--wc-purple) 100%);
             position: fixed; width: 100%; top: 0; z-index: 2000;
-            opacity: 0; visibility: hidden; transition: 1s;
         }
-        .auth-container.visible { opacity: 1; visibility: visible; }
-        
         .auth-card { 
-            background: white; padding: 3rem; border-radius: 20px; 
-            text-align: center; width: 90%; max-width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            border-bottom: 8px solid var(--panini-yellow);
+            background: var(--glass); padding: 40px; border-radius: 30px; 
+            text-align: center; width: 90%; max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            color: #333; border: 2px solid var(--wc-cyan);
         }
-        .google-btn { 
-            background: white; color: #333; border: 1px solid #ddd; padding: 14px; border-radius: 12px; 
-            cursor: pointer; width: 100%; font-weight: 700; margin-top: 25px; 
-            display: flex; align-items: center; justify-content: center; gap: 12px; 
-            box-shadow: 0 4px 0 #eee;
-        }
-        .google-btn:active { transform: translateY(3px); box-shadow: none; }
-
-        /* --- APP INTERFACE --- */
-        #app { display: none; background: #eee; min-height: 100vh; }
-        .navbar-top {
-            position: fixed; top: 0; width: 100%; height: 65px;
-            background: white; display: flex; align-items: center;
-            justify-content: space-between; padding: 0 20px; z-index: 1500;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .menu-toggle { cursor: pointer; background: var(--panini-red); color: white; padding: 8px 15px; border-radius: 8px; font-weight: 900; font-size: 0.8rem; }
-
-        nav {
-            position: fixed; top: 0; left: -320px; width: 280px; height: 100%;
-            background: white; z-index: 1600; padding-top: 20px;
-            box-shadow: 10px 0 20px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column;
-        }
-        nav.active { left: 0; }
-        nav a { 
-            padding: 15px 25px; color: #444; text-decoration: none; 
-            font-family: 'Oswald'; border-left: 5px solid transparent;
-        }
-        nav a:hover, nav a.active-link { background: #fff5f5; color: var(--panini-red); border-left-color: var(--panini-red); }
-
-        /* --- ALBUM STYLES --- */
-        .view { display: none; max-width: 1100px; margin: 80px auto 120px; padding: 0 15px; }
-        .view.active { display: block; }
-        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .auth-card img.logo-wc { width: 100%; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .auth-card h2 { font-family: 'Oswald'; font-size: 1.8rem; margin-bottom: 25px; color: var(--wc-blue); }
         
-        .sticker-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 15px; }
-        .sticker { 
-            aspect-ratio: 1; background: #f8f8f8; border: 1px solid #ddd; 
-            border-radius: 6px; display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; font-size: 1rem; cursor: pointer; font-family: 'Oswald';
+        .google-btn-aesthetic { 
+            background: #4285F4; color: white; border: none; padding: 15px; border-radius: 50px; 
+            cursor: pointer; width: 100%; font-weight: 600; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center; gap: 15px; 
+            transition: 0.3s; box-shadow: 0 10px 20px rgba(66, 133, 244, 0.3);
         }
-        .sticker small { font-size: 0.55rem; color: #888; margin-top: 2px; }
-        .sticker.selected { 
-            background: var(--panini-yellow); border-color: orange; color: black;
-            transform: scale(1.05); box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        .google-btn-aesthetic:hover { transform: translateY(-3px); background: #357abd; }
+
+        /* --- DASHBOARD --- */
+        #app { display: none; }
+        .navbar {
+            position: fixed; top: 0; width: 100%; height: 70px;
+            background: rgba(10, 10, 26, 0.8); backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-brand { font-family: 'Oswald'; font-size: 1.5rem; color: var(--wc-cyan); }
+
+        /* MENU DINAMICO */
+        .sidebar {
+            position: fixed; top: 70px; left: -280px; width: 260px; height: calc(100% - 70px);
+            background: var(--wc-blue); z-index: 999; transition: 0.4s;
+            padding: 20px; border-right: 1px solid var(--wc-cyan);
+        }
+        .sidebar.active { left: 0; }
+        .nav-item { 
+            padding: 15px; color: white; text-decoration: none; display: flex; 
+            align-items: center; gap: 10px; border-radius: 12px; margin-bottom: 10px;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: var(--wc-cyan); }
+
+        /* --- VIEWS --- */
+        .main-content { padding: 90px 20px 120px; max-width: 1200px; margin: auto; }
+        .card-glass { 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
+            backdrop-filter: blur(10px); border-radius: 20px; padding: 25px; margin-bottom: 20px;
         }
 
-        .selection-footer {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: white;
-            padding: 20px; display: flex; flex-direction: column; align-items: center;
-            border-top: 4px solid var(--panini-yellow); transform: translateY(100%);
-            z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        /* PRECIOS CON IMAGENES */
+        .player-price-card {
+            display: flex; align-items: center; gap: 20px; background: rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 15px; margin-bottom: 15px;
         }
-        .selection-footer.visible { transform: translateY(0); }
-        .buy-btn { background: #25d366; color: white; border: none; padding: 15px 40px; border-radius: 50px; cursor: pointer; font-family: 'Oswald'; font-weight: 900; width: 100%; max-width: 400px; }
-
-        .group-btn { background: var(--panini-red); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-family: 'Oswald'; }
+        .player-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--wc-cyan); }
         
-        #toast-container { position: fixed; top: 80px; right: 20px; z-index: 10000; }
-        .toast { background: #333; color: white; padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; animation: slideIn 0.3s forwards; }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        /* GRID DE CARTAS */
+        .sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; }
+        .stk { 
+            aspect-ratio: 1; background: rgba(255,255,255,0.1); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            font-weight: bold; border: 1px solid transparent;
+        }
+        .stk.selected { background: var(--wc-cyan); color: #000; border-color: white; transform: scale(1.1); }
+
+        /* FOOTER DINAMICO */
+        .order-footer {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%);
+            width: 90%; max-width: 500px; background: white; color: #333; padding: 20px;
+            border-radius: 20px; transition: 0.5s; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .order-footer.visible { transform: translateX(-50%) translateY(0); }
+        textarea { width: 100%; padding: 10px; border-radius: 10px; margin: 10px 0; border: 1px solid #ddd; font-family: inherit; }
+
+        /* PROFILE EDITOR */
+        .profile-pic-container { position: relative; width: 120px; margin: auto; }
+        .edit-badge { position: absolute; bottom: 0; right: 0; background: var(--wc-cyan); padding: 5px; border-radius: 50%; cursor: pointer; }
     </style>
 </head>
-<body onclick="enableAudio()">
-
-    <!-- INTRO ESPACIAL -->
-    <div id="intro-space">
-        <div class="earth-intro"></div>
-    </div>
+<body>
 
     <!-- PANTALLA LOGIN -->
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Panini_Group_logo.svg/1024px-Panini_Group_logo.svg.png" width="150" style="margin-bottom:10px;">
-            <h2 style="font-family:'Oswald'; color:var(--panini-red); margin-bottom: 5px;">SOUVREIGN</h2>
-            <p style="font-size: 0.8rem; color: #666; font-weight: bold;">GESTIÓN DE COLECCIONES 2026</p>
-            
-            <button class="google-btn" id="loginBtn" onclick="loginWithGoogle()">
+            <img src="FIFA-World-Cup-2026.jpg" class="logo-wc" alt="World Cup 2026">
+            <h2>INICIAR SESIÓN</h2>
+            <button class="google-btn-aesthetic" onclick="loginWithGoogle()">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20"> 
                 INGRESAR CON GOOGLE
             </button>
@@ -143,73 +121,93 @@
 
     <!-- APP PRINCIPAL -->
     <div id="app">
-        <header class="navbar-top">
-            <div class="menu-toggle" onclick="toggleMenu()">☰ MENU</div>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Panini_Group_logo.svg/1024px-Panini_Group_logo.svg.png" height="25">
-            <div id="nav-user-name" style="font-family:'Oswald'; font-size: 0.8rem; color: var(--panini-red);">USUARIO</div>
-        </header>
-
-        <nav id="sidebar">
-            <div style="padding: 20px; text-align: center;">
-                <img id="nav-user-img" src="" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--panini-yellow);">
-            </div>
-            <a href="#" onclick="showView('album-view')">📋 SOLICITAR CARTAS</a>
-            <a href="#" onclick="showView('prices-view')">💰 LISTA DE PRECIOS</a>
-            <a href="#" onclick="handleLogout()" style="color: #ff5252; margin-top: auto; border-top: 1px solid #eee;">🚪 CERRAR SESIÓN</a>
+        <nav class="navbar">
+            <div style="cursor:pointer; font-size:1.5rem;" onclick="toggleSidebar()">☰</div>
+            <div class="nav-brand">SOUVREIGN 2026</div>
+            <img id="user-avatar-nav" src="" style="width:35px; height:35px; border-radius:50%;" onclick="showView('profile-view')">
         </nav>
 
-        <div id="album-view" class="view active">
-            <div class="card" style="border-left: 5px solid var(--panini-red); display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h2 id="grp-name" style="font-family:'Oswald'; color:var(--panini-red);">GRUPO A</h2>
-                    <p style="font-size: 0.7rem; color: #888;">Toca un país y luego las cartas que necesitas.</p>
-                </div>
-                <div style="display:flex; gap:5px;">
-                    <button onclick="changeGroup(-1)" class="group-btn">◄</button>
-                    <button onclick="changeGroup(1)" class="group-btn">►</button>
-                </div>
-            </div>
+        <div class="sidebar" id="sidebar">
+            <a href="#" class="nav-item" onclick="showView('album-view')">🏆 Solicitar Cartas</a>
+            <a href="#" class="nav-item" onclick="showView('prices-view')">💰 Lista de Precios</a>
+            <a href="#" class="nav-item" onclick="showView('profile-view')">👤 Mi Perfil</a>
+            <a href="#" class="nav-item" onclick="logout()" style="color:#ff5252; margin-top:20px;">🚪 Salir</a>
+        </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-                <div class="card">
-                    <div id="team-list"></div>
+        <div class="main-content">
+            <!-- VISTA ALBUM -->
+            <div id="album-view" class="view active">
+                <div class="card-glass">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h2 id="group-title" style="font-family:'Oswald'; color:var(--wc-cyan);">GRUPO A</h2>
+                        <div>
+                            <button onclick="changeGroup(-1)" style="background:none; border:1px solid white; color:white; padding:5px 15px; border-radius:8px;">◄</button>
+                            <button onclick="changeGroup(1)" style="background:none; border:1px solid white; color:white; padding:5px 15px; border-radius:8px;">►</button>
+                        </div>
+                    </div>
+                    <div id="country-tabs" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;"></div>
                 </div>
-                <div class="card">
-                    <h3 id="current-team-title" style="font-family:'Oswald'; color: var(--panini-red); border-bottom: 2px solid var(--panini-yellow); padding-bottom: 5px;">SELECCIONA UN PAÍS</h3>
+
+                <div class="card-glass">
+                    <h3 id="active-country-name" style="margin-bottom:15px; font-family:'Oswald';">SELECCIONA PAÍS</h3>
                     <div class="sticker-grid" id="sticker-grid"></div>
                 </div>
             </div>
-        </div>
 
-        <div id="prices-view" class="view">
-            <div class="card" style="max-width: 500px; margin: auto;">
-                <h2 style="font-family:'Oswald'; color: var(--panini-red); text-align: center; margin-bottom: 20px;">LISTA DE PRECIOS</h2>
-                <div id="price-list-content" style="line-height: 2; font-weight: bold;">
-                    <p>• Carta Normal: <span style="float:right">Q2.00</span></p>
-                    <p>• Escudo (#1): <span style="float:right">Q10.00</span></p>
-                    <p>• Estadio (#13): <span style="float:right">Q15.00</span></p>
-                    <hr style="margin: 10px 0; opacity: 0.2;">
-                    <p style="color: var(--panini-red)">• MESSI (Arg #17): <span style="float:right">Q30.00</span></p>
-                    <p style="color: var(--panini-red)">• CR7 (Por #15): <span style="float:right">Q30.00</span></p>
-                    <p style="color: var(--panini-red)">• MBAPPÉ (Fra #20): <span style="float:right">Q25.00</span></p>
+            <!-- VISTA PRECIOS -->
+            <div id="prices-view" class="view" style="display:none;">
+                <div class="card-glass">
+                    <h2 style="font-family:'Oswald'; text-align:center; color:var(--wc-cyan); margin-bottom:20px;">JUGADORES TOP</h2>
+                    
+                    <div class="player-price-card">
+                        <img src="imagenmessi.jpg" class="player-img">
+                        <div style="flex:1"><h3>LIONEL MESSI</h3><p>Argentina #17</p></div>
+                        <div style="color:var(--wc-cyan); font-weight:bold;">Q30.00</div>
+                    </div>
+
+                    <div class="player-price-card">
+                        <img src="cristianomundial.jpg" class="player-img">
+                        <div style="flex:1"><h3>C. RONALDO</h3><p>Portugal #15</p></div>
+                        <div style="color:var(--wc-cyan); font-weight:bold;">Q30.00</div>
+                    </div>
+
+                    <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+                        <p>• Normales: Q2.00</p>
+                        <p>• Escudos (#1): Q10.00</p>
+                        <p>• Estadios (#13): Q15.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA PERFIL -->
+            <div id="profile-view" class="view" style="display:none;">
+                <div class="card-glass" style="text-align:center;">
+                    <div class="profile-pic-container">
+                        <img id="edit-avatar" src="" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--wc-cyan);">
+                        <label for="file-upload" class="edit-badge">📷</label>
+                        <input type="file" id="file-upload" style="display:none" onchange="updateProfilePic(event)">
+                    </div>
+                    <h2 id="edit-name" style="margin-top:15px;">Nombre de Usuario</h2>
+                    <p id="edit-email" style="opacity:0.6; margin-bottom:20px;">usuario@correo.com</p>
+                    <button onclick="logout()" style="background:rgba(255,82,82,0.2); color:#ff5252; border:1px solid #ff5252; padding:10px 20px; border-radius:10px; cursor:pointer;">CERRAR SESIÓN</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- PIE DE SELECCIÓN -->
-    <div id="selection-footer" class="selection-footer">
-        <p style="font-family:'Oswald'; margin-bottom: 10px;">TOTAL ESTIMADO: <span style="color:var(--panini-red)">Q<span id="total-price">0.00</span></span></p>
-        <button class="buy-btn" onclick="sendWhatsAppOrder()">
-            SOLICITAR <span id="selected-count">0</span> CARTAS POR WHATSAPP
-        </button>
+        <!-- FOOTER DE PEDIDO -->
+        <div id="order-footer" class="order-footer">
+            <h4 style="font-family:'Oswald';">RESUMEN DEL PEDIDO</h4>
+            <p style="font-size:0.8rem; margin-bottom:10px;"><span id="count-label">0</span> cartas seleccionadas</p>
+            
+            <textarea id="extra-cards" placeholder="Escribe aquí si necesitas cartas adicionales (ej: Oro #5, Coca-Cola #2, etc.)"></textarea>
+            
+            <button onclick="sendOrder()" style="width:100%; background:#25d366; color:white; border:none; padding:15px; border-radius:15px; font-weight:bold; cursor:pointer;">
+                ENVIAR PEDIDO POR WHATSAPP
+            </button>
+        </div>
     </div>
-
-    <div id="toast-container"></div>
-    <audio id="audioElement" loop src="we-are-one.mp3"></audio>
 
 <script>
-    const WHATSAPP_NUMBER = "50246199644";
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -223,150 +221,132 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let selectedItems = [];
-    let currentIdx = 0;
-    let activeTeam = "";
+    let selectedCards = [];
+    let groupIdx = 0;
+    let activeCountry = "";
 
     const grupos = [
-        {id: "A", paises: ["México", "Sudáfrica", "República de Corea", "República Checa"]},
-        {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"]},
+        {id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},
+        {id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},
         {id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},
-        {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Türkiye"]},
-        {id: "E", paises: ["Alemania", "Curazao", "Costa de Marfil", "Ecuador"]},
+        {id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},
+        {id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},
         {id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},
-        {id: "G", paises: ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"]},
-        {id: "H", paises: ["España", "Uruguay", "Arabia Saudita", "Cabo Verde"]},
+        {id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},
+        {id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},
         {id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},
         {id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},
         {id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},
         {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}
     ];
 
-    // --- SECUENCIA DE INICIO ---
-    function initSequence() {
-        const intro = document.getElementById('intro-space');
-        // Estrellas
-        for (let i = 0; i < 40; i++) {
-            const star = document.createElement('div');
-            star.className = 'star-field';
-            const size = Math.random() * 2 + 'px';
-            star.style.width = size; star.style.height = size;
-            star.style.left = '50%'; star.style.top = '50%';
-            const angle = Math.random() * Math.PI * 2;
-            const dist = 500 + Math.random() * 500;
-            star.style.setProperty('--x', Math.cos(angle) * dist + 'px');
-            star.style.setProperty('--y', Math.sin(angle) * dist + 'px');
-            star.style.animationDelay = Math.random() * 2 + 's';
-            intro.appendChild(star);
-        }
-        
-        setTimeout(() => {
-            intro.style.opacity = '0';
-            document.getElementById('auth-screen').classList.add('visible');
-            setTimeout(() => intro.remove(), 1500);
-        }, 4200);
-    }
-    initSequence();
-
     auth.onAuthStateChanged(user => {
-        if(user) {
+        if (user) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            document.getElementById('nav-user-name').innerText = user.displayName.toUpperCase();
-            document.getElementById('nav-user-img').src = user.photoURL || 'https://www.gstatic.com/images/branding/product/2x/avatar_square_blue_120dp.png';
+            updateUI(user);
             renderGroup();
+        } else {
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('app').style.display = 'none';
         }
     });
 
+    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    function logout() { auth.signOut().then(() => location.reload()); }
+
+    function updateUI(user) {
+        document.getElementById('user-avatar-nav').src = user.photoURL || 'default-avatar.png';
+        document.getElementById('edit-avatar').src = user.photoURL || 'default-avatar.png';
+        document.getElementById('edit-name').innerText = user.displayName;
+        document.getElementById('edit-email').innerText = user.email;
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        if(id !== 'album-view') document.getElementById('order-footer').classList.remove('visible');
+        else if(selectedCards.length > 0) document.getElementById('order-footer').classList.add('visible');
+        toggleSidebar();
+    }
+
     function renderGroup() {
-        const g = grupos[currentIdx];
-        document.getElementById('grp-name').innerText = "GRUPO " + g.id;
-        const list = document.getElementById('team-list'); list.innerHTML = "";
+        const g = grupos[groupIdx];
+        document.getElementById('group-title').innerText = "GRUPO " + g.id;
+        const container = document.getElementById('country-tabs');
+        container.innerHTML = "";
+        
         g.paises.forEach(p => {
-            const d = document.createElement('div');
-            d.style.cssText = "padding:12px; cursor:pointer; border-bottom:1px solid #eee; font-family:'Oswald'; display:flex; align-items:center;";
-            d.onclick = () => { activeTeam = p; document.getElementById('current-team-title').innerText = p.toUpperCase(); renderStickers(); };
-            d.innerHTML = `<img src="https://flagcdn.com/w40/${getIso(p)}.png" width="22" style="margin-right:12px;"> ${p.toUpperCase()}`;
-            list.appendChild(d);
+            const btn = document.createElement('button');
+            btn.innerText = p;
+            btn.style.cssText = "background:rgba(255,255,255,0.1); color:white; border:none; padding:8px 15px; border-radius:20px; white-space:nowrap; cursor:pointer;";
+            btn.onclick = () => { activeCountry = p; document.getElementById('active-country-name').innerText = p.toUpperCase(); renderStickers(); };
+            container.appendChild(btn);
         });
     }
 
     function renderStickers() {
-        const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
+        const grid = document.getElementById('sticker-grid');
+        grid.innerHTML = "";
         for(let i=1; i<=20; i++) {
-            const id = `${activeTeam} #${i}`;
-            const price = calculatePrice(activeTeam, i);
-            const isSelected = selectedItems.find(s => s.id === id);
-            
-            const s = document.createElement('div');
-            s.className = `sticker ${isSelected ? 'selected' : ''}`;
-            s.innerHTML = `${i} <small>Q${price}</small>`;
-            s.onclick = () => toggleSticker(id, price);
-            grid.appendChild(s);
+            const cardId = `${activeCountry} #${i}`;
+            const div = document.createElement('div');
+            div.className = `stk ${selectedCards.includes(cardId) ? 'selected' : ''}`;
+            div.innerText = i;
+            div.onclick = () => toggleCard(cardId);
+            grid.appendChild(div);
         }
     }
 
-    function calculatePrice(team, num) {
-        if(num === 1) return 10;
-        if(num === 13) return 15;
-        if(team === "Argentina" && num === 17) return 30; // Messi
-        if(team === "Portugal" && num === 15) return 30;  // CR7
-        if(team === "Francia" && num === 20) return 25;   // Mbappe
-        return 2;
-    }
-
-    function toggleSticker(id, price) {
-        const index = selectedItems.findIndex(s => s.id === id);
-        if(index > -1) selectedItems.splice(index, 1);
-        else selectedItems.push({id, price});
+    function toggleCard(id) {
+        if(selectedCards.includes(id)) selectedCards = selectedCards.filter(c => c !== id);
+        else selectedCards.push(id);
         
         renderStickers();
-        updateFooter();
-    }
-
-    function updateFooter() {
-        const footer = document.getElementById('selection-footer');
-        const count = selectedItems.length;
-        const total = selectedItems.reduce((sum, item) => sum + item.price, 0);
-        
-        document.getElementById('selected-count').innerText = count;
-        document.getElementById('total-price').innerText = total.toFixed(2);
-        
-        if(count > 0) footer.classList.add('visible');
+        const footer = document.getElementById('order-footer');
+        document.getElementById('count-label').innerText = selectedCards.length;
+        if(selectedCards.length > 0) footer.classList.add('visible');
         else footer.classList.remove('visible');
     }
 
-    function sendWhatsAppOrder() {
+    function changeGroup(dir) {
+        groupIdx = (groupIdx + dir + grupos.length) % grupos.length;
+        renderGroup();
+    }
+
+    function updateProfilePic(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('edit-avatar').src = e.target.result;
+                document.getElementById('user-avatar-nav').src = e.target.result;
+                // Aquí podrías subir la imagen a Firebase Storage en un proyecto real
+                alert("Foto de perfil actualizada visualmente.");
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function sendOrder() {
         const user = auth.currentUser.displayName;
-        const lista = selectedItems.map(s => `%0A• ${s.id} (Q${s.price})`).join('');
-        const total = selectedItems.reduce((sum, item) => sum + item.price, 0);
-        const msg = `*PEDIDO PANINI - SOUVREIGN*%0A*Cliente:* ${user}${lista}%0A%0A*TOTAL ESTIMADO: Q${total}*`;
-        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+        const extras = document.getElementById('extra-cards').value;
+        let text = `*NUEVO PEDIDO MUNDIAL 2026*%0A*Usuario:* ${user}%0A%0A*Cartas:*%0A${selectedCards.join('%0A')}`;
         
-        db.collection("pedidos").add({ usuario: user, items: selectedItems, total, fecha: new Date() });
-        showToast("Abriendo WhatsApp...");
+        if(extras) text += `%0A%0A*Adicionales:*%0A${extras}`;
+        
+        window.open(`https://wa.me/50246199644?text=${text}`, '_blank');
+        
+        // Guardar en DB para respaldo
+        db.collection("pedidos").add({
+            user: user,
+            items: selectedCards,
+            extras: extras,
+            timestamp: new Date()
+        });
     }
-
-    function getIso(p) {
-        const codes = { "México":"mx", "Sudáfrica":"za", "República de Corea":"kr", "República Checa":"cz", "Canadá":"ca", "Bosnia y Herzegovina":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "Estados Unidos":"us", "Paraguay":"py", "Australia":"au", "Türkiye":"tr", "Alemania":"de", "Curazao":"cw", "Costa de Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "Nueva Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia Saudita":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
-        return codes[p] || "un";
-    }
-
-    function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-    function showView(id) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        toggleMenu();
-    }
-    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function handleLogout() { auth.signOut().then(() => location.reload()); }
-    function showToast(m) {
-        const t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
-        document.getElementById('toast-container').appendChild(t);
-        setTimeout(() => t.remove(), 3000);
-    }
-    function changeGroup(dir) { currentIdx = (currentIdx + dir + grupos.length) % grupos.length; renderGroup(); }
-    function enableAudio() { const a = document.getElementById('audioElement'); if(a.paused) a.play(); }
 </script>
 </body>
 </html>
