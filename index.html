@@ -8,156 +8,139 @@
     <link rel="icon" type="image/jpeg" href="imagenmundial.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
     
-    <!-- Firebase -->
+    <!-- Firebase App (Base) y Auth -->
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
 
     <style>
-        :root { 
-            --gold: #ffeb3b;
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --premium: #00d2ff;
-        }
-        
+        :root { --gold: #ffeb3b; --glass: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.15); }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            background: #000; color: white; min-height: 100vh; overflow-x: hidden;
+        body { font-family: 'Roboto', sans-serif; background: #000; color: white; min-height: 100vh; overflow-x: hidden; }
+
+        /* --- INTRO ESPACIAL --- */
+        #intro-space {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+            z-index: 3000; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; pointer-events: none; transition: opacity 2s ease;
+        }
+        .star-field { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: zoomStar 4s infinite ease-in; }
+        @keyframes zoomStar { 0% { transform: scale(0) translate(0, 0); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: scale(1.5) translate(var(--x), var(--y)); opacity: 0; } }
+        .earth-intro { 
+            width: 150px; height: 150px; 
+            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png'); 
+            background-size: cover; filter: drop-shadow(0 0 30px rgba(0, 140, 255, 0.4)); 
+            animation: approachEarth 5s forwards cubic-bezier(0.7, 0, 0.3, 1); z-index: 3001; 
+        }
+        @keyframes approachEarth { 
+            0% { transform: scale(0.1) rotate(0deg); opacity: 0; } 
+            20% { opacity: 1; }
+            100% { transform: scale(25) rotate(15deg); opacity: 0; } 
         }
 
-        /* --- LOGIN & DINAMIC WORLD --- */
+        /* --- AUTH SCREEN --- */
         #login-screen {
-            position: fixed; inset: 0; z-index: 2000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #000; overflow: hidden;
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('imagenmundial.jpg');
+            background-size: cover; background-position: center; position: fixed; width: 100%; top: 0; z-index: 2000;
+            opacity: 0; visibility: hidden; transition: 1.5s;
         }
-
-        #world-bg {
-            position: absolute; width: 150%; height: 150%;
-            background: url('imagenmundial.jpg') no-repeat center;
-            background-size: cover; opacity: 0.4;
-            animation: rotateWorld 60s linear infinite;
+        #login-screen.visible { opacity: 1; visibility: visible; }
+        
+        .auth-card { 
+            background: rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 30px; 
+            border: 1px solid rgba(255,255,255,0.2); text-align: center; 
+            backdrop-filter: blur(20px); width: 90%; max-width: 400px;
         }
-
-        @keyframes rotateWorld { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .login-card {
-            position: relative; z-index: 2001; padding: 40px;
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 30px;
-            text-align: center; width: 90%; max-width: 400px;
+        .google-btn { 
+            background: white; color: #333; border: none; padding: 14px; border-radius: 12px; 
+            cursor: pointer; width: 100%; font-weight: 700; margin-top: 25px; 
+            display: flex; align-items: center; justify-content: center; gap: 12px; 
+            font-size: 1rem; transition: 0.3s;
         }
+        .google-btn:hover { background: #f1f1f1; transform: translateY(-2px); }
 
-        .btn-google {
-            background: white; color: #000; border: none; padding: 15px 25px;
-            border-radius: 12px; font-family: 'Oswald'; display: flex;
-            align-items: center; justify-content: center; gap: 10px;
-            width: 100%; cursor: pointer; transition: 0.3s;
-        }
-
-        /* --- INTERFAZ APP --- */
-        .navbar-top {
-            position: fixed; top: 0; width: 100%; height: 70px;
-            background: rgba(0, 5, 15, 0.8); backdrop-filter: blur(20px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; z-index: 1500; border-bottom: 1px solid var(--glass-border);
-        }
-
-        nav {
-            position: fixed; top: 0; left: -100%; width: 280px; height: 100vh;
-            background: rgba(0, 8, 20, 0.98); backdrop-filter: blur(30px);
-            z-index: 1550; padding: 100px 0; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-        }
+        /* --- APP CONTENT --- */
+        #app-content { display: none; }
+        .navbar-top { position: fixed; top: 0; width: 100%; height: 70px; background: rgba(0, 5, 15, 0.9); backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1500; border-bottom: 1px solid var(--glass-border); }
+        nav { position: fixed; top: 0; left: -100%; width: 280px; height: 100vh; background: rgba(0, 8, 20, 0.98); backdrop-filter: blur(20px); z-index: 1550; padding: 100px 0; transition: 0.5s; border-right: 1px solid var(--glass-border); }
         nav.active { left: 0; }
+        .nav-link { padding: 18px 30px; color: rgba(255,255,255,0.7); text-decoration: none; font-family: 'Oswald'; display: flex; align-items: center; gap: 15px; }
+        .nav-link.active-sec { color: var(--gold); background: rgba(255,235,59,0.05); border-left: 4px solid var(--gold); }
 
-        .nav-link {
-            padding: 16px 30px; color: rgba(255,255,255,0.6); text-decoration: none;
-            font-family: 'Oswald'; display: flex; align-items: center; gap: 15px; font-size: 1.1rem;
-        }
-        .nav-link.active-sec { color: var(--gold); border-left: 4px solid var(--gold); }
-
-        /* --- GRUPOS Y CARTAS --- */
-        .view { display: none; padding: 100px 15px 150px; max-width: 1200px; margin: auto; }
+        .view { display: none; padding: 100px 15px 160px; max-width: 1200px; margin: auto; animation: fadeIn 0.4s; }
         .view.active { display: block; }
-
-        .group-block { margin-bottom: 50px; }
-        .group-header { font-family: 'Oswald'; color: var(--gold); font-size: 1.8rem; margin-bottom: 20px; border-bottom: 2px solid var(--gold); }
-
-        .countries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .country-card { background: var(--glass); border-radius: 20px; padding: 20px; border: 1px solid var(--glass-border); }
-        .country-info { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .flag-img { width: 40px; border-radius: 5px; }
-
-        .stickers-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .sticker {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Oswald';
+        .group-header { font-family: 'Oswald'; color: var(--gold); border-bottom: 2px solid var(--gold); margin: 30px 0 15px; padding-bottom: 5px; text-transform: uppercase; }
+        .countries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .country-card { background: var(--glass); border-radius: 20px; padding: 15px; border: 1px solid var(--glass-border); }
+        .country-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-weight: 700; }
+        .flag-img { width: 35px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        
+        .stickers-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .sticker { 
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); 
+            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Oswald'; 
         }
-        .sticker.selected { background: var(--gold); color: #000; border-color: var(--gold); transform: scale(1.05); }
+        .sticker.selected { background: var(--gold); color: #000; border-color: var(--gold); transform: scale(1.05); box-shadow: 0 0 15px rgba(255,235,59,0.4); }
         .sticker small { font-size: 0.6rem; opacity: 0.7; }
 
         /* --- EXTRAS --- */
-        .extras-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .extras-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
         .extra-card { border-radius: 20px; overflow: hidden; aspect-ratio: 3/4.5; cursor: pointer; border: 1px solid var(--glass-border); position: relative; }
-        .extra-card img { width: 100%; height: 100%; object-fit: cover; }
-        .extra-card.selected { border: 3px solid var(--gold); }
+        .extra-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .extra-card:hover img { transform: scale(1.1); }
+        .extra-card.selected { border: 4px solid var(--gold); }
 
-        /* --- FOOTER TOTAL --- */
-        .footer-action {
-            position: fixed; bottom: 0; width: 100%; padding: 20px;
-            background: rgba(0,8,20,0.95); backdrop-filter: blur(15px);
-            border-top: 1px solid var(--gold); transform: translateY(100%);
-            transition: 0.4s; z-index: 1000; display: flex; flex-direction: column; align-items: center;
-        }
+        .footer-action { position: fixed; bottom: 0; width: 100%; padding: 25px; background: rgba(0,8,20,0.95); border-top: 1px solid var(--gold); transform: translateY(100%); transition: 0.4s; z-index: 1000; text-align: center; backdrop-filter: blur(10px); }
         .footer-action.visible { transform: translateY(0); }
-        .total-price { font-family: 'Oswald'; font-size: 1.5rem; color: var(--gold); margin-bottom: 10px; }
-        .btn-send { background: var(--gold); color: #000; border: none; padding: 15px 60px; border-radius: 12px; font-family: 'Oswald'; font-weight: 700; cursor: pointer; }
+        .total-box { font-family: 'Oswald'; font-size: 1.8rem; color: var(--gold); margin-bottom: 10px; }
+        .btn-send { background: var(--gold); color: #000; border: none; padding: 15px 60px; border-radius: 12px; font-family: 'Oswald'; font-weight: 700; cursor: pointer; font-size: 1.1rem; }
 
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1520; display: none; }
-        .overlay.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
+    <!-- INTRO DE ZOOM ESPACIAL -->
+    <div id="intro-space">
+        <div class="earth-intro"></div>
+    </div>
+
     <!-- PANTALLA DE LOGIN -->
     <div id="login-screen">
-        <div id="world-bg"></div>
-        <div class="login-card">
-            <img src="panini.jpg" style="width: 150px; margin-bottom: 20px;">
-            <h1 style="font-family:'Oswald'; margin-bottom: 10px;">BIENVENIDO</h1>
-            <p style="opacity:0.7; margin-bottom:30px;">Inicia sesión para armar tu pedido</p>
-            <button class="btn-google" onclick="loginWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20">
-                CONTINUAR CON GOOGLE
+        <div class="auth-card">
+            <h1 style="font-family:'Oswald'; color:var(--gold); font-size: 2rem; letter-spacing: 2px;">SOUVREIGN</h1>
+            <p style="opacity:0.8; margin-top: 5px;">MUNDIAL 2026</p>
+            <button class="google-btn" onclick="loginWithGoogle()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="22">
+                INICIAR SESIÓN CON GOOGLE
             </button>
         </div>
     </div>
 
-    <!-- APP PRINCIPAL -->
-    <div id="app-content" style="display: none;">
+    <!-- CONTENIDO APP -->
+    <div id="app-content">
         <header class="navbar-top">
-            <div onclick="toggleMenu()" style="cursor:pointer; color:var(--gold); font-size:1.5rem;">☰</div>
-            <img src="panini.jpg" height="30">
-            <div id="user-avatar" style="width:35px; height:35px; border-radius:50%; background:var(--gold); color:#000; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.8rem;">JP</div>
+            <div onclick="toggleMenu()" style="cursor:pointer; font-size:1.6rem; color:var(--gold);">☰</div>
+            <img src="panini.jpg" height="35">
+            <div id="user-avatar" style="width:38px; height:38px; background:var(--gold); color:#000; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size: 1rem;">JP</div>
         </header>
 
         <nav id="sidebar">
-            <a href="#" class="nav-link" onclick="showView('profile-view', this)"><span>🧑</span> MI PERFIL</a>
-            <a href="#" class="nav-link active-sec" onclick="showView('album-view', this)"><span>📋</span> ÁLBUM (20 CARTAS/PAÍS)</a>
-            <a href="#" class="nav-link" onclick="showView('extras-view', this)"><span>🌟</span> CARTAS EXTRA</a>
-            <div style="padding: 30px;"><button onclick="logout()" style="background:none; border:1px solid #ff5252; color:#ff5252; width:100%; padding:10px; border-radius:8px; cursor:pointer;">SALIR</button></div>
+            <a href="#" class="nav-link" onclick="showView('profile-view', this)"><span>👤</span> PERFIL</a>
+            <a href="#" class="nav-link active-sec" onclick="showView('album-view', this)"><span>⚽</span> ÁLBUM COMPLETO</a>
+            <a href="#" class="nav-link" onclick="showView('extras-view', this)"><span>🌟</span> CARTAS LEGENDARIAS</a>
+            <div style="padding:40px;"><button onclick="location.reload()" style="background:none; border:1px solid #ff5252; color:#ff5252; width:100%; padding:10px; border-radius:8px; cursor:pointer;">CERRAR SESIÓN</button></div>
         </nav>
 
-        <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+        <div class="overlay" id="overlay" onclick="toggleMenu()" style="position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; z-index:1520;"></div>
 
         <main>
             <div id="profile-view" class="view">
-                <div style="background:var(--glass); padding:40px; border-radius:25px; text-align:center;">
-                    <h2 id="user-name" style="font-family:'Oswald';">CARGANDO...</h2>
-                    <p id="user-email" style="opacity:0.6;"></p>
+                <div style="background:var(--glass); padding:50px; border-radius:25px; text-align:center; border: 1px solid var(--glass-border);">
+                    <h2 id="u-name" style="font-family:'Oswald'; font-size: 2rem;">INVITADO</h2>
+                    <p id="u-email" style="opacity:0.6; margin-top:10px;"></p>
                 </div>
             </div>
 
@@ -166,34 +149,77 @@
             </div>
 
             <div id="extras-view" class="view">
+                <h2 class="group-header">EXTRAS MUNDIALISTAS</h2>
                 <div class="extras-grid">
-                    <div class="extra-card" onclick="toggleSelection(this, 'MESSI LEGEND', 50)">
+                    <div class="extra-card" onclick="toggleSelection(this, 'MESSI GOLD EXTRA', 50)">
                         <img src="imagenmessi.jpg">
-                        <div style="position:absolute; bottom:0; background:rgba(0,0,0,0.8); width:100%; text-align:center; padding:10px;">MESSI GOLD - Q50</div>
+                        <div style="position:absolute; bottom:0; background:linear-gradient(transparent, rgba(0,0,0,0.9)); width:100%; text-align:center; padding:20px;">
+                            <p style="font-family:'Oswald';">MESSI GOLD - Q50</p>
+                        </div>
                     </div>
-                    <div class="extra-card" onclick="toggleSelection(this, 'CR7 LEGEND', 50)">
+                    <div class="extra-card" onclick="toggleSelection(this, 'CR7 LEGACY EXTRA', 50)">
                         <img src="cristianomundial.jpg">
-                        <div style="position:absolute; bottom:0; background:rgba(0,0,0,0.8); width:100%; text-align:center; padding:10px;">CR7 LEGACY - Q50</div>
+                        <div style="position:absolute; bottom:0; background:linear-gradient(transparent, rgba(0,0,0,0.9)); width:100%; text-align:center; padding:20px;">
+                            <p style="font-family:'Oswald';">CR7 LEGACY - Q50</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
 
         <div id="footer-order" class="footer-action">
-            <div class="total-price">TOTAL: Q<span id="total-val">0.00</span></div>
-            <button class="btn-send" onclick="sendWhatsApp()">PEDIR POR WHATSAPP</button>
+            <div class="total-box">TOTAL: Q<span id="total-val">0.00</span></div>
+            <button class="btn-send" onclick="sendWhatsApp()">CONFIRMAR PEDIDO WHATSAPP</button>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSy...", authDomain: "souvreign.firebaseapp.com" }; // Sustituir con tu config real
+        // CONFIGURACIÓN DE FIREBASE (Reemplaza con tus credenciales reales en la consola de Firebase)
+        const firebaseConfig = {
+            apiKey: "AIzaSy...", 
+            authDomain: "tu-app.firebaseapp.com",
+            projectId: "tu-app",
+            storageBucket: "tu-app.appspot.com",
+            messagingSenderId: "12345",
+            appId: "1:12345:web:abcde"
+        };
         firebase.initializeApp(firebaseConfig);
 
+        // --- ANIMACIÓN DE INICIO Y ESTRELLAS ---
+        const intro = document.getElementById('intro-space');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star-field';
+            const size = Math.random() * 2 + 1 + 'px';
+            star.style.width = size; star.style.height = size;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--x', (Math.random() - 0.5) * 1500 + 'px');
+            star.style.setProperty('--y', (Math.random() - 0.5) * 1500 + 'px');
+            star.style.animationDelay = Math.random() * 4 + 's';
+            intro.appendChild(star);
+        }
+
+        setTimeout(() => {
+            intro.style.opacity = '0';
+            document.getElementById('login-screen').classList.add('visible');
+            setTimeout(() => intro.remove(), 2000);
+        }, 4800);
+
+        // --- BASE DE DATOS DE GRUPOS ---
         const GROUPS = [
-            {id: "A", countries: [{n:"México",c:"mx"}, {n:"Sudáfrica",c:"za"}, {n:"Corea",c:"kr"}, {n:"Rep. Checa",c:"cz"}]},
-            {id: "J", countries: [{n:"Argentina",c:"ar"}, {n:"Austria",c:"at"}, {n:"Argelia",c:"dz"}, {n:"Jordania",c:"jo"}]},
-            {id: "I", countries: [{n:"Francia",c:"fr"}, {n:"Senegal",c:"sn"}, {n:"Noruega",c:"no"}, {n:"Irak",c:"iq"}]},
-            {id: "K", countries: [{n:"Portugal",c:"pt"}, {n:"Colombia",c:"co"}, {n:"Uzbekistán",c:"uz"}, {n:"Jamaica",c:"jm"}]}
+            {id: "A", paises: ["México", "Sudáfrica", "República de Corea", "República Checa"], codes: ["mx","za","kr","cz"]},
+            {id: "B", paises: ["Canadá", "Bosnia y Herzegovina", "Qatar", "Suiza"], codes: ["ca","ba","qa","ch"]},
+            {id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"], codes: ["br","ma","ht","gb-sct"]},
+            {id: "D", paises: ["Estados Unidos", "Paraguay", "Australia", "Türkiye"], codes: ["us","py","au","tr"]},
+            {id: "E", paises: ["Alemania", "Curazao", "Costa de Marfil", "Ecuador"], codes: ["de","cw","ci","ec"]},
+            {id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"], codes: ["nl","jp","tn","al"]},
+            {id: "G", paises: ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"], codes: ["be","eg","ir","nz"]},
+            {id: "H", paises: ["España", "Uruguay", "Arabia Saudita", "Cabo Verde"], codes: ["es","uy","sa","cv"]},
+            {id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"], codes: ["fr","sn","no","iq"]},
+            {id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"], codes: ["ar","at","dz","jo"]},
+            {id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"], codes: ["pt","co","uz","jm"]},
+            {id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"], codes: ["gb-eng","hr","gh","pa"]}
         ];
 
         let selection = [];
@@ -202,40 +228,37 @@
         function renderAlbum() {
             const root = document.getElementById('album-root');
             GROUPS.forEach(g => {
-                const gDiv = document.createElement('div');
-                gDiv.className = 'group-block';
-                gDiv.innerHTML = `<h2 class="group-header">GRUPO ${g.id}</h2><div class="countries-grid"></div>`;
-                const grid = gDiv.querySelector('.countries-grid');
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group-block';
+                groupDiv.innerHTML = `<h2 class="group-header">GRUPO ${g.id}</h2><div class="countries-grid"></div>`;
+                const grid = groupDiv.querySelector('.countries-grid');
 
-                g.countries.forEach(c => {
-                    const cDiv = document.createElement('div');
-                    cDiv.className = 'country-card';
-                    let stickers = '';
+                g.paises.forEach((name, idx) => {
+                    const countryCard = document.createElement('div');
+                    countryCard.className = 'country-card';
+                    let stickersHtml = '';
                     for(let i=1; i<=20; i++) {
-                        let price = 2;
+                        let price = 2; 
                         if(i === 1) price = 10;
                         if(i === 13) price = 15;
                         
-                        // Lógica especial por país
-                        if(c.n === "Argentina") {
-                            if(i === 17) price = 30;
+                        // Lógica de precios avanzada
+                        if(name === "Argentina") {
+                            if(i === 17) price = 30; // Messi
                             if(i === 19) price = 10;
                         }
-                        if(c.n === "Portugal" && i === 15) price = 30;
-                        if(c.n === "Francia") {
-                            if(i === 20) price = 25;
-                            if(i === 15) price = 10;
+                        if(name === "Portugal" && i === 15) price = 30; // CR7
+                        if(name === "Francia") {
+                            if(i === 20) price = 25; // Mbappe
+                            if(i === 15) price = 10; // Dembele
                         }
 
-                        stickers += `<div class="sticker" onclick="toggleSelection(this, '${c.n} #${i}', ${price})">
-                            ${i}<small>Q${price}</small>
-                        </div>`;
+                        stickersHtml += `<div class="sticker" onclick="toggleSelection(this, '${name} #${i}', ${price})">${i}<small>Q${price}</small></div>`;
                     }
-                    cDiv.innerHTML = `<div class="country-info"><img class="flag-img" src="https://flagcdn.com/${c.c}.svg"><span>${c.n}</span></div>
-                                      <div class="stickers-row">${stickers}</div>`;
-                    grid.appendChild(cDiv);
+                    countryCard.innerHTML = `<div class="country-info"><img src="https://flagcdn.com/${g.codes[idx]}.svg" class="flag-img"><span>${name}</span></div><div class="stickers-row">${stickersHtml}</div>`;
+                    grid.appendChild(countryCard);
                 });
-                root.appendChild(gDiv);
+                root.appendChild(groupDiv);
             });
         }
 
@@ -245,16 +268,37 @@
                 selection.push({id, price});
                 total += price;
             } else {
-                selection = selection.filter(item => item.id !== id);
+                selection = selection.filter(s => s.id !== id);
                 total -= price;
             }
             document.getElementById('total-val').innerText = total.toFixed(2);
             document.getElementById('footer-order').classList.toggle('visible', total > 0);
         }
 
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+        // --- AUTH LOGIC ---
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).then((result) => {
+                const user = result.user;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                document.getElementById('u-name').innerText = user.displayName;
+                document.getElementById('u-email').innerText = user.email;
+                document.getElementById('user-avatar').innerText = user.displayName.charAt(0);
+            }).catch((error) => {
+                console.error("Error en login:", error);
+                // Si no tienes configurado Firebase aún, esto fallará. 
+                // Para pruebas locales sin API KEY, puedes forzar la entrada:
+                /*
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                */
+            });
+        }
+
+        function toggleMenu() { 
+            document.getElementById('sidebar').classList.toggle('active'); 
+            document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none';
         }
 
         function showView(id, link) {
@@ -262,31 +306,17 @@
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active-sec'));
             link.classList.add('active-sec');
-            toggleMenu();
-        }
-
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then(res => {
-                updateUI(res.user);
-            });
-        }
-
-        function updateUI(user) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-            document.getElementById('user-name').innerText = user.displayName;
-            document.getElementById('user-email').innerText = user.email;
-            document.getElementById('user-avatar').innerText = user.displayName.charAt(0);
+            if(window.innerWidth < 768) toggleMenu();
         }
 
         function sendWhatsApp() {
-            const list = selection.map(s => `- ${s.id} (Q${s.price})`).join('%0A');
-            const msg = `¡Hola! Soy ${document.getElementById('user-name').innerText}.%0AMi pedido:%0A${list}%0A%0ATOTAL: Q${total}`;
-            window.open(`https://wa.me/50246199644?text=${msg}`, '_blank');
+            const userName = document.getElementById('u-name').innerText;
+            const items = selection.map(s => `%0A• ${s.id} (Q${s.price})`).join('');
+            const text = `*PEDIDO SOUVREIGN - PANINI*%0A%0A*Cliente:* ${userName}${items}%0A%0A*TOTAL:* Q${total.toFixed(2)}`;
+            window.open(`https://wa.me/50246199644?text=${text}`, '_blank');
         }
 
-        document.addEventListener('DOMContentLoaded', renderAlbum);
+        renderAlbum();
     </script>
 </body>
 </html>
