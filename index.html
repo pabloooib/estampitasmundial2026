@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIFA 2026</title>
+    <title>SOUVREIGN | FIFA 2026</title>
     <link rel="icon" type="image/jpg" href="panini.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -51,6 +51,14 @@
         .stk.selected { background: var(--wc-cyan); color: #000; border-color: #fff; }
         .stk b { font-family: 'Oswald'; font-size: 1.4rem; }
 
+        /* --- ESPECIALES (MESSI/CR7) --- */
+        .special-card { background: linear-gradient(135deg, #1a1a1a, #000); border-radius: 20px; overflow: hidden; border: 1px solid var(--gold); margin-bottom: 20px; display: flex; align-items: center; cursor: pointer; transition: 0.3s; }
+        .special-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
+        .special-card.selected { border: 3px solid var(--wc-cyan); }
+        .special-card img { width: 120px; height: 150px; object-fit: cover; }
+        .special-info { padding: 20px; flex-grow: 1; }
+        .special-info h3 { font-family: 'Oswald'; color: var(--gold); font-size: 1.5rem; }
+
         /* --- CARRITO DRAWER --- */
         .cart-trigger { position: fixed; bottom: 30px; right: 30px; background: var(--wc-cyan); color: #000; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; z-index: 1001; box-shadow: 0 10px 25px rgba(0,229,255,0.4); }
         .cart-trigger span { position: absolute; top: 0; right: 0; background: #ff5252; color: #fff; font-size: 0.7rem; padding: 4px 8px; border-radius: 50%; font-weight: bold; }
@@ -73,7 +81,7 @@
 
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <h1 style="font-family:'Oswald'; letter-spacing:3px; margin-bottom:30px; color: white;"> PANINI 2026 </h1>
+            <h1 style="font-family:'Oswald'; letter-spacing:3px; margin-bottom:30px; color: white;">SOUVREIGN</h1>
             <button class="btn-google-clean" onclick="loginWithGoogle()">INICIAR SESIÓN CON GOOGLE</button>
         </div>
     </div>
@@ -107,7 +115,6 @@
             <div class="nav-item" onclick="logout()" style="color:#ff5252; margin-top:15px;"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
         </div>
 
-        <!-- CARRITO DRAWER -->
         <div class="cart-drawer" id="cart-drawer">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h2 style="font-family:'Oswald';">MI CARRITO</h2>
@@ -126,7 +133,6 @@
         </div>
 
         <div class="main-content">
-            <!-- VISTA PERFIL -->
             <div id="profile-view" class="view">
                 <div style="text-align:center; background:var(--glass); padding:50px 20px; border-radius:35px;">
                     <img id="profile-img" src="" style="width:130px; height:130px; border-radius:50%; border:4px solid var(--wc-cyan); object-fit:cover; margin-bottom:20px;">
@@ -135,7 +141,6 @@
                 </div>
             </div>
 
-            <!-- VISTA ALBUM -->
             <div id="album-view" class="view active">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
                     <h2 id="group-title" style="font-family:'Oswald'; color:var(--wc-cyan); font-size:1.8rem;">GRUPO A</h2>
@@ -149,10 +154,26 @@
                 <div class="sticker-grid" id="sticker-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:12px;"></div>
             </div>
 
-            <!-- VISTA ESPECIALES / INFO -->
             <div id="prices-view" class="view">
-                <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:30px;">CARTAS LEYENDARIAS</h2>
-                <p style="text-align:center; opacity:0.7;">Próximamente más contenido visual aquí...</p>
+                <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:30px; color: var(--gold);">EDICIÓN LEYENDAS</h2>
+                
+                <div id="special-messi" class="special-card" onclick="addToCart('MESSI LEYENDA', 30)">
+                    <img src="messi.jpg" alt="Messi">
+                    <div class="special-info">
+                        <h3>LIONEL MESSI</h3>
+                        <p>Carta Especial Leyenda</p>
+                        <b style="color: var(--wc-cyan);">Q30.00</b>
+                    </div>
+                </div>
+
+                <div id="special-cr7" class="special-card" onclick="addToCart('CR7 LEYENDA', 30)">
+                    <img src="cr7.jpg" alt="CR7">
+                    <div class="special-info">
+                        <h3>C. RONALDO</h3>
+                        <p>Carta Especial Leyenda</p>
+                        <b style="color: var(--wc-cyan);">Q30.00</b>
+                    </div>
+                </div>
             </div>
 
             <div id="info-view" class="view">
@@ -242,6 +263,7 @@
             s.onclick = () => addToCart(id, getPrice(i));
             grid.appendChild(s);
         }
+        updateSpecialHighlights();
     }
 
     function getPrice(n) { return n === 1 ? 10 : (n === 13 ? 15 : 2); }
@@ -252,6 +274,14 @@
         else cart.push({id, price});
         updateCartUI();
         renderStickers();
+    }
+
+    function updateSpecialHighlights() {
+        // Resaltar cartas de Messi/CR7 si ya están en el carrito
+        const m = document.getElementById('special-messi');
+        const c = document.getElementById('special-cr7');
+        if(m) cart.find(x => x.id === 'MESSI LEYENDA') ? m.classList.add('selected') : m.classList.remove('selected');
+        if(c) cart.find(x => x.id === 'CR7 LEYENDA') ? c.classList.add('selected') : c.classList.remove('selected');
     }
 
     function updateCartUI() {
@@ -294,7 +324,6 @@
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        // OCULTAR MENÚ AL SELECCIONAR
         document.getElementById('sidebar').classList.remove('active');
     }
 
