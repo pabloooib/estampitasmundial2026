@@ -51,15 +51,15 @@
         .stk.selected { background: var(--wc-cyan); color: #000; border-color: #fff; }
         .stk b { font-family: 'Oswald'; font-size: 1.4rem; }
 
-        /* --- ESPECIALES (MESSI/CR7) --- */
+        /* --- ESPECIALES (IMÁGENES CORREGIDAS) --- */
         .special-card { background: linear-gradient(135deg, #1a1a1a, #000); border-radius: 20px; overflow: hidden; border: 1px solid var(--gold); margin-bottom: 20px; display: flex; align-items: center; cursor: pointer; transition: 0.3s; }
         .special-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
-        .special-card.selected { border: 3px solid var(--wc-cyan); }
-        .special-card img { width: 120px; height: 150px; object-fit: cover; }
+        .special-card.selected { border: 3px solid var(--wc-cyan); background: rgba(0, 229, 255, 0.1); }
+        .special-card img { width: 120px; height: 160px; object-fit: cover; border-right: 1px solid var(--gold); }
         .special-info { padding: 20px; flex-grow: 1; }
-        .special-info h3 { font-family: 'Oswald'; color: var(--gold); font-size: 1.5rem; }
+        .special-info h3 { font-family: 'Oswald'; color: var(--gold); font-size: 1.5rem; margin-bottom: 5px; }
 
-        /* --- CARRITO DRAWER --- */
+        /* --- CARRITO --- */
         .cart-trigger { position: fixed; bottom: 30px; right: 30px; background: var(--wc-cyan); color: #000; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; z-index: 1001; box-shadow: 0 10px 25px rgba(0,229,255,0.4); }
         .cart-trigger span { position: absolute; top: 0; right: 0; background: #ff5252; color: #fff; font-size: 0.7rem; padding: 4px 8px; border-radius: 50%; font-weight: bold; }
         
@@ -69,10 +69,9 @@
         
         .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
         .item-info { flex-grow: 1; display: flex; justify-content: space-between; margin-right: 15px; }
-        .btn-remove { color: #ff5252; background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px; transition: 0.2s; }
-        .btn-remove:hover { transform: scale(1.2); }
+        .btn-remove { color: #ff5252; background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px; }
 
-        textarea { width: 100%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; padding: 12px; border-radius: 12px; margin-top: 10px; resize: none; font-family: inherit; font-size: 0.8rem; }
+        textarea { width: 100%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; padding: 12px; border-radius: 12px; margin-top: 10px; resize: none; font-family: inherit; }
     </style>
 </head>
 <body>
@@ -105,8 +104,8 @@
             <div class="nav-item" onclick="showView('info-view')"><i class="fa-solid fa-tags"></i> LISTA DE PRECIOS</div>
             
             <div style="margin-top:20px; padding:0 10px;">
-                <p style="font-size:0.7rem; opacity:0.6; text-transform:uppercase; letter-spacing:1px;">Carta Faltante / Nota</p>
-                <textarea id="extra-request" rows="3" placeholder="¿Buscas alguna específica? Escríbela aquí..."></textarea>
+                <p style="font-size:0.7rem; opacity:0.6; text-transform:uppercase; letter-spacing:1px;">Nota de Pedido</p>
+                <textarea id="extra-request" rows="3" placeholder="Ej: Busco la #5 de México..."></textarea>
             </div>
 
             <a href="https://instagram.com/pablooib" target="_blank" class="ig-link">
@@ -126,7 +125,7 @@
                     <span>TOTAL:</span>
                     <span id="cart-total">Q0.00</span>
                 </div>
-                <button onclick="sendOrder()" style="width:100%; background:#25d366; color:#fff; border:none; padding:20px; border-radius:20px; font-weight:bold; cursor:pointer; font-size:1rem;">
+                <button onclick="sendOrder()" style="width:100%; background:#25d366; color:#fff; border:none; padding:20px; border-radius:20px; font-weight:bold; cursor:pointer;">
                     <i class="fa-brands fa-whatsapp"></i> ENVIAR PEDIDO
                 </button>
             </div>
@@ -158,20 +157,20 @@
                 <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:30px; color: var(--gold);">EDICIÓN LEYENDAS</h2>
                 
                 <div id="special-messi" class="special-card" onclick="addToCart('MESSI LEYENDA', 30)">
-                    <img src="messi.jpg" alt="Messi">
+                    <img src="imagenmessi.jpg" alt="Messi">
                     <div class="special-info">
                         <h3>LIONEL MESSI</h3>
-                        <p>Carta Especial Leyenda</p>
-                        <b style="color: var(--wc-cyan);">Q30.00</b>
+                        <p>Special World Cup Edition</p>
+                        <b style="color: var(--wc-cyan); font-size: 1.2rem;">Q30.00</b>
                     </div>
                 </div>
 
                 <div id="special-cr7" class="special-card" onclick="addToCart('CR7 LEYENDA', 30)">
-                    <img src="cr7.jpg" alt="CR7">
+                    <img src="cristianomundial.jpg" alt="CR7">
                     <div class="special-info">
                         <h3>C. RONALDO</h3>
-                        <p>Carta Especial Leyenda</p>
-                        <b style="color: var(--wc-cyan);">Q30.00</b>
+                        <p>Special World Cup Edition</p>
+                        <b style="color: var(--wc-cyan); font-size: 1.2rem;">Q30.00</b>
                     </div>
                 </div>
             </div>
@@ -277,7 +276,6 @@
     }
 
     function updateSpecialHighlights() {
-        // Resaltar cartas de Messi/CR7 si ya están en el carrito
         const m = document.getElementById('special-messi');
         const c = document.getElementById('special-cr7');
         if(m) cart.find(x => x.id === 'MESSI LEYENDA') ? m.classList.add('selected') : m.classList.remove('selected');
@@ -303,7 +301,7 @@
     }
 
     function confirmDelete(idx, name) {
-        if(confirm(`¿Deseas quitar "${name}" del carrito?`)) {
+        if(confirm(`¿Quitar "${name}" del pedido?`)) {
             cart.splice(idx, 1);
             updateCartUI();
             renderStickers();
@@ -313,8 +311,8 @@
     function sendOrder() {
         if(cart.length === 0) return alert("Carrito vacío");
         const notes = document.getElementById('extra-request').value;
-        const items = cart.map(x => `• ${x.id} (Q${x.price})`).join('%0A');
-        const text = `*PEDIDO SOUVREIGN*%0A*Cliente:* ${auth.currentUser.displayName}%0A%0A*Detalle:*%0A${items}%0A%0A*Nota:* ${notes}%0A%0A*TOTAL:* ${document.getElementById('cart-total').innerText}`;
+        const items = cart.map(x => `• ${x.id}`).join('%0A');
+        const text = `*NUEVO PEDIDO SOUVREIGN*%0A*Cliente:* ${auth.currentUser.displayName}%0A%0A*Cartas:*%0A${items}%0A%0A*Nota:* ${notes}%0A%0A*TOTAL:* ${document.getElementById('cart-total').innerText}`;
         window.open(`https://wa.me/50246199644?text=${text}`, '_blank');
     }
 
