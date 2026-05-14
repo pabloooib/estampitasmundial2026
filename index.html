@@ -43,6 +43,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- STICKERS ALBUM --- */
+        .instruction-box { background: var(--glass); padding: 15px; border-radius: 15px; margin-bottom: 20px; border-left: 4px solid var(--wc-cyan); }
         .stk { aspect-ratio: 0.8; background: var(--glass); border-radius: 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; border:1px solid var(--glass-border); transition: 0.3s; position: relative; }
         .stk.selected { background: var(--wc-cyan); color: #000; border-color: #fff; transform: scale(0.95); box-shadow: 0 0 20px rgba(0,229,255,0.5); }
         .stk.legend-stk { border: 2px solid var(--gold); }
@@ -50,17 +51,34 @@
 
         /* --- LEGENDS CARDS --- */
         .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        .legend-card { position: relative; background: var(--card-grad); border-radius: 30px; overflow: hidden; border: 1px solid var(--glass-border); transition: 0.4s; display: flex; flex-direction: column; }
-        .legend-card img { width: 100%; height: 320px; object-fit: cover; mask-image: linear-gradient(to bottom, black 70%, transparent 100%); }
-        .legend-content { padding: 20px; text-align: center; margin-top: -50px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-radius: 30px 30px 0 0; z-index: 5; }
-        .legend-content h3 { font-family: 'Oswald'; font-size: 1.6rem; color: #fff; }
+        .legend-card {
+            position: relative; background: var(--card-grad); border-radius: 30px; overflow: hidden;
+            border: 1px solid var(--glass-border); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column;
+        }
+        .legend-card img {
+            width: 100%; height: 320px; object-fit: cover;
+            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+        }
+        .legend-content {
+            padding: 20px; text-align: center; margin-top: -50px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            border-radius: 30px 30px 0 0; z-index: 5;
+        }
+        .legend-content h3 { font-family: 'Oswald'; font-size: 1.6rem; color: #fff; letter-spacing: 2px; }
         .price-tag { color: var(--wc-cyan); font-weight: 700; font-size: 1.2rem; margin: 10px 0; display: block; }
-        .btn-add-special { background: #fff; color: #000; border: none; padding: 12px; border-radius: 50px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .legend-card.selected { border: 2px solid var(--gold); }
+        .btn-add-special {
+            background: #fff; color: #000; border: none; padding: 12px; border-radius: 50px;
+            font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .legend-card.selected { border: 2px solid var(--gold); box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
+        .legend-card.selected .btn-add-special { background: var(--gold); }
 
         /* --- CART UI --- */
         .cart-trigger { position: fixed; bottom: 25px; right: 25px; background: var(--wc-cyan); color: #000; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; z-index: 1001; box-shadow: 0 10px 30px rgba(0,229,255,0.4); }
-        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100%; background: #fff; color: #000; z-index: 3000; transition: 0.4s; padding: 30px; display: flex; flex-direction: column; }
+        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100%; background: #fff; color: #000; z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px; display: flex; flex-direction: column; }
         .cart-drawer.active { right: 0; }
     </style>
 </head>
@@ -275,15 +293,8 @@
         let total = 0;
         cart.forEach((item, index) => {
             total += item.price;
-            let displayTitle = item.id;
-            let displaySubtitle = "Cromo Especial";
-            if (item.id.includes(" #")) {
-                const parts = item.id.split(" #");
-                displayTitle = parts[0];
-                displaySubtitle = `Sticker #${parts[1]}`;
-            }
             list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #f0f0f0;">
-                <div><b style="font-size:1rem; color:#000;">${displayTitle}</b><br><small style="color:#666;">${displaySubtitle}</small></div>
+                <div><b style="font-size:1rem;">${item.id}</b><br><small style="color:#888;">Q${item.price}.00</small></div>
                 <i class="fa-solid fa-trash-alt" style="color:#ff5252; cursor:pointer;" onclick="removeItem(${index})"></i>
             </div>`;
         });
@@ -297,6 +308,7 @@
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.getElementById('sidebar').classList.remove('active');
+        if(id === 'prices-view') syncSpecialUI();
     }
 
     function changeGroup(d) { currentGrp = (currentGrp + d + grupos.length) % grupos.length; renderGroup(); renderStickers(); }
@@ -306,38 +318,18 @@
     function sendOrder() {
         if(cart.length === 0) return alert("Tu carrito está vacío.");
         
-        // Separar y Ordenar
-        const leyendas = cart
-            .filter(item => item.id.includes('LEYENDA') || item.id.includes('CARTA'))
-            .sort((a, b) => a.id.localeCompare(b.id));
-
-        const cromosPaises = cart
-            .filter(item => !item.id.includes('LEYENDA') && !item.id.includes('CARTA'))
-            .sort((a, b) => {
-                const [paisA, numA] = a.id.split(' #');
-                const [paisB, numB] = b.id.split(' #');
-                if (paisA !== paisB) return paisA.localeCompare(paisB);
-                return parseInt(numA) - parseInt(numB);
-            });
-
-        // Construir Mensaje para WhatsApp
         let msg = `*--- 🏆 NUEVO PEDIDO PANINI ---*%0A`;
         msg += `*👤 Cliente:* ${auth.currentUser.displayName}%0A%0A`;
         msg += `*Cartas:*%0A`;
         
-        leyendas.forEach(item => {
-            msg += `* ${item.id}%0A`;
-        });
-
-        cromosPaises.forEach(item => {
-            // Aquí forzamos que se envíe el ID completo (País + #Número)
+        // Generamos la lista exacta: "País #Número" o "Nombre Leyenda"
+        cart.forEach(item => {
             msg += `* ${item.id}%0A`;
         });
         
         msg += `%0A*💰 TOTAL A PAGAR: ${document.getElementById('cart-total').innerText}*%0A`;
         msg += `*--------------------------*`;
         
-        // Abrir WhatsApp con el mensaje codificado correctamente
         window.open(`https://wa.me/50246199644?text=${msg}`, '_blank');
     }
 </script>
