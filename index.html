@@ -46,8 +46,7 @@
         .instruction-box { background: var(--glass); padding: 15px; border-radius: 15px; margin-bottom: 20px; border-left: 4px solid var(--wc-cyan); }
         .stk { aspect-ratio: 0.8; background: var(--glass); border-radius: 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; border:1px solid var(--glass-border); transition: 0.3s; position: relative; }
         .stk.selected { background: var(--wc-cyan); color: #000; border-color: #fff; transform: scale(0.95); box-shadow: 0 0 20px rgba(0,229,255,0.5); }
-        .stk.legend-stk { border: 2px solid var(--gold); box-shadow: inset 0 0 10px rgba(255,215,0,0.2); }
-        .stk.legend-stk b { color: var(--gold); text-shadow: 0 0 5px rgba(255,215,0,0.5); }
+        .stk.legend-stk { border: 2px solid var(--gold); }
         .stk b { font-family: 'Oswald'; font-size: 1.2rem; }
 
         /* --- LEGENDS CARDS --- */
@@ -57,7 +56,6 @@
             border: 1px solid var(--glass-border); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex; flex-direction: column;
         }
-        .legend-card:hover { transform: translateY(-10px); border-color: var(--gold); }
         .legend-card img {
             width: 100%; height: 320px; object-fit: cover;
             mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
@@ -91,7 +89,6 @@
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
             <h1 style="font-family:'Oswald'; letter-spacing:8px; font-size:3rem;">PANINI</h1>
-            <p style="opacity:0.6; font-size:0.8rem; letter-spacing:2px;">SOUVREIGN COLLECTOR</p>
             <button class="btn-login" onclick="loginWithGoogle()">INGRESAR AL ÁLBUM</button>
         </div>
     </div>
@@ -132,11 +129,7 @@
         </div>
 
         <div class="main-content">
-            <!-- VIEW: ALBUM -->
             <div id="album-view" class="view active">
-                <div class="instruction-box">
-                    <p style="font-weight:600; font-size:0.9rem; color:var(--wc-cyan);">ELIGE TUS STICKERS</p>
-                </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h2 id="group-title" style="font-family:'Oswald'; font-size:1.8rem;">GRUPO A</h2>
                     <div style="display:flex; gap:10px;">
@@ -149,7 +142,6 @@
                 <div id="sticker-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:15px;"></div>
             </div>
 
-            <!-- VIEW: LEYENDAS -->
             <div id="prices-view" class="view">
                 <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:40px; color:var(--gold); font-size:2.5rem; letter-spacing:5px;">ROYAL LEGENDS</h2>
                 <div class="special-grid">
@@ -186,7 +178,6 @@
                 </div>
             </div>
 
-            <!-- VIEW: PERFIL -->
             <div id="profile-view" class="view">
                 <div style="text-align:center; background:var(--glass); padding:60px 20px; border-radius:35px; border:1px solid var(--glass-border);">
                     <img id="profile-img" src="" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--wc-cyan); margin-bottom:20px;">
@@ -256,10 +247,7 @@
         for(let i=1; i<=20; i++){
             const id = `${selectedCountry} #${i}`;
             let price = (i === 1) ? 10 : (i === 13 ? 15 : 2);
-            
-            // Lógica Especial para CR7 en Portugal #15
             if(selectedCountry === "Portugal" && i === 15) price = 40;
-
             const isSel = cart.find(x => x.id === id);
             const s = document.createElement('div');
             s.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''}`;
@@ -329,23 +317,19 @@
 
     function sendOrder() {
         if(cart.length === 0) return alert("Tu carrito está vacío.");
-        const legends = cart.filter(x => x.price >= 40);
-        const normals = cart.filter(x => x.price < 40);
+        
         let msg = `*--- 🏆 NUEVO PEDIDO PANINI ---*%0A`;
         msg += `*👤 Cliente:* ${auth.currentUser.displayName}%0A%0A`;
-        if(legends.length > 0) {
-            msg += `*⭐ CARTAS LEYENDA:*%0A`;
-            legends.forEach(l => msg += `• ${l.id} _(Q${l.price}.00)_%0A`);
-            msg += `%0A`;
-        }
-        if(normals.length > 0) {
-            msg += `*⚽ STICKERS SELECCIONADOS:*%0A`;
-            normals.forEach(n => msg += `• ${n.id} _(Q${n.price}.00)_%0A`);
-            msg += `%0A`;
-        }
-        msg += `*--------------------------*%0A`;
-        msg += `*💰 TOTAL A PAGAR: ${document.getElementById('cart-total').innerText}*%0A`;
+        msg += `*Cartas:*%0A`;
+        
+        // Generamos la lista exacta: "País #Número" o "Nombre Leyenda"
+        cart.forEach(item => {
+            msg += `* ${item.id}%0A`;
+        });
+        
+        msg += `%0A*💰 TOTAL A PAGAR: ${document.getElementById('cart-total').innerText}*%0A`;
         msg += `*--------------------------*`;
+        
         window.open(`https://wa.me/50246199644?text=${msg}`, '_blank');
     }
 </script>
