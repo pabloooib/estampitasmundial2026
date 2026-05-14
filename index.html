@@ -14,154 +14,51 @@
 
     <style>
         :root { 
-            --wc-purple: #4a148c;
-            --wc-blue: #001b3a;
             --wc-cyan: #00e5ff;
             --gold: #ffd700;
-            --glass: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.07);
             --glass-border: rgba(255, 255, 255, 0.12);
-            --dark-bg: #050510;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Poppins', sans-serif; background: #050510; color: #fff; overflow-x: hidden; }
+
+        /* --- INTRO ANIMATION --- */
+        #intro-space { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        .earth-zoom { width: 150px; height: 150px; background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') center/cover; animation: superZoom 3.5s forwards; }
+        @keyframes superZoom { 0% { transform: scale(0.1); opacity: 0; } 20% { opacity: 1; } 100% { transform: scale(50); opacity: 0; } }
+
+        /* --- UI COMPONENTS --- */
+        .auth-container { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('FIFA-World-Cup-2026.jpg') center/cover; position: fixed; width: 100%; z-index: 2000; }
+        .auth-card { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); padding: 40px; border-radius: 30px; text-align: center; width: 85%; max-width: 380px; border: 1px solid var(--glass-border); }
         
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: var(--dark-bg); 
-            color: #fff; 
-            overflow-x: hidden; 
-            line-height: 1.6;
-        }
-
-        /* --- ANIMACIÓN INTRO --- */
-        #intro-space { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: black; z-index: 9999; display: flex; 
-            align-items: center; justify-content: center; transition: 1s; 
-        }
-        .earth-zoom { 
-            width: 150px; height: 150px; 
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') center/cover; 
-            animation: superZoom 3.5s forwards cubic-bezier(0.45, 0.05, 0.55, 0.95); 
-        }
-        @keyframes superZoom { 
-            0% { transform: scale(0.1); opacity: 0; } 
-            20% { opacity: 1; } 
-            100% { transform: scale(50); opacity: 0; } 
-        }
-
-        /* --- AUTH SCREEN --- */
-        .auth-container { 
-            height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('FIFA-World-Cup-2026.jpg') center/cover; 
-            position: fixed; width: 100%; z-index: 2000; 
-        }
-        .auth-card { 
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(25px); 
-            padding: 40px; border-radius: 30px; text-align: center; 
-            width: 85%; max-width: 400px; border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .btn-google-clean { 
-            background: #fff; color: #000; border: none; padding: 16px; 
-            border-radius: 15px; font-weight: 700; cursor: pointer; 
-            width: 100%; font-size: 1rem; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-
-        /* --- NAVIGATION --- */
-        .navbar { 
-            position: fixed; top: 0; width: 100%; height: 70px; 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 20px; background: rgba(5,5,16,0.95); 
-            backdrop-filter: blur(15px); z-index: 1000; 
-            border-bottom: 1px solid var(--glass-border); 
-        }
-        .sidebar { 
-            position: fixed; top: 0; left: -300px; width: 280px; height: 100%; 
-            background: #08081a; z-index: 1500; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            padding: 30px 20px; border-right: 1px solid var(--glass-border);
-        }
+        .navbar { position: fixed; top: 0; width: 100%; height: 65px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: rgba(5,5,16,0.9); backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--glass-border); }
+        
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0a0a1a; z-index: 1500; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 20px; }
         .sidebar.active { left: 0; }
-        .nav-item { 
-            padding: 14px 18px; color: #fff; text-decoration: none; border-radius: 12px; 
-            margin-bottom: 8px; display: flex; align-items: center; gap: 12px; 
-            font-weight: 500; cursor: pointer; transition: 0.2s;
-        }
-        .nav-item:hover { background: var(--glass); color: var(--wc-cyan); }
-        .ig-link { 
-            margin-top: 30px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); 
-            padding: 12px; border-radius: 12px; text-decoration: none; color: white; 
-            display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; 
-        }
 
-        /* --- VISTAS --- */
-        .view { padding: 90px 15px 120px; max-width: 1000px; margin: auto; display: none; animation: fadeIn 0.4s ease; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view { padding: 85px 15px 120px; max-width: 1000px; margin: auto; display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- STICKERS --- */
-        .sticker-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
-            gap: 10px; 
-        }
-        .stk { 
-            aspect-ratio: 0.8; background: var(--glass); border-radius: 12px; 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; cursor: pointer; border: 1px solid var(--glass-border); 
-            transition: 0.2s; 
-        }
-        .stk.selected { background: var(--wc-cyan); color: #000; border-color: #fff; transform: scale(0.95); }
-        .stk b { font-family: 'Oswald'; font-size: 1.3rem; }
-        .stk small { font-size: 0.7rem; font-weight: 600; opacity: 0.8; }
-
-        /* --- ESPECIALES --- */
-        .special-card { 
-            background: linear-gradient(135deg, #1a1a1a, #000); 
-            border-radius: 18px; overflow: hidden; border: 1px solid var(--gold); 
-            margin-bottom: 15px; display: flex; align-items: center; cursor: pointer; transition: 0.3s; 
-        }
-        .special-card img { width: 100px; height: 130px; object-fit: cover; border-right: 1px solid var(--gold); }
-        .special-info { padding: 15px; flex-grow: 1; }
-        .special-info h3 { font-family: 'Oswald'; color: var(--gold); font-size: 1.2rem; }
-        .special-card.selected { border: 2px solid var(--wc-cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
-
-        /* --- CARRITO --- */
-        .cart-trigger { 
-            position: fixed; bottom: 25px; right: 25px; background: var(--wc-cyan); 
-            color: #000; width: 60px; height: 60px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 1.4rem; cursor: pointer; z-index: 1001; 
-            box-shadow: 0 8px 20px rgba(0,229,255,0.4); 
-        }
-        .cart-badge { 
-            position: absolute; top: -5px; right: -5px; background: #ff5252; 
-            color: #fff; font-size: 0.75rem; padding: 4px 8px; border-radius: 20px; font-weight: bold; 
-        }
+        /* --- STICKERS & CARDS --- */
+        .stk { aspect-ratio: 0.8; background: var(--glass); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--glass-border); transition: 0.2s; }
+        .stk.selected { background: var(--wc-cyan); color: #000; transform: scale(0.95); box-shadow: 0 0 15px var(--wc-cyan); }
         
-        .cart-drawer { 
-            position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; 
-            height: 100%; background: #fff; color: #000; z-index: 3000; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; 
-            display: flex; flex-direction: column; 
-        }
+        .special-card { background: linear-gradient(135deg, #1a1a1a, #000); border-radius: 18px; overflow: hidden; border: 1px solid var(--gold); margin-bottom: 15px; display: flex; align-items: center; cursor: pointer; transition: 0.3s; }
+        .special-card img { width: 90px; height: 120px; object-fit: cover; border-right: 1px solid var(--gold); }
+        .special-card.selected { border: 2px solid var(--wc-cyan); background: rgba(0, 229, 255, 0.15); box-shadow: 0 0 20px rgba(0, 229, 255, 0.4); }
+
+        /* --- CART UI --- */
+        .cart-trigger { position: fixed; bottom: 25px; right: 25px; background: var(--wc-cyan); color: #000; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; z-index: 1001; box-shadow: 0 8px 25px rgba(0,229,255,0.4); }
+        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100%; background: #fff; color: #000; z-index: 3000; transition: 0.4s; padding: 25px; display: flex; flex-direction: column; }
         .cart-drawer.active { right: 0; }
-        .cart-items { flex: 1; overflow-y: auto; margin: 20px 0; }
-        .cart-item-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px 0; border-bottom: 1px solid #eee; 
-        }
 
-        textarea { 
-            width: 100%; border: 1px solid var(--glass-border); background: var(--glass); 
-            color: #fff; padding: 12px; border-radius: 12px; margin-top: 10px; 
-            resize: none; font-family: inherit; font-size: 0.9rem;
-        }
-
-        /* --- SCROLLBARS --- */
-        #country-scroll::-webkit-scrollbar { height: 4px; }
-        #country-scroll::-webkit-scrollbar-thumb { background: var(--wc-cyan); border-radius: 10px; }
+        /* --- UTILS --- */
+        .btn-google { background: #fff; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .nav-item { padding: 14px; color: #fff; border-radius: 10px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .nav-item:hover { background: var(--glass); }
+        textarea { width: 100%; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; padding: 10px; border-radius: 10px; margin-top: 5px; font-family: inherit; }
     </style>
 </head>
 <body>
@@ -170,129 +67,126 @@
 
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <h1 style="font-family:'Oswald'; letter-spacing:4px; margin-bottom:25px;">SOUVREIGN</h1>
-            <p style="font-size: 0.8rem; margin-bottom: 25px; opacity: 0.7;">PANINI DIGITAL COLLECTOR 2026</p>
-            <button class="btn-google-clean" onclick="loginWithGoogle()">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20">
-                INICIAR SESIÓN
+            <h1 style="font-family:'Oswald'; letter-spacing:3px; margin-bottom:20px;">SOUVREIGN</h1>
+            <button class="btn-google" onclick="loginWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18"> INICIAR SESIÓN
             </button>
         </div>
     </div>
 
     <div class="cart-trigger" onclick="toggleCart()">
         <i class="fa-solid fa-cart-shopping"></i>
-        <div class="cart-badge" id="cart-badge">0</div>
+        <span id="cart-badge" style="position:absolute; top:-5px; right:-5px; background:#ff5252; color:white; font-size:0.7rem; padding:4px 7px; border-radius:50%;">0</span>
     </div>
 
     <div id="app" style="display:none;">
         <nav class="navbar">
-            <div onclick="toggleSidebar()" style="cursor:pointer; font-size:1.4rem;"><i class="fa-solid fa-bars-staggered"></i></div>
-            <img src="panini.jpg" height="35" style="border-radius:6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-            <img id="nav-avatar" src="" style="width:38px; height:38px; border-radius:50%; border:2px solid var(--wc-cyan); cursor:pointer;" onclick="showView('profile-view')">
+            <div onclick="toggleSidebar()" style="font-size:1.3rem;"><i class="fa-solid fa-bars-staggered"></i></div>
+            <img src="panini.jpg" height="30" style="border-radius:4px;">
+            <img id="nav-avatar" src="" style="width:35px; border-radius:50%; border:2px solid var(--wc-cyan);" onclick="showView('profile-view')">
         </nav>
 
         <div class="sidebar" id="sidebar">
-            <div class="nav-item" onclick="showView('album-view')"><i class="fa-solid fa-layer-group"></i> PEDIR CARTAS</div>
+            <div class="nav-item" onclick="showView('album-view')"><i class="fa-solid fa-clone"></i> PEDIR CARTAS</div>
             <div class="nav-item" onclick="showView('prices-view')"><i class="fa-solid fa-star"></i> ESPECIALES</div>
-            <div class="nav-item" onclick="showView('info-view')"><i class="fa-solid fa-list-ul"></i> PRECIOS</div>
-            <div class="nav-item" onclick="showView('profile-view')"><i class="fa-solid fa-user-gear"></i> MI PERFIL</div>
+            <div class="nav-item" onclick="showView('info-view')"><i class="fa-solid fa-tags"></i> PRECIOS</div>
+            <div class="nav-item" onclick="showView('profile-view')"><i class="fa-solid fa-user"></i> PERFIL</div>
             
             <div style="margin-top:20px;">
-                <p style="font-size:0.65rem; opacity:0.5; text-transform:uppercase; letter-spacing:1.5px; padding-left:15px;">Notas de entrega</p>
-                <textarea id="extra-request" rows="3" placeholder="Ej: Las quiero sin recortar..."></textarea>
+                <p style="font-size:0.6rem; opacity:0.5; text-transform:uppercase; margin-left:10px;">Nota Extra</p>
+                <textarea id="extra-request" rows="2" placeholder="Ej: Busco repetidas..."></textarea>
             </div>
-
-            <a href="https://instagram.com/pablooib" target="_blank" class="ig-link">
-                <i class="fa-brands fa-instagram"></i> @pablooib
-            </a>
-            <div class="nav-item" onclick="logout()" style="color:#ff5252; margin-top:15px; border: 1px solid rgba(255,82,82,0.2);"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
+            
+            <div class="nav-item" onclick="logout()" style="color:#ff5252; margin-top:30px;"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
         </div>
 
         <div class="cart-drawer" id="cart-drawer">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2 style="font-family:'Oswald'; letter-spacing:1px;">CARRITO</h2>
-                <i class="fa-solid fa-xmark" onclick="toggleCart()" style="font-size:1.5rem; cursor:pointer;"></i>
+                <h2 style="font-family:'Oswald';">MI PEDIDO</h2>
+                <i class="fa-solid fa-xmark" onclick="toggleCart()" style="font-size:1.5rem;"></i>
             </div>
-            <div class="cart-items" id="cart-list"></div>
-            <div style="padding-top:20px; border-top:2px solid #f0f0f0;">
-                <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:20px; font-size:1.3rem;">
-                    <span>TOTAL:</span>
-                    <span id="cart-total">Q0.00</span>
+            <div id="cart-list" style="flex:1; overflow-y:auto; margin:15px 0;"></div>
+            <div style="border-top:2px solid #eee; padding-top:15px;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem; margin-bottom:15px;">
+                    <span>TOTAL:</span> <span id="cart-total">Q0.00</span>
                 </div>
-                <button onclick="sendOrder()" style="width:100%; background:#25d366; color:#fff; border:none; padding:18px; border-radius:15px; font-weight:bold; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; gap:10px;">
-                    <i class="fa-brands fa-whatsapp" style="font-size:1.4rem;"></i> ENVIAR PEDIDO
+                <button onclick="sendOrder()" style="width:100%; background:#25d366; color:#fff; border:none; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer;">
+                    <i class="fa-brands fa-whatsapp"></i> ENVIAR A WHATSAPP
                 </button>
             </div>
         </div>
 
         <div class="main-content">
+            <!-- VISTA PERFIL -->
             <div id="profile-view" class="view">
-                <div style="text-align:center; background:var(--glass); padding:40px 20px; border-radius:25px; border: 1px solid var(--glass-border);">
+                <div style="text-align:center; background:var(--glass); padding:40px 20px; border-radius:25px; border:1px solid var(--glass-border);">
                     <img id="profile-img" src="" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--wc-cyan); margin-bottom:15px;">
-                    <h2 id="profile-name" style="font-family:'Oswald'; font-size:1.8rem;">---</h2>
-                    <p id="profile-email" style="opacity:0.6; font-size:0.9rem;">---</p>
+                    <h2 id="profile-name" style="font-family:'Oswald';">---</h2>
+                    <p id="profile-email" style="opacity:0.6; font-size:0.8rem;">---</p>
                 </div>
             </div>
 
+            <!-- VISTA ALBUM -->
             <div id="album-view" class="view active">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2 id="group-title" style="font-family:'Oswald'; color:var(--wc-cyan);">GRUPO A</h2>
-                    <div style="display:flex; gap:8px;">
-                        <button onclick="changeGroup(-1)" style="background:var(--glass); border:none; color:#fff; width:40px; height:40px; border-radius:50%;"><i class="fa-solid fa-chevron-left"></i></button>
-                        <button onclick="changeGroup(1)" style="background:var(--glass); border:none; color:#fff; width:40px; height:40px; border-radius:50%;"><i class="fa-solid fa-chevron-right"></i></button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2 id="group-title" style="font-family:'Oswald'; color:var(--wc-cyan); font-size:1.5rem;">GRUPO A</h2>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="changeGroup(-1)" style="background:var(--glass); border:none; color:white; width:35px; height:35px; border-radius:50%;"><</button>
+                        <button onclick="changeGroup(1)" style="background:var(--glass); border:none; color:white; width:35px; height:35px; border-radius:50%;">></button>
                     </div>
                 </div>
-                <div id="country-scroll" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; scroll-behavior: smooth;"></div>
-                <h3 id="country-label" style="margin:20px 0 10px; font-family:'Oswald'; font-size:1rem; letter-spacing:2px; color:rgba(255,255,255,0.5);">PAÍS</h3>
-                <div class="sticker-grid" id="sticker-grid"></div>
+                <div id="country-scroll" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;"></div>
+                <h3 id="country-label" style="margin:15px 0 10px; font-family:'Oswald'; font-size:0.9rem; opacity:0.5;">PAÍS</h3>
+                <div id="sticker-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(70px, 1fr)); gap:10px;"></div>
             </div>
 
+            <!-- VISTA ESPECIALES -->
             <div id="prices-view" class="view">
-                <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:25px; color: var(--gold); letter-spacing:2px;">EDICIÓN ESPECIAL</h2>
+                <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:20px; color:var(--gold);">CARTAS LEYENDAS</h2>
                 
-                <div id="special-panini" class="special-card" onclick="addToCart('CARTA PANINI', 45)">
+                <div id="special-panini" class="special-card" onclick="toggleSpecial('CARTA PANINI', 45, 'special-panini')">
                     <img src="panini.jpg" alt="Panini">
-                    <div class="special-info">
-                        <h3>CARTA PANINI</h3>
-                        <p>Collector's Limited Edition</p>
-                        <b style="color: var(--wc-cyan); font-size: 1.1rem;">Q45.00</b>
+                    <div style="padding:15px;">
+                        <h3 style="font-family:'Oswald'; color:var(--gold);">CARTA PANINI</h3>
+                        <p style="font-size:0.8rem; opacity:0.7;">Edición Coleccionista</p>
+                        <b style="color:var(--wc-cyan);">Q45.00</b>
                     </div>
                 </div>
 
-                <div id="special-messi" class="special-card" onclick="addToCart('MESSI LEYENDA', 30)">
+                <div id="special-messi" class="special-card" onclick="toggleSpecial('MESSI LEYENDA', 30, 'special-messi')">
                     <img src="imagenmessi.jpg" alt="Messi">
-                    <div class="special-info">
-                        <h3>LIONEL MESSI</h3>
-                        <p>Special World Cup Edition</p>
-                        <b style="color: var(--wc-cyan); font-size: 1.1rem;">Q30.00</b>
+                    <div style="padding:15px;">
+                        <h3 style="font-family:'Oswald'; color:var(--gold);">LIONEL MESSI</h3>
+                        <p style="font-size:0.8rem; opacity:0.7;">World Cup Special</p>
+                        <b style="color:var(--wc-cyan);">Q30.00</b>
                     </div>
                 </div>
 
-                <div id="special-cr7" class="special-card" onclick="addToCart('CR7 LEYENDA', 30)">
+                <div id="special-cr7" class="special-card" onclick="toggleSpecial('CR7 LEYENDA', 30, 'special-cr7')">
                     <img src="cristianomundial.jpg" alt="CR7">
-                    <div class="special-info">
-                        <h3>C. RONALDO</h3>
-                        <p>Special World Cup Edition</p>
-                        <b style="color: var(--wc-cyan); font-size: 1.1rem;">Q30.00</b>
+                    <div style="padding:15px;">
+                        <h3 style="font-family:'Oswald'; color:var(--gold);">C. RONALDO</h3>
+                        <p style="font-size:0.8rem; opacity:0.7;">World Cup Special</p>
+                        <b style="color:var(--wc-cyan);">Q30.00</b>
                     </div>
                 </div>
             </div>
 
+            <!-- VISTA INFO -->
             <div id="info-view" class="view">
-                <div style="background:var(--glass); padding:30px; border-radius:25px; border: 1px solid var(--glass-border);">
-                    <h2 style="font-family:'Oswald'; margin-bottom:20px; color:var(--wc-cyan);">TARIFARIO</h2>
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--glass-border);"><span>Sticker Normal</span> <b>Q2.00</b></div>
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--glass-border);"><span>Escudo (#1)</span> <b>Q10.00</b></div>
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--glass-border);"><span>Jugador Clave (#13)</span> <b>Q15.00</b></div>
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--glass-border); color:var(--gold);"><span>Leyendas Messi/CR7</span> <b>Q30.00</b></div>
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; color:var(--wc-cyan);"><span>Carta Panini</span> <b>Q45.00</b></div>
+                <div style="background:var(--glass); padding:25px; border-radius:20px; border:1px solid var(--glass-border);">
+                    <h2 style="font-family:'Oswald'; margin-bottom:15px; color:var(--wc-cyan);">LISTA DE PRECIOS</h2>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><span>Normal</span><b>Q2.00</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><span>Escudo (#1)</span><b>Q10.00</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><span>Especial (#13)</span><b>Q15.00</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; color:var(--gold);"><span>Leyendas</span><b>Q30.00</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; color:var(--wc-cyan);"><span>Carta Panini</span><b>Q45.00</b></div>
                 </div>
             </div>
         </div>
     </div>
 
 <script>
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -326,8 +220,7 @@
 
     const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
 
-    setTimeout(() => { document.getElementById('intro-space')?.fadeOut(); document.getElementById('intro-space').style.opacity = "0"; setTimeout(()=>document.getElementById('intro-space').remove(), 1000); }, 3500);
-
+    // Login Handler
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
@@ -339,6 +232,7 @@
             selectedCountry = grupos[0].paises[0];
             renderGroup();
             renderStickers();
+            setTimeout(() => { document.getElementById('intro-space')?.remove(); }, 3500);
         }
     });
 
@@ -349,9 +243,9 @@
         scroll.innerHTML = "";
         g.paises.forEach(p => {
             const card = document.createElement('div');
-            const isActive = selectedCountry === p;
-            card.style = `min-width:110px; padding:12px; border-radius:15px; background:${isActive ? 'var(--wc-cyan)' : 'var(--glass)'}; color:${isActive ? '#000' : '#fff'}; text-align:center; cursor:pointer; transition:0.3s; border: 1px solid ${isActive ? '#fff' : 'var(--glass-border)'};`;
-            card.innerHTML = `<img src="https://flagcdn.com/w40/${flags[p]}.png" style="display:block; margin:0 auto 8px; border-radius:2px;"> <b style="font-size:0.8rem;">${p}</b>`;
+            const active = selectedCountry === p;
+            card.style = `min-width:100px; padding:12px; border-radius:12px; background:${active?'var(--wc-cyan)':'var(--glass)'}; color:${active?'#000':'#fff'}; text-align:center; cursor:pointer; transition:0.3s; border:1px solid ${active?'#fff':'var(--glass-border)'}`;
+            card.innerHTML = `<img src="https://flagcdn.com/w40/${flags[p]}.png" style="display:block; margin:0 auto 5px;"> <b style="font-size:0.75rem;">${p}</b>`;
             card.onclick = () => { selectedCountry = p; renderGroup(); renderStickers(); };
             scroll.appendChild(card);
         });
@@ -362,36 +256,44 @@
         const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
         for(let i=1; i<=20; i++){
             const id = `${selectedCountry} #${i}`;
+            const price = (i === 1) ? 10 : (i === 13 ? 15 : 2);
             const isSel = cart.find(x => x.id === id);
             const s = document.createElement('div');
             s.className = `stk ${isSel ? 'selected' : ''}`;
-            s.innerHTML = `<b>${i}</b><small>Q${getPrice(i)}</small>`;
-            s.onclick = () => addToCart(id, getPrice(i));
+            s.innerHTML = `<b>${i}</b><small>Q${price}</small>`;
+            s.onclick = () => addToCart(id, price);
             grid.appendChild(s);
         }
-        updateSpecialHighlights();
+        syncSpecialUI();
     }
-
-    function getPrice(n) { return n === 1 ? 10 : (n === 13 ? 15 : 2); }
 
     function addToCart(id, price) {
         const idx = cart.findIndex(x => x.id === id);
-        if(idx > -1) {
-            cart.splice(idx, 1);
-        } else {
-            cart.push({id, price});
-        }
+        if(idx > -1) cart.splice(idx, 1);
+        else cart.push({id, price});
         updateCartUI();
         renderStickers();
     }
 
-    function updateSpecialHighlights() {
-        const ids = ['special-messi', 'special-cr7', 'special-panini'];
-        const names = ['MESSI LEYENDA', 'CR7 LEYENDA', 'CARTA PANINI'];
-        
-        ids.forEach((id, i) => {
-            const el = document.getElementById(id);
-            if(el) cart.find(x => x.id === names[i]) ? el.classList.add('selected') : el.classList.remove('selected');
+    function toggleSpecial(id, price, elementId) {
+        const idx = cart.findIndex(x => x.id === id);
+        if(idx > -1) cart.splice(idx, 1);
+        else cart.push({id, price});
+        updateCartUI();
+        syncSpecialUI();
+    }
+
+    function syncSpecialUI() {
+        const specials = [
+            {name: 'MESSI LEYENDA', el: 'special-messi'},
+            {name: 'CR7 LEYENDA', el: 'special-cr7'},
+            {name: 'CARTA PANINI', el: 'special-panini'}
+        ];
+        specials.forEach(s => {
+            const element = document.getElementById(s.el);
+            if(element) {
+                cart.find(x => x.id === s.name) ? element.classList.add('selected') : element.classList.remove('selected');
+            }
         });
     }
 
@@ -402,45 +304,39 @@
         let total = 0;
         cart.forEach((item, index) => {
             total += item.price;
-            const row = document.createElement('div');
-            row.className = 'cart-item-row';
-            row.innerHTML = `
-                <div style="display:flex; flex-direction:column;">
-                    <span style="font-weight:600; font-size:0.9rem;">${item.id}</span>
-                    <small style="color:var(--wc-purple)">Precio: Q${item.price}.00</small>
-                </div>
-                <button style="color:#ff5252; background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="removeFromCart(${index})"><i class="fa-solid fa-trash-can"></i></button>
-            `;
-            list.appendChild(row);
+            list.innerHTML += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #eee;">
+                    <div><b style="font-size:0.9rem;">${item.id}</b><br><small>Q${item.price}.00</small></div>
+                    <i class="fa-solid fa-trash" style="color:#ff5252; cursor:pointer;" onclick="removeItem(${index})"></i>
+                </div>`;
         });
         document.getElementById('cart-total').innerText = `Q${total}.00`;
     }
 
-    function removeFromCart(idx) {
+    function removeItem(idx) {
         cart.splice(idx, 1);
         updateCartUI();
         renderStickers();
     }
 
     function sendOrder() {
-        if(cart.length === 0) return alert("El carrito está vacío.");
+        if(cart.length === 0) return alert("Carrito vacío");
         const notes = document.getElementById('extra-request').value;
-        const items = cart.map(x => `• ${x.id} (Q${x.price})`).join('%0A');
-        const text = `*SOUVREIGN - NUEVO PEDIDO*%0A*Usuario:* ${auth.currentUser.displayName}%0A%0A*Detalle de Cartas:*%0A${items}%0A%0A*Notas adicionales:* ${notes || 'Ninguna'}%0A%0A*TOTAL A PAGAR: ${document.getElementById('cart-total').innerText}*`;
+        const itemsText = cart.map(x => `• ${x.id}`).join('%0A');
+        const text = `*NUEVO PEDIDO SOUVREIGN*%0A*Cliente:* ${auth.currentUser.displayName}%0A%0A*Cartas:*%0A${itemsText}%0A%0A*Nota:* ${notes}%0A%0A*TOTAL:* ${document.getElementById('cart-total').innerText}`;
         window.open(`https://wa.me/50246199644?text=${text}`, '_blank');
     }
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
     function toggleCart() { document.getElementById('cart-drawer').classList.toggle('active'); }
-    
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.getElementById('sidebar').classList.remove('active');
-        window.scrollTo(0,0);
+        if(id === 'prices-view') syncSpecialUI();
     }
 
-    function changeGroup(d) { currentGrp = (currentGrp + d + grupos.length) % grupos.length; renderGroup(); }
+    function changeGroup(d) { currentGrp = (currentGrp + d + grupos.length) % grupos.length; renderGroup(); renderStickers(); }
     function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function logout() { auth.signOut().then(() => location.reload()); }
 </script>
