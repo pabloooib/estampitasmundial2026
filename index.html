@@ -321,32 +321,35 @@
         // Ordenar stickers
         stickers.sort((a, b) => a.id.localeCompare(b.id));
 
-        // Construir mensaje
-        let msg = `🏆 *NUEVO PEDIDO PANINI*%0A%0A`;
+        // Construir mensaje NORMAL
+        let msg = `--- NUEVO PEDIDO PANINI ---\n\n`;
 
-        msg += `👤 *Cliente:* ${auth.currentUser.displayName}%0A%0A`;
+        msg += `Cliente: ${auth.currentUser.displayName}\n\n`;
 
-        msg += `*Cartas:*%0A`;
+        msg += `Cartas:\n`;
 
         // Leyendas
         leyendas.forEach(item => {
-            msg += `* ${item.id}%0A`;
+            msg += `* ${item.id}\n`;
         });
 
-        // Stickers normales
+        // Stickers
         stickers.forEach(item => {
-            msg += `* ${item.id}%0A`;
+            msg += `* ${item.id}\n`;
         });
 
-        msg += `%0A`;
+        msg += `\n`;
 
-        msg += `*Nota:* %0A%0A`;
+        msg += `Nota:\n\n`;
 
-        msg += `*TOTAL:* ${document.getElementById('cart-total').innerText}`;
+        msg += `TOTAL: ${document.getElementById('cart-total').innerText}`;
+
+        // Codificar correctamente para URL
+        const mensajeCodificado = encodeURIComponent(msg);
 
         // Abrir WhatsApp
         window.open(
-            `https://wa.me/50246199644?text=${msg}`,
+            `https://wa.me/50246199644?text=${mensajeCodificado}`,
             '_blank'
         );
     }
