@@ -304,63 +304,45 @@
     function logout() { auth.signOut().then(() => location.reload()); }
 
     function sendOrder() {
-        if(cart.length === 0) {
+        if(cart.length === 0){
             alert("Tu carrito está vacío.");
             return;
         }
 
-        // Separar leyendas y stickers normales
-        const leyendas = cart.filter(item => 
+        // Separar leyendas y stickers
+        const leyendas = cart.filter(item =>
             item.id.includes('LEYENDA') || item.id.includes('CARTA')
         );
 
-        const stickers = cart.filter(item => 
+        const stickers = cart.filter(item =>
             !item.id.includes('LEYENDA') && !item.id.includes('CARTA')
         );
 
-        // Ordenar stickers por país y número
-        stickers.sort((a, b) => {
-            const [paisA, numA] = a.id.split(' #');
-            const [paisB, numB] = b.id.split(' #');
+        // Ordenar stickers
+        stickers.sort((a, b) => a.id.localeCompare(b.id));
 
-            if (paisA !== paisB) {
-                return paisA.localeCompare(paisB);
-            }
-
-            return parseInt(numA) - parseInt(numB);
-        });
-
-        // Construcción del mensaje
+        // Construir mensaje
         let msg = `🏆 *NUEVO PEDIDO PANINI*%0A%0A`;
 
         msg += `👤 *Cliente:* ${auth.currentUser.displayName}%0A%0A`;
 
-        // Stickers normales
-        if(stickers.length > 0) {
-            msg += `🌎 *STICKERS*%0A`;
-
-            stickers.forEach(item => {
-                const [pais, numero] = item.id.split(' #');
-
-                msg += `• ${pais} - #${numero}%0A`;
-            });
-
-            msg += `%0A`;
-        }
+        msg += `*Cartas:*%0A`;
 
         // Leyendas
-        if(leyendas.length > 0) {
-            msg += `👑 *LEYENDAS*%0A`;
+        leyendas.forEach(item => {
+            msg += `* ${item.id}%0A`;
+        });
 
-            leyendas.forEach(item => {
-                msg += `• ${item.id}%0A`;
-            });
+        // Stickers normales
+        stickers.forEach(item => {
+            msg += `* ${item.id}%0A`;
+        });
 
-            msg += `%0A`;
-        }
+        msg += `%0A`;
 
-        // Total
-        msg += `💰 *TOTAL:* ${document.getElementById('cart-total').innerText}%0A`;
+        msg += `*Nota:* %0A%0A`;
+
+        msg += `*TOTAL:* ${document.getElementById('cart-total').innerText}`;
 
         // Abrir WhatsApp
         window.open(
