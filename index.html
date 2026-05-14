@@ -318,12 +318,34 @@
     function sendOrder() {
         if(cart.length === 0) return alert("Tu carrito está vacío.");
         
+        // 1. Separar Leyendas de Cromos normales y ordenar
+        const leyendas = cart
+            .filter(item => item.id.includes('LEYENDA') || item.id.includes('CARTA'))
+            .sort((a, b) => a.id.localeCompare(b.id));
+
+        const cromosPaises = cart
+            .filter(item => !item.id.includes('LEYENDA') && !item.id.includes('CARTA'))
+            .sort((a, b) => {
+                // Separamos "País" y "#Número" para ordenar correctamente
+                const [paisA, numA] = a.id.split(' #');
+                const [paisB, numB] = b.id.split(' #');
+                
+                if (paisA !== paisB) return paisA.localeCompare(paisB);
+                return parseInt(numA) - parseInt(numB);
+            });
+
+        // 2. Construcción del mensaje formateado
         let msg = `*--- 🏆 NUEVO PEDIDO PANINI ---*%0A`;
         msg += `*👤 Cliente:* ${auth.currentUser.displayName}%0A%0A`;
         msg += `*Cartas:*%0A`;
         
-        // Generamos la lista exacta: "País #Número" o "Nombre Leyenda"
-        cart.forEach(item => {
+        // Añadir Leyendas al inicio del mensaje
+        leyendas.forEach(item => {
+            msg += `* ${item.id}%0A`;
+        });
+
+        // Añadir Stickers por país después
+        cromosPaises.forEach(item => {
             msg += `* ${item.id}%0A`;
         });
         
