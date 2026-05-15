@@ -83,10 +83,16 @@
         </nav>
 
         <div class="sidebar" id="sidebar">
-            <div onclick="showView('album-view')" style="padding:18px; color:white; font-weight:600;"><i class="fa-solid fa-book-open"></i> MI ÁLBUM</div>
-            <div onclick="showView('prices-view')" style="padding:18px; color:white; font-weight:600;"><i class="fa-solid fa-crown"></i> LEYENDAS</div>
-            <div onclick="showView('profile-view')" style="padding:18px; color:white; font-weight:600;"><i class="fa-solid fa-user-gear"></i> PERFIL</div>
-            <div onclick="logout()" style="color:#ff5252; margin-top:40px; padding:18px;"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
+            <div onclick="showView('album-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-book-open"></i> MI ÁLBUM</div>
+            <div onclick="showView('prices-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-crown"></i> LEYENDAS</div>
+            <div onclick="showView('profile-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-user-gear"></i> PERFIL</div>
+            
+            <!-- ENLACE A INSTAGRAM -->
+            <a href="https://instagram.com/pablooib" target="_blank" style="text-decoration:none; display:block; padding:18px; color:#e1306c; font-weight:600; cursor:pointer;">
+                <i class="fa-brands fa-instagram"></i> INSTAGRAM
+            </a>
+
+            <div onclick="logout()" style="color:#ff5252; margin-top:40px; padding:18px; cursor:pointer;"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
         </div>
 
         <div class="cart-trigger" onclick="toggleCart()">
@@ -124,39 +130,11 @@
                 <div id="sticker-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:15px;"></div>
             </div>
 
+            <!-- APARTADO DINÁMICO DE LEYENDAS (SINCRONIZADO) -->
             <div id="prices-view" class="view">
                 <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:40px; color:var(--gold); font-size:2.5rem; letter-spacing:5px;">ROYAL LEGENDS</h2>
-                <div class="special-grid">
-                    <div id="special-messi" class="legend-card">
-                        <img src="imagenmessi.jpg">
-                        <div class="legend-content">
-                            <h3>LIONEL MESSI</h3>
-                            <span class="price-tag">Q40.00</span>
-                            <button class="btn-add-special" onclick="toggleSpecial('MESSI LEYENDA', 50, 'special-messi')">
-                                <i class="fa-solid fa-plus"></i> <span class="btn-txt">AGOTADO POR EL MOMENTO</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="special-cr7" class="legend-card">
-                        <img src="cristianomundial.jpg">
-                        <div class="legend-content">
-                            <h3>C. RONALDO</h3>
-                            <span class="price-tag">Q40.00</span>
-                            <button class="btn-add-special" onclick="toggleSpecial('CR7 LEYENDA', 40, 'special-cr7')">
-                                <i class="fa-solid fa-plus"></i> <span class="btn-txt">AGREGAR</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="special-panini" class="legend-card">
-                        <img src="panini.png">
-                        <div class="legend-content">
-                            <h3>PANINI GOLD</h3>
-                            <span class="price-tag">Q50.00</span>
-                            <button class="btn-add-special" onclick="toggleSpecial('CARTA PANINI', 40, 'special-panini')">
-                                <i class="fa-solid fa-plus"></i> <span class="btn-txt">AGOTADO POR EL MOMENTO</span>
-                            </button>
-                        </div>
-                    </div>
+                <div class="special-grid" id="royal-legends-container">
+                    <!-- Se renderiza en tiempo real desde Firestore -->
                 </div>
             </div>
 
@@ -182,6 +160,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore(); // Inicialización de Firestore v9 compat
 
     auth.onAuthStateChanged(user => {
         setTimeout(() => {
@@ -207,6 +186,7 @@
         selectedCountry = grupos[0].paises[0];
         renderGroup();
         renderStickers();
+        listenToRoyalLegends(); // Iniciar monitoreo del inventario de leyendas
     }
 
     function renderGroup() {
@@ -237,7 +217,49 @@
             s.onclick = () => addToCart(id, price);
             grid.appendChild(s);
         }
-        syncSpecialUI();
+    }
+
+    // LISTENER EN TIEMPO REAL CON FIREBASE COPIANDO TU MAQUETA EXACTA
+    function listenToRoyalLegends() {
+        db.collection("config").doc("royal_legends").onSnapshot((docSnap) => {
+            if(!docSnap.exists) return;
+            const data = docSnap.data();
+            const container = document.getElementById('royal-legends-container');
+            let htmlHTML = "";
+
+            Object.entries(data).forEach(([idCard, info]) => {
+                let sourceImg = "panini.png";
+                if(idCard === "special-messi") sourceImg = "imagenmessi.jpg";
+                if(idCard === "special-cr7") sourceImg = "cristianomundial.jpg";
+
+                const isSelected = cart.find(x => x.id === info.itemCartName);
+                const cardClass = isSelected ? "legend-card selected" : "legend-card";
+                
+                let textBtn = "";
+                let attrDisabled = "";
+                
+                if (isSelected) {
+                    textBtn = "QUITAR";
+                } else {
+                    textBtn = info.disponible ? "AGREGAR" : "AGOTADO POR EL MOMENTO";
+                    attrDisabled = info.disponible ? "" : "disabled style='opacity: 0.5; cursor: not-allowed;'";
+                }
+
+                htmlHTML += `
+                    <div id="${idCard}" class="${cardClass}">
+                        <img src="${sourceImg}">
+                        <div class="legend-content">
+                            <h3>${info.name}</h3>
+                            <span class="price-tag">Q${parseFloat(info.price).toFixed(2)}</span>
+                            <button class="btn-add-special" ${attrDisabled} onclick="toggleSpecial('${info.itemCartName}', ${info.price}, '${idCard}')">
+                                <i class="fa-solid fa-plus"></i> <span class="btn-txt">${textBtn}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = htmlHTML;
+        });
     }
 
     function addToCart(id, price) {
@@ -253,20 +275,15 @@
         if(idx > -1) cart.splice(idx, 1);
         else cart.push({id, price});
         updateCartUI();
-        syncSpecialUI();
-    }
-
-    function syncSpecialUI() {
-        const specials = [{name:'MESSI LEYENDA', el:'special-messi'},{name:'CR7 LEYENDA', el:'special-cr7'},{name:'CARTA PANINI', el:'special-panini'}];
-        specials.forEach(s => {
-            const el = document.getElementById(s.el);
-            if(el) {
-                const isSelected = cart.find(x => x.id === s.name);
-                const btn = el.querySelector('.btn-txt');
-                if(isSelected) { el.classList.add('selected'); btn.innerText = "QUITAR"; }
-                else { el.classList.remove('selected'); btn.innerText = "AGREGAR"; }
-            }
-        });
+        
+        // Forzamos el rediseño inmediato mapeando clases visuales
+        const el = document.getElementById(elementId);
+        if(el) {
+            const isSelected = cart.find(x => x.id === id);
+            const btn = el.querySelector('.btn-txt');
+            if(isSelected) { el.classList.add('selected'); btn.innerText = "QUITAR"; }
+            else { el.classList.remove('selected'); btn.innerText = "AGREGAR"; }
+        }
     }
 
     function updateCartUI() {
@@ -290,7 +307,24 @@
         document.getElementById('cart-total').innerText = `Q${total}.00`;
     }
 
-    function removeItem(i) { cart.splice(i, 1); updateCartUI(); renderStickers(); }
+    function removeItem(i) { 
+        const item = cart[i];
+        cart.splice(i, 1); 
+        updateCartUI(); 
+        renderStickers();
+        
+        // Si removemos un cromo especial desde la basura del carro, actualizamos su tarjeta visual
+        let targetId = "";
+        if(item.id === "MESSI LEYENDA") targetId = "special-messi";
+        if(item.id === "CR7 LEYENDA") targetId = "special-cr7";
+        if(item.id === "CARTA PANINI") targetId = "special-panini";
+        
+        if(targetId) {
+            const el = document.getElementById(targetId);
+            if(el) { el.classList.remove('selected'); el.querySelector('.btn-txt').innerText = "AGREGAR"; }
+        }
+    }
+    
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
     function toggleCart() { document.getElementById('cart-drawer').classList.toggle('active'); }
     function showView(id) {
@@ -309,49 +343,21 @@
             return;
         }
 
-        // Separar leyendas y stickers
-        const leyendas = cart.filter(item =>
-            item.id.includes('LEYENDA') || item.id.includes('CARTA')
-        );
-
-        const stickers = cart.filter(item =>
-            !item.id.includes('LEYENDA') && !item.id.includes('CARTA')
-        );
-
-        // Ordenar stickers
+        const leyendas = cart.filter(item => item.id.includes('LEYENDA') || item.id.includes('CARTA'));
+        const stickers = cart.filter(item => !item.id.includes('LEYENDA') && !item.id.includes('CARTA'));
         stickers.sort((a, b) => a.id.localeCompare(b.id));
 
-        // Construir mensaje NORMAL
         let msg = `--- NUEVO PEDIDO PANINI ---\n\n`;
-
         msg += `Cliente: ${auth.currentUser.displayName}\n\n`;
-
         msg += `Cartas:\n`;
 
-        // Leyendas
-        leyendas.forEach(item => {
-            msg += `* ${item.id}\n`;
-        });
-
-        // Stickers
-        stickers.forEach(item => {
-            msg += `* ${item.id}\n`;
-        });
-
-        msg += `\n`;
-
-        msg += `Nota:\n\n`;
-
+        leyendas.forEach(item => { msg += `* ${item.id}\n`; });
+        stickers.forEach(item => { msg += `* ${item.id}\n`; });
+        msg += `\nNota:\n\n`;
         msg += `TOTAL: ${document.getElementById('cart-total').innerText}`;
 
-        // Codificar correctamente para URL
         const mensajeCodificado = encodeURIComponent(msg);
-
-        // Abrir WhatsApp
-        window.open(
-            `https://wa.me/50246199644?text=${mensajeCodificado}`,
-            '_blank'
-        );
+        window.open(`https://wa.me/50246199644?text=${mensajeCodificado}`, '_blank');
     }
 </script>
 </body>
