@@ -19,6 +19,7 @@
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.12);
             --card-grad: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            --insta-grad: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -35,6 +36,12 @@
 
         /* --- UI ELEMENTS --- */
         .navbar { position:fixed; top:0; width:100%; height:70px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:rgba(2,2,10,0.8); backdrop-filter:blur(15px); z-index:1000; border-bottom:1px solid var(--glass-border); }
+        .nav-right-actions { display: flex; align-items: center; gap: 15px; }
+        
+        /* Botón visual de Instagram */
+        .btn-insta-nav { background: var(--insta-grad); color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3); transition: transform 0.2s; }
+        .btn-insta-nav:active { transform: scale(0.95); }
+
         .sidebar { position:fixed; top:0; left:-300px; width:280px; height:100%; background:#050510; z-index:1500; transition:0.4s; padding:30px 20px; border-right:1px solid var(--glass-border); }
         .sidebar.active { left:0; }
         
@@ -43,10 +50,18 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- STICKERS ALBUM --- */
-        .stk { aspect-ratio: 0.8; background: var(--glass); border-radius: 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; border:1px solid var(--glass-border); transition: 0.3s; position: relative; }
+        .stk { aspect-ratio: 0.75; background: var(--glass); border-radius: 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; border:1px solid var(--glass-border); transition: 0.3s; position: relative; padding: 5px; text-align: center; }
         .stk.selected { background: var(--wc-cyan); color: #000; border-color: #fff; transform: scale(0.95); box-shadow: 0 0 20px rgba(0,229,255,0.5); }
+        .stk.selected .stk-status { color: #000; font-weight: bold; }
         .stk.legend-stk { border: 2px solid var(--gold); }
-        .stk b { font-family: 'Oswald'; font-size: 1.2rem; }
+        .stk b { font-family: 'Oswald'; font-size: 1.2rem; line-height: 1.1; }
+        
+        /* Estilos de Stock para Estampitas */
+        .stk-status { font-size: 0.55rem; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px; padding: 1px 5px; border-radius: 4px; }
+        .stk-status.av { color: #25d366; background: rgba(37, 211, 102, 0.1); }
+        .stk.selected .stk-status.av { background: rgba(0, 0, 0, 0.15); color: #000; }
+        .stk-status.so { color: #ff5252; background: rgba(255, 82, 82, 0.1); }
+        .stk.stk-sold-out { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.5); }
 
         /* --- LEGENDS CARDS --- */
         .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
@@ -77,21 +92,22 @@
 
     <div id="app" style="display:none;">
         <nav class="navbar">
-            <div onclick="toggleSidebar()" style="font-size:1.5rem;"><i class="fa-solid fa-bars-staggered"></i></div>
+            <div onclick="toggleSidebar()" style="font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-bars-staggered"></i></div>
             <span style="font-family:'Oswald'; letter-spacing:4px; font-size:1.4rem;">PANINI</span>
-            <img id="nav-avatar" src="" style="width:40px; border-radius:50%; border:2px solid var(--wc-cyan);" onclick="showView('profile-view')">
+            
+            <div class="nav-right-actions">
+                <!-- BOTÓN VISUAL DE INSTAGRAM FUERA DEL MENÚ -->
+                <a href="https://instagram.com/pablooib" target="_blank" class="btn-insta-nav">
+                    <i class="fa-brands fa-instagram"></i> @pablooib
+                </a>
+                <img id="nav-avatar" src="" style="width:40px; border-radius:50%; border:2px solid var(--wc-cyan); cursor:pointer;" onclick="showView('profile-view')">
+            </div>
         </nav>
 
         <div class="sidebar" id="sidebar">
             <div onclick="showView('album-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-book-open"></i> MI ÁLBUM</div>
             <div onclick="showView('prices-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-crown"></i> LEYENDAS</div>
             <div onclick="showView('profile-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-user-gear"></i> PERFIL</div>
-            
-            <!-- ENLACE A INSTAGRAM -->
-            <a href="https://instagram.com/pablooib" target="_blank" style="text-decoration:none; display:block; padding:18px; color:#e1306c; font-weight:600; cursor:pointer;">
-                <i class="fa-brands fa-instagram"></i> pablooib
-            </a>
-
             <div onclick="logout()" style="color:#ff5252; margin-top:40px; padding:18px; cursor:pointer;"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
         </div>
 
@@ -127,15 +143,12 @@
                 </div>
                 <div id="country-scroll" style="display:flex; gap:15px; overflow-x:auto; padding-bottom:20px;"></div>
                 <h3 id="country-label" style="margin:20px 0 15px; font-family:'Oswald'; color:var(--wc-cyan); letter-spacing:3px;">PAÍS</h3>
-                <div id="sticker-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:15px;"></div>
+                <div id="sticker-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(85px, 1fr)); gap:12px;"></div>
             </div>
 
-            <!-- APARTADO DINÁMICO DE LEYENDAS (SINCRONIZADO) -->
             <div id="prices-view" class="view">
                 <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:40px; color:var(--gold); font-size:2.5rem; letter-spacing:5px;">ROYAL LEGENDS</h2>
-                <div class="special-grid" id="royal-legends-container">
-                    <!-- Se renderiza en tiempo real desde Firestore -->
-                </div>
+                <div class="special-grid" id="royal-legends-container"></div>
             </div>
 
             <div id="profile-view" class="view">
@@ -160,7 +173,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.firestore(); // Inicialización de Firestore v9 compat
+    const db = firebase.firestore();
 
     auth.onAuthStateChanged(user => {
         setTimeout(() => {
@@ -186,7 +199,7 @@
         selectedCountry = grupos[0].paises[0];
         renderGroup();
         renderStickers();
-        listenToRoyalLegends(); // Iniciar monitoreo del inventario de leyendas
+        listenToRoyalLegends();
     }
 
     function renderGroup() {
@@ -206,20 +219,43 @@
     function renderStickers() {
         document.getElementById('country-label').innerText = selectedCountry.toUpperCase();
         const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
+        
         for(let i=1; i<=20; i++){
             const id = `${selectedCountry} #${i}`;
             let price = (i === 1) ? 10 : (i === 13 ? 15 : 2);
             if(selectedCountry === "Portugal" && i === 15) price = 40;
+            
+            // Regla de disponibilidad automática (Pares = Disponible, Impares = Agotado)
+            // Puedes ajustar esto para mapear estados dinámicos si lo requieres.
+            const disponible = (i % 2 === 0); 
+            
             const isSel = cart.find(x => x.id === id);
             const s = document.createElement('div');
-            s.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''}`;
-            s.innerHTML = `<b>${i}</b><small style="opacity:0.8; font-size:0.65rem;">Q${price}.00</small>`;
-            s.onclick = () => addToCart(id, price);
+            
+            // Si está agotado, le inyectamos una clase para estilizarlo opaco
+            s.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
+            
+            // Añadir el microtexto de stock abajo
+            const stockLabel = disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>';
+            
+            s.innerHTML = `
+                <b>${i}</b>
+                <small style="opacity:0.8; font-size:0.65rem;">Q${price}.00</small>
+                ${stockLabel}
+            `;
+            
+            // Solo añadir al carrito si está disponible
+            s.onclick = () => {
+                if(disponible) {
+                    addToCart(id, price);
+                } else {
+                    alert(`El cromo #${i} de ${selectedCountry} no cuenta con existencias actualmente.`);
+                }
+            };
             grid.appendChild(s);
         }
     }
 
-    // LISTENER EN TIEMPO REAL CON FIREBASE COPIANDO TU MAQUETA EXACTA
     function listenToRoyalLegends() {
         db.collection("config").doc("royal_legends").onSnapshot((docSnap) => {
             if(!docSnap.exists) return;
@@ -276,7 +312,6 @@
         else cart.push({id, price});
         updateCartUI();
         
-        // Forzamos el rediseño inmediato mapeando clases visuales
         const el = document.getElementById(elementId);
         if(el) {
             const isSelected = cart.find(x => x.id === id);
@@ -313,7 +348,6 @@
         updateCartUI(); 
         renderStickers();
         
-        // Si removemos un cromo especial desde la basura del carro, actualizamos su tarjeta visual
         let targetId = "";
         if(item.id === "MESSI LEYENDA") targetId = "special-messi";
         if(item.id === "CR7 LEYENDA") targetId = "special-cr7";
