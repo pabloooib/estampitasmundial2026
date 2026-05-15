@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PANINI | SOUVREIGN</title>
     <link rel="icon" type="image/png" href="panini.png">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght=500;700&family=Poppins:wght=300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
@@ -38,7 +38,6 @@
         .navbar { position:fixed; top:0; width:100%; height:70px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:rgba(2,2,10,0.8); backdrop-filter:blur(15px); z-index:1000; border-bottom:1px solid var(--glass-border); }
         .nav-right-actions { display: flex; align-items: center; gap: 15px; }
         
-        /* Botón visual de Instagram */
         .btn-insta-nav { background: var(--insta-grad); color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3); transition: transform 0.2s; }
         .btn-insta-nav:active { transform: scale(0.95); }
 
@@ -56,12 +55,11 @@
         .stk.legend-stk { border: 2px solid var(--gold); }
         .stk b { font-family: 'Oswald'; font-size: 1.2rem; line-height: 1.1; }
         
-        /* Estilos de Stock para Estampitas */
         .stk-status { font-size: 0.55rem; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px; padding: 1px 5px; border-radius: 4px; }
         .stk-status.av { color: #25d366; background: rgba(37, 211, 102, 0.1); }
         .stk.selected .stk-status.av { background: rgba(0, 0, 0, 0.15); color: #000; }
         .stk-status.so { color: #ff5252; background: rgba(255, 82, 82, 0.1); }
-        .stk.stk-sold-out { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.5); }
+        .stk.stk-sold-out { opacity: 0.3; cursor: not-allowed; filter: grayscale(0.8); border-color: rgba(255,82,82,0.2); }
 
         /* --- LEGENDS CARDS --- */
         .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
@@ -96,7 +94,6 @@
             <span style="font-family:'Oswald'; letter-spacing:4px; font-size:1.4rem;">PANINI</span>
             
             <div class="nav-right-actions">
-                <!-- BOTÓN VISUAL DE INSTAGRAM FUERA DEL MENÚ -->
                 <a href="https://instagram.com/pablooib" target="_blank" class="btn-insta-nav">
                     <i class="fa-brands fa-instagram"></i> @pablooib
                 </a>
@@ -186,6 +183,8 @@
     let cart = [];
     let currentGrp = 0;
     let selectedCountry = "";
+    let unsubStickers = null; // Guardar listener activo para evitar duplicados
+
     const grupos = [{id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},{id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},{id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},{id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},{id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},{id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},{id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},{id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},{id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},{id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},{id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},{id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}];
     const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
 
@@ -198,7 +197,7 @@
         document.getElementById('profile-email').innerText = user.email;
         selectedCountry = grupos[0].paises[0];
         renderGroup();
-        renderStickers();
+        listenToStickers(); // Cambio aquí: Escucha activa en vez de renderizado estático
         listenToRoyalLegends();
     }
 
@@ -211,49 +210,73 @@
             const card = document.createElement('div');
             card.style = `min-width:115px; padding:15px; border-radius:20px; background:${active?'var(--wc-cyan)':'var(--glass)'}; color:${active?'#000':'#fff'}; text-align:center; cursor:pointer; border:1px solid ${active?'#fff':'var(--glass-border)'}; transition:0.3s;`;
             card.innerHTML = `<img src="https://flagcdn.com/w40/${flags[p]}.png" style="display:block; margin:0 auto 8px; border-radius:4px;"> <b style="font-size:0.85rem;">${p}</b>`;
-            card.onclick = () => { selectedCountry = p; renderGroup(); renderStickers(); };
+            card.onclick = () => { selectedCountry = p; renderGroup(); listenToStickers(); };
             scroll.appendChild(card);
         });
     }
 
-    function renderStickers() {
+    // NUEVA FUNCIÓN: Escucha y sincroniza los cambios de disponibilidad del Administrador al Instante
+    function listenToStickers() {
         document.getElementById('country-label').innerText = selectedCountry.toUpperCase();
-        const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
         
-        for(let i=1; i<=20; i++){
-            const id = `${selectedCountry} #${i}`;
-            let price = (i === 1) ? 10 : (i === 13 ? 15 : 2);
-            if(selectedCountry === "Portugal" && i === 15) price = 40;
+        // Cancelamos la escucha del país anterior si existe para optimizar memoria
+        if(unsubStickers) unsubStickers();
+
+        unsubStickers = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
+            const grid = document.getElementById('sticker-grid'); 
+            grid.innerHTML = "";
             
-            // Regla de disponibilidad automática (Pares = Disponible, Impares = Agotado)
-            // Puedes ajustar esto para mapear estados dinámicos si lo requieres.
-            const disponible = (i % 2 === 0); 
-            
-            const isSel = cart.find(x => x.id === id);
-            const s = document.createElement('div');
-            
-            // Si está agotado, le inyectamos una clase para estilizarlo opaco
-            s.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
-            
-            // Añadir el microtexto de stock abajo
-            const stockLabel = disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>';
-            
-            s.innerHTML = `
-                <b>${i}</b>
-                <small style="opacity:0.8; font-size:0.65rem;">Q${price}.00</small>
-                ${stockLabel}
-            `;
-            
-            // Solo añadir al carrito si está disponible
-            s.onclick = () => {
-                if(disponible) {
-                    addToCart(id, price);
-                } else {
-                    alert(`El cromo #${i} de ${selectedCountry} no cuenta con existencias actualmente.`);
+            const preciosGuardados = docSnap.exists ? docSnap.data() : {};
+
+            for(let i = 1; i <= 20; i++){
+                const id = `${selectedCountry} #${i}`;
+                
+                // Valores de fallback por defecto por si no se han editado en el admin
+                let price = (i === 1) ? 10 : (i === 13 ? 15 : 2);
+                if(selectedCountry === "Portugal" && i === 15) price = 40;
+                let disponible = true;
+
+                // Extraer el objeto mapeado del admin {precio, disponible}
+                if (preciosGuardados.hasOwnProperty(i)) {
+                    if (typeof preciosGuardados[i] === 'object' && preciosGuardados[i] !== null) {
+                        price = preciosGuardados[i].price ?? preciosGuardados[i].precio ?? price;
+                        disponible = preciosGuardados[i].disponible ?? true;
+                    } else {
+                        price = preciosGuardados[i]; // Retrocompatibilidad por si solo guardó el número anteriormente
+                    }
                 }
-            };
-            grid.appendChild(s);
-        }
+
+                // Si el artículo se actualizó a "Agotado" en el admin y el usuario ya lo tenía en el carrito, se remueve automáticamente.
+                if(!disponible) {
+                    const idxEnCarrito = cart.findIndex(x => x.id === id);
+                    if(idxEnCarrito > -1) {
+                        cart.splice(idxEnCarrito, 1);
+                        updateCartUI();
+                    }
+                }
+
+                const isSel = cart.find(x => x.id === id);
+                const s = document.createElement('div');
+                
+                s.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
+                const stockLabel = disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>';
+                
+                s.innerHTML = `
+                    <b>${i}</b>
+                    <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
+                    ${stockLabel}
+                `;
+                
+                s.onclick = () => {
+                    if(disponible) {
+                        addToCart(id, price);
+                    } else {
+                        alert(`El cromo #${i} de ${selectedCountry} no cuenta con existencias actualmente.`);
+                    }
+                };
+                grid.appendChild(s);
+            }
+        });
     }
 
     function listenToRoyalLegends() {
@@ -269,6 +292,14 @@
                 if(idCard === "special-cr7") sourceImg = "cristianomundial.jpg";
 
                 const isSelected = cart.find(x => x.id === info.itemCartName);
+                
+                // Si el admin agota una leyenda y el usuario la tenía en el carrito, se le remueve
+                if(!info.disponible && isSelected) {
+                    const idx = cart.findIndex(x => x.id === info.itemCartName);
+                    cart.splice(idx, 1);
+                    updateCartUI();
+                }
+
                 const cardClass = isSelected ? "legend-card selected" : "legend-card";
                 
                 let textBtn = "";
@@ -301,15 +332,24 @@
     function addToCart(id, price) {
         const idx = cart.findIndex(x => x.id === id);
         if(idx > -1) cart.splice(idx, 1);
-        else cart.push({id, price});
+        else cart.push({id, price: parseFloat(price)});
         updateCartUI();
-        renderStickers();
+        
+        // Forzamos redibujado local rápido del estado seleccionado sin romper la escucha
+        const grid = document.getElementById('sticker-grid');
+        if(grid && grid.children.length > 0) {
+            const num = id.split(' #')[1];
+            const items = grid.getElementsByClassName('stk');
+            if(items[num-1]) {
+                items[num-1].classList.toggle('selected');
+            }
+        }
     }
 
     function toggleSpecial(id, price, elementId) {
         const idx = cart.findIndex(x => x.id === id);
         if(idx > -1) cart.splice(idx, 1);
-        else cart.push({id, price});
+        else cart.push({id, price: parseFloat(price)});
         updateCartUI();
         
         const el = document.getElementById(elementId);
@@ -346,7 +386,16 @@
         const item = cart[i];
         cart.splice(i, 1); 
         updateCartUI(); 
-        renderStickers();
+        
+        // Si el ítem removido pertenece al país actual visualizándose, deseleccionarlo visualmente
+        if (item.id.startsWith(selectedCountry + " #")) {
+            const num = item.id.split(' #')[1];
+            const grid = document.getElementById('sticker-grid');
+            if(grid) {
+                const items = grid.getElementsByClassName('stk');
+                if(items[num-1]) items[num-1].classList.remove('selected');
+            }
+        }
         
         let targetId = "";
         if(item.id === "MESSI LEYENDA") targetId = "special-messi";
@@ -367,7 +416,7 @@
         document.getElementById('sidebar').classList.remove('active');
     }
 
-    function changeGroup(d) { currentGrp = (currentGrp + d + grupos.length) % grupos.length; renderGroup(); renderStickers(); }
+    function changeGroup(d) { currentGrp = (currentGrp + d + grupos.length) % grupos.length; selectedCountry = grupos[currentGrp].paises[0]; renderGroup(); listenToStickers(); }
     function loginWithGoogle() { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(() => auth.signInWithRedirect(provider)); }
     function logout() { auth.signOut().then(() => location.reload()); }
 
