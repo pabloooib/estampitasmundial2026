@@ -183,7 +183,7 @@
     let cart = [];
     let currentGrp = 0;
     let selectedCountry = "";
-    let activeUnsubs = []; // Array para manejar múltiples escuchas simultáneas (esencial para Campeones)
+    let activeUnsubs = []; 
 
     const grupos = [{id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},{id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},{id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},{id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},{id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},{id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},{id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},{id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},{id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},{id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},{id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},{id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]},{id: "CAMPEONES", paises: ["Campeones"]}];
     const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa", "Campeones":"un" };
@@ -215,11 +215,9 @@
         });
     }
 
-    // FUNCIÓN OPTIMIZADA: Escucha documentos individuales si es "Campeones", o mapeados si es país normal
     function listenToStickers() {
         document.getElementById('country-label').innerText = selectedCountry === "Campeones" ? "CAMPEONES DEL MUNDO (FWC)" : selectedCountry.toUpperCase();
         
-        // Limpiar todos los listeners activos anteriores para evitar fugas de memoria
         activeUnsubs.forEach(unsub => unsub());
         activeUnsubs = [];
 
@@ -229,27 +227,32 @@
         const isCampeones = selectedCountry === "Campeones";
 
         if (isCampeones) {
-            // Creamos un contenedor de datos local para renderizar la colección entera en tiempo real
-            const cacheCampeones = {};
             const startLoop = 9;
             const endLoop = 19;
 
-            // Iteramos creando un listener onSnapshot en tiempo real para cada cromo fwc (del fwc 9 al fwc 19)
+            // 1. Inyectamos las cajas vacías ordenadas secuencialmente del 9 al 19
             for (let i = startLoop; i <= endLoop; i++) {
-                const docId = `fwc ${i}`; // id en la base de datos (ej. "fwc 9")
-                const itemCartId = `FWC ${i}`; // id en tu carrito
+                const s = document.createElement('div');
+                s.id = `fwc-container-${i}`;
+                s.className = `stk legend-stk`;
+                s.innerHTML = `<b>FWC ${i}</b><br><small style="opacity:0.5; font-size:0.6rem;">Conectando...</small>`;
+                grid.appendChild(s);
+            }
+
+            // 2. Vinculamos un listener asíncrono e independiente por cada documento fwc de Firestore
+            for (let i = startLoop; i <= endLoop; i++) {
+                const docId = `fwc ${i}`; 
+                const itemCartId = `FWC ${i}`; 
 
                 const unsub = db.collection("precios_estampas").doc(docId).onSnapshot((docSnap) => {
+                    const cell = document.getElementById(`fwc-container-${i}`);
+                    if (!cell) return; 
+
                     const datosCromo = docSnap.exists ? docSnap.data() : {};
                     
-                    // Fallback de valores por defecto
                     let price = datosCromo.price ?? datosCromo.precio ?? 5;
                     let disponible = datosCromo.disponible ?? true;
 
-                    // Guardamos en nuestro caché local el estado actualizado de este cromo
-                    cacheCampeones[i] = { price, disponible, itemCartId };
-
-                    // Si se agota desde el admin y el usuario lo tenía en carrito, se remueve al instante
                     if (!disponible) {
                         const idxEnCarrito = cart.findIndex(x => x.id === itemCartId);
                         if (idxEnCarrito > -1) {
@@ -258,14 +261,28 @@
                         }
                     }
 
-                    // Re-renderizar el grid completo de campeones con la data actualizada
-                    renderCampeonesGrid(cacheCampeones, startLoop, endLoop);
+                    const isSel = cart.find(x => x.id === itemCartId);
+                    
+                    cell.className = `stk ${isSel ? 'selected' : ''} legend-stk ${!disponible ? 'stk-sold-out' : ''}`;
+                    cell.innerHTML = `
+                        <b>FWC ${i}</b>
+                        <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
+                        ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
+                    `;
+                    
+                    cell.onclick = () => {
+                        if (disponible) {
+                            addToCart(itemCartId, price, true, i);
+                        } else {
+                            alert(`El cromo FWC ${i} no cuenta con existencias actualmente.`);
+                        }
+                    };
                 });
 
                 activeUnsubs.push(unsub);
             }
         } else {
-            // Flujo Normal para los Países Estándar (un solo documento compuesto)
+            // Flujo normal de países con documento compuesto
             const unsub = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
                 grid.innerHTML = "";
                 const preciosGuardados = docSnap.exists ? docSnap.data() : {};
@@ -315,37 +332,6 @@
             });
 
             activeUnsubs.push(unsub);
-        }
-    }
-
-    // Auxiliar dinámico para redibujar la sección Campeones ordenadamente
-    function renderCampeonesGrid(cache, start, end) {
-        const grid = document.getElementById('sticker-grid');
-        grid.innerHTML = "";
-
-        for (let i = start; i <= end; i++) {
-            // Si el listener individual aún no ha traído data de Firestore, ponemos valores temporales
-            const info = cache[i] || { price: 5, disponible: true, itemCartId: `FWC ${i}` };
-            const isSel = cart.find(x => x.id === info.itemCartId);
-
-            const s = document.createElement('div');
-            s.className = `stk ${isSel ? 'selected' : ''} legend-stk ${!info.disponible ? 'stk-sold-out' : ''}`;
-            
-            s.innerHTML = `
-                <b>FWC ${i}</b>
-                <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(info.price).toFixed(2)}</small>
-                ${info.disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
-            `;
-
-            s.onclick = () => {
-                if (info.disponible) {
-                    addToCart(info.itemCartId, info.price, true, i);
-                } else {
-                    alert(`El cromo FWC ${i} no cuenta con existencias actualmente.`);
-                }
-            };
-
-            grid.appendChild(s);
         }
     }
 
