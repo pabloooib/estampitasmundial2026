@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght=500;700&family=Poppins:wght=300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Firebase Legacy SDKs (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore-compat.js"></script>
@@ -26,7 +25,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Poppins', sans-serif; background: #02020a; color: #fff; overflow-x: hidden; }
 
-        /* --- INTRO & LOGIN --- */
         #intro-space { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:10000; display:flex; align-items:center; justify-content:center; pointer-events:none; }
         .earth-zoom { width:30vw; height:30vw; min-width:150px; background:url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') center/cover; animation: superZoom 4s forwards cubic-bezier(0.7, 0, 0.3, 1); }
         @keyframes superZoom { 0% { transform: scale(0.1); opacity: 0; } 15% { opacity: 1; } 100% { transform: scale(45); opacity: 0; } }
@@ -35,12 +33,9 @@
         .auth-card { background:rgba(255,255,255,0.03); backdrop-filter:blur(20px); padding:50px 30px; border-radius:40px; text-align:center; width:85%; max-width:350px; border:1px solid var(--glass-border); }
         .btn-login { background:var(--wc-cyan); color:#000; border:none; padding:18px; border-radius:20px; font-weight:800; width:100%; margin-top:30px; font-size:1.1rem; box-shadow: 0 10px 30px rgba(0,229,255,0.4); cursor:pointer; }
 
-        /* --- UI ELEMENTS --- */
         .navbar { position:fixed; top:0; width:100%; height:70px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:rgba(2,2,10,0.8); backdrop-filter:blur(15px); z-index:1000; border-bottom:1px solid var(--glass-border); }
         .nav-right-actions { display: flex; align-items: center; gap: 15px; }
-        
-        .btn-insta-nav { background: var(--insta-grad); color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3); transition: transform 0.2s; }
-        .btn-insta-nav:active { transform: scale(0.95); }
+        .btn-insta-nav { background: var(--insta-grad); color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3); }
 
         .sidebar { position:fixed; top:0; left:-300px; width:280px; height:100%; background:#050510; z-index:1500; transition:0.4s; padding:30px 20px; border-right:1px solid var(--glass-border); }
         .sidebar.active { left:0; }
@@ -49,30 +44,27 @@
         .view.active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- STICKERS ALBUM --- */
         .stk { aspect-ratio: 0.75; background: var(--glass); border-radius: 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; border:1px solid var(--glass-border); transition: 0.3s; position: relative; padding: 5px; text-align: center; }
         .stk.selected { background: var(--wc-cyan) !important; color: #000 !important; border-color: #fff !important; transform: scale(0.95); box-shadow: 0 0 20px rgba(0,229,255,0.5); }
         .stk.selected .stk-status { color: #000 !important; font-weight: bold; }
-        .stk.legend-stk { border: 2px solid var(--gold); }
         .stk b { font-family: 'Oswald'; font-size: 1.2rem; line-height: 1.1; }
         
-        .stk-status { font-size: 0.55rem; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px; padding: 1px 5px; border-radius: 4px; }
+        .stk-status { font-size: 0.55rem; text-transform: uppercase; margin-top: 4px; padding: 1px 5px; border-radius: 4px; }
         .stk-status.av { color: #25d366; background: rgba(37, 211, 102, 0.1); }
         .stk.selected .stk-status.av { background: rgba(0, 0, 0, 0.15) !important; color: #000 !important; }
         .stk-status.so { color: #ff5252; background: rgba(255, 82, 82, 0.1); }
-        .stk.stk-sold-out { opacity: 0.3; cursor: not-allowed; filter: grayscale(0.8); border-color: rgba(255,82,82,0.2); }
+        .stk.stk-sold-out { opacity: 0.3; cursor: not-allowed; filter: grayscale(0.8); }
 
-        /* --- LEGENDS CARDS --- */
-        .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; }
         .legend-card { position: relative; background: var(--card-grad); border-radius: 30px; overflow: hidden; border: 1px solid var(--glass-border); transition: 0.4s; display: flex; flex-direction: column; }
-        .legend-card img { width: 100%; height: 320px; object-fit: cover; mask-image: linear-gradient(to bottom, black 70%, transparent 100%); }
-        .legend-content { padding: 20px; text-align: center; margin-top: -50px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-radius: 30px 30px 0 0; z-index: 5; }
-        .legend-content h3 { font-family: 'Oswald'; font-size: 1.6rem; color: #fff; }
-        .price-tag { color: var(--wc-cyan); font-weight: 700; font-size: 1.2rem; margin: 10px 0; display: block; }
+        .legend-card img { width: 100%; height: 260px; object-fit: cover; mask-image: linear-gradient(to bottom, black 70%, transparent 100%); }
+        .legend-content { padding: 20px; text-align: center; margin-top: -30px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); border-radius: 30px 30px 0 0; z-index: 5; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .legend-content h3 { font-family: 'Oswald'; font-size: 1.4rem; color: #fff; letter-spacing: 1px; }
+        .price-tag { color: var(--wc-cyan); font-weight: 700; font-size: 1.3rem; margin: 10px 0; display: block; }
         .btn-add-special { background: #fff; color: #000; border: none; padding: 12px; border-radius: 50px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .legend-card.selected { border: 2px solid var(--gold); }
+        .legend-card.selected { border: 2px solid var(--wc-cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
+        .legend-card.selected.gold-border { border-color: var(--gold); }
 
-        /* --- CART UI --- */
         .cart-trigger { position: fixed; bottom: 25px; right: 25px; background: var(--wc-cyan); color: #000; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; z-index: 1001; box-shadow: 0 10px 30px rgba(0,229,255,0.4); }
         .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100%; background: #fff; color: #000; z-index: 3000; transition: 0.4s; padding: 30px; display: flex; flex-direction: column; }
         .cart-drawer.active { right: 0; }
@@ -82,7 +74,6 @@
 
     <div id="intro-space"><div class="earth-zoom"></div></div>
 
-    <!-- Login View -->
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
             <h1 style="font-family:'Oswald'; letter-spacing:8px; font-size:3rem;">PANINI</h1>
@@ -90,35 +81,29 @@
         </div>
     </div>
 
-    <!-- Main App -->
     <div id="app" style="display:none;">
         <nav class="navbar">
             <div onclick="toggleSidebar()" style="font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-bars-staggered"></i></div>
             <span style="font-family:'Oswald'; letter-spacing:4px; font-size:1.4rem;">PANINI</span>
-            
             <div class="nav-right-actions">
-                <a href="https://instagram.com/pablooib" target="_blank" class="btn-insta-nav">
-                    <i class="fa-brands fa-instagram"></i> @pablooib
-                </a>
+                <a href="https://instagram.com/pablooib" target="_blank" class="btn-insta-nav"><i class="fa-brands fa-instagram"></i> @pablooib</a>
                 <img id="nav-avatar" src="" style="width:40px; border-radius:50%; border:2px solid var(--wc-cyan); cursor:pointer;" onclick="showView('profile-view')">
             </div>
         </nav>
 
-        <!-- Navigation Sidebar -->
         <div class="sidebar" id="sidebar">
             <div onclick="showView('album-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-book-open"></i> MI ÁLBUM</div>
-            <div onclick="showView('prices-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-crown"></i> LEYENDAS</div>
+            <div onclick="showView('campeones-view')" style="padding:18px; color:var(--wc-cyan); font-weight:600; cursor:pointer;"><i class="fa-solid fa-trophy"></i> CAMPEONES FWC</div>
+            <div onclick="showView('prices-view')" style="padding:18px; color:var(--gold); font-weight:600; cursor:pointer;"><i class="fa-solid fa-crown"></i> ROYAL LEGENDS</div>
             <div onclick="showView('profile-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-user-gear"></i> PERFIL</div>
             <div onclick="logout()" style="color:#ff5252; margin-top:40px; padding:18px; cursor:pointer;"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
         </div>
 
-        <!-- Float Cart Action -->
         <div class="cart-trigger" onclick="toggleCart()">
             <i class="fa-solid fa-shopping-basket"></i>
             <span id="cart-badge" style="position:absolute; top:-5px; right:-5px; background:#ff5252; color:white; font-size:0.8rem; padding:4px 9px; border-radius:50%; font-weight:bold;">0</span>
         </div>
 
-        <!-- Slide-out Cart Panel -->
         <div class="cart-drawer" id="cart-drawer">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h2 style="font-family:'Oswald'; font-size:1.8rem;">TU PEDIDO</h2>
@@ -135,8 +120,8 @@
             </div>
         </div>
 
-        <!-- Section Views -->
         <div class="main-content">
+            <!-- Paises View -->
             <div id="album-view" class="view active">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h2 id="group-title" style="font-family:'Oswald'; font-size:1.8rem;">GRUPO A</h2>
@@ -150,15 +135,21 @@
                 <div id="sticker-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(85px, 1fr)); gap:12px;"></div>
             </div>
 
-            <!-- Royal Legends Cards View -->
+            <!-- Campeones View Modular -->
+            <div id="campeones-view" class="view">
+                <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:40px; color:var(--wc-cyan); font-size:2.5rem; letter-spacing:4px;">CAMPEONES DEL MUNDO</h2>
+                <div class="special-grid" id="campeones-cards-container"></div>
+            </div>
+
+            <!-- Royal Legends View -->
             <div id="prices-view" class="view">
                 <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:40px; color:var(--gold); font-size:2.5rem; letter-spacing:5px;">ROYAL LEGENDS</h2>
                 <div class="special-grid" id="royal-legends-container"></div>
             </div>
 
-            <!-- User Info View -->
+            <!-- Profile -->
             <div id="profile-view" class="view">
-                <div style="text-align:center; background:var(--glass); padding:60px 20px; border-radius:35px; border:1px solid var(--wc-cyan); margin-bottom:20px;">
+                <div style="text-align:center; background:var(--glass); padding:60px 20px; border-radius:35px; border:1px solid var(--wc-cyan);">
                     <img id="profile-img" src="" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--wc-cyan); margin-bottom:20px;">
                     <h2 id="profile-name" style="font-family:'Oswald'; font-size:2.2rem;">---</h2>
                     <p id="profile-email" style="opacity:0.5;">---</p>
@@ -168,7 +159,6 @@
     </div>
 
 <script>
-    // Firebase Setup
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
         authDomain: "tiendaskin-bccba.firebaseapp.com",
@@ -195,8 +185,8 @@
     let selectedCountry = "";
     let activeUnsubs = []; 
 
-    const grupos = [{id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},{id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},{id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},{id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},{id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},{id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},{id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},{id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},{id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},{id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},{id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},{id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]},{id: "CAMPEONES", paises: ["Campeones"]}];
-    const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa", "Campeones":"un" };
+    const grupos = [{id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},{id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},{id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},{id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},{id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},{id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},{id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},{id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},{id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},{id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},{id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},{id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}];
+    const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
 
     function initApp(user) {
         document.getElementById('auth-screen').style.display = 'none';
@@ -208,56 +198,43 @@
         selectedCountry = grupos[0].paises[0];
         renderGroup();
         listenToStickers(); 
+        listenToCampeones();
         listenToRoyalLegends();
     }
 
     function renderGroup() {
         const g = grupos[currentGrp];
-        document.getElementById('group-title').innerText = g.id === "CAMPEONES" ? "CAMPEONES DEL MUNDO" : "GRUPO " + g.id;
+        document.getElementById('group-title').innerText = "GRUPO " + g.id;
         const scroll = document.getElementById('country-scroll'); scroll.innerHTML = "";
         g.paises.forEach(p => {
             const active = selectedCountry === p;
             const card = document.createElement('div');
             card.style = `min-width:115px; padding:15px; border-radius:20px; background:${active?'var(--wc-cyan)':'var(--glass)'}; color:${active?'#000':'#fff'}; text-align:center; cursor:pointer; border:1px solid ${active?'#fff':'var(--glass-border)'}; transition:0.3s;`;
-            card.innerHTML = `<img src="https://flagcdn.com/w40/${flags[p]}.png" style="display:block; margin:0 auto 8px; border-radius:4px;"> <b style="font-size:0.85rem;">${p === "Campeones" ? "FWC" : p}</b>`;
+            card.innerHTML = `<img src="https://flagcdn.com/w40/${flags[p]}.png" style="display:block; margin:0 auto 8px; border-radius:4px;"> <b style="font-size:0.85rem;">${p}</b>`;
             card.onclick = () => { selectedCountry = p; renderGroup(); listenToStickers(); };
             scroll.appendChild(card);
         });
     }
 
     function listenToStickers() {
-        const isCampeones = selectedCountry === "Campeones";
-        document.getElementById('country-label').innerText = isCampeones ? "CAMPEONES DEL MUNDO (FWC)" : selectedCountry.toUpperCase();
-        
+        document.getElementById('country-label').innerText = selectedCountry.toUpperCase();
         activeUnsubs.forEach(unsub => unsub());
         activeUnsubs = [];
 
-        const grid = document.getElementById('sticker-grid'); 
-        grid.innerHTML = "";
-
-        // Generamos el listado de llaves según el tipo de país
+        const grid = document.getElementById('sticker-grid'); grid.innerHTML = "";
         const itemKeys = [];
-        if (isCampeones) {
-            // Genera llaves de fwc9 a fwc19
-            for (let i = 9; i <= 19; i++) { itemKeys.push(`fwc${i}`); }
-        } else {
-            // Países regulares van del 1 al 20
-            for (let i = 1; i <= 20; i++) { itemKeys.push(String(i)); }
-        }
+        for (let i = 1; i <= 20; i++) { itemKeys.push(String(i)); }
 
-        // Renderizado inicial con esqueletos visuales limpios
         itemKeys.forEach(key => {
             const id = `${selectedCountry} #${key}`;
             const isAlreadySelected = cart.some(x => x.id === id);
-
             const s = document.createElement('div');
             s.id = `sticker-container-${key}`;
-            s.className = `stk ${isAlreadySelected ? 'selected' : ''} ${isCampeones ? 'legend-stk' : ''}`;
-            s.innerHTML = `<b>${key.toUpperCase()}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
+            s.className = `stk ${isAlreadySelected ? 'selected' : ''}`;
+            s.innerHTML = `<b>#${key}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
             grid.appendChild(s);
         });
 
-        // Conexión directa en tiempo real mediante Snapshot
         const unsub = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
             const preciosGuardados = docSnap.exists ? docSnap.data() : {};
 
@@ -266,50 +243,68 @@
                 if (!cell) return;
 
                 const id = `${selectedCountry} #${key}`;
-                
-                // Configuración de costos predeterminados por si no existen en Firestore
-                let price = isCampeones ? 15 : ((key === "1") ? 10 : (key === "13" ? 15 : 2));
+                let price = (key === "1") ? 10 : (key === "13" ? 15 : 2);
                 if (selectedCountry === "Portugal" && key === "15") price = 40;
                 let disponible = true;
 
-                // Lectura directa de la propiedad (funciona perfectamente con "1" o con "fwc9")
                 if (preciosGuardados.hasOwnProperty(key)) {
                     if (typeof preciosGuardados[key] === 'object' && preciosGuardados[key] !== null) {
-                        price = preciosGuardados[key].price ?? preciosGuardados[key].precio ?? price;
+                        price = preciosGuardados[key].precio ?? preciosGuardados[key].price ?? price;
                         disponible = preciosGuardados[key].disponible ?? true;
-                    } else {
-                        price = preciosGuardados[key];
                     }
                 }
 
                 if (!disponible) {
                     const idxEnCarrito = cart.findIndex(x => x.id === id);
-                    if (idxEnCarrito > -1) {
-                        cart.splice(idxEnCarrito, 1);
-                        updateCartUI();
-                    }
+                    if (idxEnCarrito > -1) { cart.splice(idxEnCarrito, 1); updateCartUI(); }
                 }
 
                 const isSel = cart.some(x => x.id === id);
-                
-                cell.className = `stk ${isSel ? 'selected' : ''} ${(price >= 40 || isCampeones) ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
-                cell.innerHTML = `
-                    <b>${key.toUpperCase()}</b>
-                    <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
-                    ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
-                `;
+                cell.className = `stk ${isSel ? 'selected' : ''} ${(price >= 40) ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
+                cell.innerHTML = `<b>#${key}</b><small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}`;
                 
                 cell.onclick = () => {
-                    if (disponible) {
-                        addToCart(id, price, key);
-                    } else {
-                        alert(`El cromo ${key.toUpperCase()} de ${selectedCountry} no cuenta con existencias actualmente.`);
-                    }
+                    if (disponible) addToCart(id, price, key);
+                    else alert(`El cromo #${key} de ${selectedCountry} está agotado.`);
                 };
             });
         });
-
         activeUnsubs.push(unsub);
+    }
+
+    function listenToCampeones() {
+        db.collection("config").doc("campeones_config").onSnapshot((docSnap) => {
+            const container = document.getElementById('campeones-cards-container');
+            if(!docSnap.exists) return;
+            const data = docSnap.data();
+            let htmlHTML = "";
+
+            Object.entries(data).forEach(([idCard, info]) => {
+                const isSelected = cart.some(x => x.id === info.itemCartName);
+                if(!info.disponible && isSelected) {
+                    const idx = cart.findIndex(x => x.id === info.itemCartName);
+                    cart.splice(idx, 1); updateCartUI();
+                }
+
+                const cardClass = isSelected ? "legend-card selected" : "legend-card";
+                let textBtn = isSelected ? "QUITAR" : (info.disponible ? "AGREGAR" : "AGOTADO");
+                let attrDisabled = (!isSelected && !info.disponible) ? "disabled style='opacity: 0.5; cursor: not-allowed;'" : "";
+
+                htmlHTML += `
+                    <div id="card-campeon-${idCard}" class="${cardClass}">
+                        <img src="panini.png" style="object-fit: contain; padding: 20px; background: rgba(0,0,0,0.2);">
+                        <div class="legend-content">
+                            <h3>${idCard.toUpperCase()}</h3>
+                            <span class="price-tag">Q${parseFloat(info.price).toFixed(2)}</span>
+                            <button class="btn-add-special" ${attrDisabled} onclick="toggleSpecial('${info.itemCartName}', ${info.price}, 'card-campeon-${idCard}')">
+                                <i class="fa-solid fa-trophy"></i> <span class="btn-txt">${textBtn}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = htmlHTML;
+        });
     }
 
     function listenToRoyalLegends() {
@@ -325,15 +320,13 @@
                 if(idCard === "special-cr7") sourceImg = "cristianomundial.jpg";
 
                 const isSelected = cart.some(x => x.id === info.itemCartName);
-                
                 if(!info.disponible && isSelected) {
                     const idx = cart.findIndex(x => x.id === info.itemCartName);
-                    cart.splice(idx, 1);
-                    updateCartUI();
+                    cart.splice(idx, 1); updateCartUI();
                 }
 
-                const cardClass = isSelected ? "legend-card selected" : "legend-card";
-                let textBtn = isSelected ? "QUITAR" : (info.disponible ? "AGREGAR" : "AGOTADO POR EL MOMENTO");
+                const cardClass = isSelected ? "legend-card selected gold-border" : "legend-card";
+                let textBtn = isSelected ? "QUITAR" : (info.disponible ? "AGREGAR" : "AGOTADO");
                 let attrDisabled = (!isSelected && !info.disponible) ? "disabled style='opacity: 0.5; cursor: not-allowed;'" : "";
 
                 htmlHTML += `
@@ -355,17 +348,11 @@
 
     function addToCart(id, price, key) {
         const idx = cart.findIndex(x => x.id === id);
-        if(idx > -1) {
-            cart.splice(idx, 1);
-        } else {
-            cart.push({id, price: parseFloat(price)});
-        }
+        if(idx > -1) cart.splice(idx, 1);
+        else cart.push({id, price: parseFloat(price)});
         updateCartUI();
-        
         const cell = document.getElementById(`sticker-container-${key}`);
-        if(cell) {
-            cell.classList.toggle('selected');
-        }
+        if(cell) cell.classList.toggle('selected');
     }
 
     function toggleSpecial(id, price, elementId) {
@@ -390,7 +377,7 @@
         cart.forEach((item, index) => {
             total += item.price;
             let displayTitle = item.id;
-            let displaySubtitle = "Cromo Regular";
+            let displaySubtitle = "Edición Especial";
             
             if (item.id.includes(" #")) {
                 const parts = item.id.split(" #");
@@ -399,7 +386,7 @@
             }
             list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #f0f0f0;">
                 <div><b style="font-size:1rem; color:#000;">${displayTitle}</b><br><small style="color:#666;">${displaySubtitle}</small></div>
-                <i class="fa-solid fa-trash-alt" style="color:#ff5252; cursor:pointer;" onclick="removeItem(${index})"></i>
+                <i class="fa-solid fa-trash-alt" style="color:#ff5252; cursor:pointer;" onclick="removeItem( ${index} )"></i>
             </div>`;
         });
         document.getElementById('cart-total').innerText = `Q${total}.00`;
@@ -407,8 +394,7 @@
 
     function removeItem(i) { 
         const item = cart[i];
-        cart.splice(i, 1); 
-        updateCartUI(); 
+        cart.splice(i, 1); updateCartUI(); 
         
         if (item.id.startsWith(selectedCountry + " #")) {
             const key = item.id.split(' #')[1];
@@ -416,15 +402,15 @@
             if(cell) cell.classList.remove('selected');
         }
         
-        let targetId = "";
-        if(item.id === "MESSI LEYENDA") targetId = "special-messi";
-        if(item.id === "CR7 LEYENDA") targetId = "special-cr7";
-        if(item.id === "CARTA PANINI") targetId = "special-panini";
-        
-        if(targetId) {
-            const el = document.getElementById(targetId);
-            if(el) { el.classList.remove('selected'); el.querySelector('.btn-txt').innerText = "AGREGAR"; }
-        }
+        document.querySelectorAll('.legend-card').forEach(card => {
+            const btnTxt = card.querySelector('.btn-txt');
+            if(card.classList.contains('selected') && !cart.some(x => x.id === card.dataset.cartname)) {
+                card.classList.remove('selected');
+                if(btnTxt) btnTxt.innerText = "AGREGAR";
+            }
+        });
+        listenToCampeones();
+        listenToRoyalLegends();
     }
     
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
@@ -440,26 +426,11 @@
     function logout() { auth.signOut().then(() => location.reload()); }
 
     function sendOrder() {
-        if(cart.length === 0){
-            alert("Tu carrito está vacío.");
-            return;
-        }
-
-        const leyendas = cart.filter(item => item.id.includes('LEYENDA') || item.id.includes('CARTA'));
-        const stickers = cart.filter(item => !item.id.includes('LEYENDA') && !item.id.includes('CARTA'));
-        stickers.sort((a, b) => a.id.localeCompare(b.id));
-
-        let msg = `--- NUEVO PEDIDO PANINI ---\n\n`;
-        msg += `Cliente: ${auth.currentUser.displayName}\n\n`;
-        msg += `Cartas:\n`;
-
-        leyendas.forEach(item => { msg += `* ${item.id}\n`; });
-        stickers.forEach(item => { msg += `* ${item.id}\n`; });
-        msg += `\nNota:\n\n`;
-        msg += `TOTAL: ${document.getElementById('cart-total').innerText}`;
-
-        const mensajeCodificado = encodeURIComponent(msg);
-        window.open(`https://wa.me/50246199644?text=${mensajeCodificado}`, '_blank');
+        if(cart.length === 0){ alert("Tu carrito está vacío."); return; }
+        let msg = `--- NUEVO PEDIDO PANINI ---\n\nCliente: ${auth.currentUser.displayName}\n\nCartas:\n`;
+        cart.forEach(item => { msg += `* ${item.id} - Q${item.price.toFixed(2)}\n`; });
+        msg += `\nTOTAL: ${document.getElementById('cart-total').innerText}`;
+        window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msg)}`, '_blank');
     }
 </script>
 </body>
