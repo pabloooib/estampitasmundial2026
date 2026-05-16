@@ -215,10 +215,9 @@
         });
     }
 
-   function listenToStickers() {
+    function listenToStickers() {
         document.getElementById('country-label').innerText = selectedCountry === "Campeones" ? "CAMPEONES DEL MUNDO (FWC)" : selectedCountry.toUpperCase();
         
-        // Limpiar todos los listeners activos anteriores para evitar fugas de memoria
         activeUnsubs.forEach(unsub => unsub());
         activeUnsubs = [];
 
@@ -228,121 +227,16 @@
         const isCampeones = selectedCountry === "Campeones";
 
         if (isCampeones) {
-            // SOLUCIÓN: Escuchar el documento unificado "Campeones" en la colección "precios_estampas"
-            const unsub = db.collection("precios_estampas").doc("Campeones").onSnapshot((docSnap) => {
-                grid.innerHTML = "";
-                const preciosGuardados = docSnap.exists ? docSnap.data() : {};
+            const startLoop = 9;
+            const endLoop = 19;
 
-                // El bucle va del cromo FWC 9 al FWC 19
-                for (let i = 9; i <= 19; i++) {
-                    const itemCartId = `FWC ${i}`; // Formato que se guarda en el carrito
-                    let price = 5; // Precio base por defecto si no se encuentra en Firebase
-                    let disponible = true;
-
-                    // Verificar si el campo del cromo (ej: "9" o "fwc 9") existe en el documento "Campeones"
-                    if (preciosGuardados.hasOwnProperty(i)) {
-                        if (typeof preciosGuardados[i] === 'object' && preciosGuardados[i] !== null) {
-                            price = preciosGuardados[i].price ?? preciosGuardados[i].precio ?? price;
-                            disponible = preciosGuardados[i].disponible ?? true;
-                        } else {
-                            price = preciosGuardados[i];
-                        }
-                    } else if (preciosGuardados.hasOwnProperty(`fwc ${i}`)) { // Alternativa por si el mapa usa texto
-                        const nodo = preciosGuardados[`fwc ${i}`];
-                        if (typeof nodo === 'object' && nodo !== null) {
-                            price = nodo.price ?? nodo.precio ?? price;
-                            disponible = nodo.disponible ?? true;
-                        } else {
-                            price = nodo;
-                        }
-                    }
-
-                    // Si se agota en el admin, lo removemos del carrito automáticamente
-                    if (!disponible) {
-                        const idxEnCarrito = cart.findIndex(x => x.id === itemCartId);
-                        if (idxEnCarrito > -1) {
-                            cart.splice(idxEnCarrito, 1);
-                            updateCartUI();
-                        }
-                    }
-
-                    // Comprobar si ya está seleccionado en el carrito
-                    const isSel = cart.find(x => x.id === itemCartId);
-                    
-                    const s = document.createElement('div');
-                    s.className = `stk ${isSel ? 'selected' : ''} legend-stk ${!disponible ? 'stk-sold-out' : ''}`;
-                    
-                    s.innerHTML = `
-                        <b>FWC ${i}</b>
-                        <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
-                        ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
-                    `;
-                    
-                    s.onclick = () => {
-                        if (disponible) {
-                            addToCart(itemCartId, price, true, i);
-                        } else {
-                            alert(`El cromo FWC ${i} no cuenta con existencias actualmente.`);
-                        }
-                    };
-                    grid.appendChild(s);
-                }
-            });
-
-            activeUnsubs.push(unsub);
-        } else {
-            // Flujo Normal para los Países Estándar (Este que ya te funciona perfectamente)
-            const unsub = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
-                grid.innerHTML = "";
-                const preciosGuardados = docSnap.exists ? docSnap.data() : {};
-
-                for (let i = 1; i <= 20; i++) {
-                    const id = `${selectedCountry} #${i}`;
-                    let price = (i === 1) ? 10 : (i === 13 ? 15 : 2);
-                    if (selectedCountry === "Portugal" && i === 15) price = 40;
-                    let disponible = true;
-
-                    if (preciosGuardados.hasOwnProperty(i)) {
-                        if (typeof preciosGuardados[i] === 'object' && preciosGuardados[i] !== null) {
-                            price = preciosGuardados[i].price ?? preciosGuardados[i].precio ?? price;
-                            disponible = preciosGuardados[i].disponible ?? true;
-                        } else {
-                            price = preciosGuardados[i];
-                        }
-                    }
-
-                    if (!disponible) {
-                        const idxEnCarrito = cart.findIndex(x => x.id === id);
-                        if (idxEnCarrito > -1) {
-                            cart.splice(idxEnCarrito, 1);
-                            updateCartUI();
-                        }
-                    }
-
-                    const isSel = cart.find(x => x.id === id);
-                    const s = document.createElement('div');
-                    s.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
-                    
-                    s.innerHTML = `
-                        <b>${i}</b>
-                        <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
-                        ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
-                    `;
-                    
-                    s.onclick = () => {
-                        if (disponible) {
-                            addToCart(id, price, false, i);
-                        } else {
-                            alert(`El cromo #${i} de ${selectedCountry} no cuenta con existencias actualmente.`);
-                        }
-                    };
-                    grid.appendChild(s);
-                }
-            });
-
-            activeUnsubs.push(unsub);
-        }
-    }
+            // 1. Inyectamos las cajas vacías ordenadas secuencialmente del 9 al 19
+            for (let i = startLoop; i <= endLoop; i++) {
+                const s = document.createElement('div');
+                s.id = `fwc-container-${i}`;
+                s.className = `stk legend-stk`;
+                s.innerHTML = `<b>FWC ${i}</b><br><small style="opacity:0.5; font-size:0.6rem;">Conectando...</small>`;
+                grid.appendChild(s);
             }
 
             // 2. Vinculamos un listener asíncrono e independiente por cada documento fwc de Firestore
