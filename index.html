@@ -82,7 +82,7 @@
 
     <div id="intro-space"><div class="earth-zoom"></div></div>
 
-    <!-- Login Screen -->
+    <!-- Login View -->
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
             <h1 style="font-family:'Oswald'; letter-spacing:8px; font-size:3rem;">PANINI</h1>
@@ -90,7 +90,7 @@
         </div>
     </div>
 
-    <!-- Main App Structure -->
+    <!-- Main App -->
     <div id="app" style="display:none;">
         <nav class="navbar">
             <div onclick="toggleSidebar()" style="font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-bars-staggered"></i></div>
@@ -104,7 +104,7 @@
             </div>
         </nav>
 
-        <!-- Sidebar Drawer -->
+        <!-- Navigation Sidebar -->
         <div class="sidebar" id="sidebar">
             <div onclick="showView('album-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-book-open"></i> MI ÁLBUM</div>
             <div onclick="showView('prices-view')" style="padding:18px; color:white; font-weight:600; cursor:pointer;"><i class="fa-solid fa-crown"></i> LEYENDAS</div>
@@ -112,13 +112,13 @@
             <div onclick="logout()" style="color:#ff5252; margin-top:40px; padding:18px; cursor:pointer;"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
         </div>
 
-        <!-- Floating Cart Trigger Button -->
+        <!-- Float Cart Action -->
         <div class="cart-trigger" onclick="toggleCart()">
             <i class="fa-solid fa-shopping-basket"></i>
             <span id="cart-badge" style="position:absolute; top:-5px; right:-5px; background:#ff5252; color:white; font-size:0.8rem; padding:4px 9px; border-radius:50%; font-weight:bold;">0</span>
         </div>
 
-        <!-- Shopping Cart Drawer -->
+        <!-- Slide-out Cart Panel -->
         <div class="cart-drawer" id="cart-drawer">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h2 style="font-family:'Oswald'; font-size:1.8rem;">TU PEDIDO</h2>
@@ -135,9 +135,8 @@
             </div>
         </div>
 
-        <!-- Main Views Container -->
+        <!-- Section Views -->
         <div class="main-content">
-            <!-- Grid Album View -->
             <div id="album-view" class="view active">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h2 id="group-title" style="font-family:'Oswald'; font-size:1.8rem;">GRUPO A</h2>
@@ -157,7 +156,7 @@
                 <div class="special-grid" id="royal-legends-container"></div>
             </div>
 
-            <!-- User Info Profile View -->
+            <!-- User Info View -->
             <div id="profile-view" class="view">
                 <div style="text-align:center; background:var(--glass); padding:60px 20px; border-radius:35px; border:1px solid var(--glass-border);">
                     <img id="profile-img" src="" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--wc-cyan); margin-bottom:20px;">
@@ -241,16 +240,19 @@
             const startLoop = 9;
             const endLoop = 19;
 
-            // Inyectamos cajas vacías ordenadas con IDs específicos estables fwc-container-i
+            // Inyección estática limpia con validación inmediata del estado del carrito
             for (let i = startLoop; i <= endLoop; i++) {
+                const itemCartId = `FWC ${i}`;
+                const isAlreadySelected = cart.some(x => x.id === itemCartId);
+                
                 const s = document.createElement('div');
                 s.id = `fwc-container-${i}`;
-                s.className = `stk legend-stk`;
+                s.className = `stk legend-stk ${isAlreadySelected ? 'selected' : ''}`;
                 s.innerHTML = `<b>FWC ${i}</b><br><small style="opacity:0.5; font-size:0.6rem;">Conectando...</small>`;
                 grid.appendChild(s);
             }
 
-            // Atamos listeners individuales en tiempo real
+            // Atamos los Snapshots en tiempo real de Firebase
             for (let i = startLoop; i <= endLoop; i++) {
                 const docId = `fwc ${i}`; 
                 const itemCartId = `FWC ${i}`; 
@@ -263,6 +265,7 @@
                     let price = datosCromo.price ?? datosCromo.precio ?? 5;
                     let disponible = datosCromo.disponible ?? true;
 
+                    // Si se agota en Firebase, lo sacamos del carrito de inmediato
                     if (!disponible) {
                         const idxEnCarrito = cart.findIndex(x => x.id === itemCartId);
                         if (idxEnCarrito > -1) {
@@ -271,7 +274,8 @@
                         }
                     }
 
-                    const isSel = cart.find(x => x.id === itemCartId);
+                    // Evaluación reactiva forzada para pintar el estado visual correcto
+                    const isSel = cart.some(x => x.id === itemCartId);
                     
                     cell.className = `stk ${isSel ? 'selected' : ''} legend-stk ${!disponible ? 'stk-sold-out' : ''}`;
                     cell.innerHTML = `
@@ -292,11 +296,14 @@
                 activeUnsubs.push(unsub);
             }
         } else {
-            // Render de Países Regulares con IDs específicos estables country-container-i
+            // Inyección estática estructurada para países regulares con lectura del carrito activa
             for (let i = 1; i <= 20; i++) {
+                const id = `${selectedCountry} #${i}`;
+                const isAlreadySelected = cart.some(x => x.id === id);
+
                 const s = document.createElement('div');
                 s.id = `country-container-${i}`;
-                s.className = `stk`;
+                s.className = `stk ${isAlreadySelected ? 'selected' : ''}`;
                 s.innerHTML = `<b>${i}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
                 grid.appendChild(s);
             }
@@ -330,7 +337,7 @@
                         }
                     }
 
-                    const isSel = cart.find(x => x.id === id);
+                    const isSel = cart.some(x => x.id === id);
                     cell.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
                     cell.innerHTML = `
                         <b>${i}</b>
@@ -364,7 +371,7 @@
                 if(idCard === "special-messi") sourceImg = "imagenmessi.jpg";
                 if(idCard === "special-cr7") sourceImg = "cristianomundial.jpg";
 
-                const isSelected = cart.find(x => x.id === info.itemCartName);
+                const isSelected = cart.some(x => x.id === info.itemCartName);
                 
                 if(!info.disponible && isSelected) {
                     const idx = cart.findIndex(x => x.id === info.itemCartName);
@@ -395,11 +402,14 @@
 
     function addToCart(id, price, isCampeones = false, indexNum = 0) {
         const idx = cart.findIndex(x => x.id === id);
-        if(idx > -1) cart.splice(idx, 1);
-        else cart.push({id, price: parseFloat(price)});
+        if(idx > -1) {
+            cart.splice(idx, 1);
+        } else {
+            cart.push({id, price: parseFloat(price)});
+        }
         updateCartUI();
         
-        // Selección directa e inequívoca apuntando al ID exacto del contenedor inyectado
+        // Mutación directa e instantánea del nodo activo en pantalla
         const targetId = isCampeones ? `fwc-container-${indexNum}` : `country-container-${indexNum}`;
         const cell = document.getElementById(targetId);
         if(cell) {
@@ -415,7 +425,7 @@
         
         const el = document.getElementById(elementId);
         if(el) {
-            const isSelected = cart.find(x => x.id === id);
+            const isSelected = cart.some(x => x.id === id);
             const btn = el.querySelector('.btn-txt');
             if(isSelected) { el.classList.add('selected'); btn.innerText = "QUITAR"; }
             else { el.classList.remove('selected'); btn.innerText = "AGREGAR"; }
@@ -451,7 +461,7 @@
         cart.splice(i, 1); 
         updateCartUI(); 
         
-        // Remoción precisa buscando el ID exacto del contenedor visual actual
+        // Remoción reactiva por IDs únicos estables
         if (item.id.startsWith(selectedCountry + " #")) {
             const num = item.id.split(' #')[1];
             const cell = document.getElementById(`country-container-${num}`);
