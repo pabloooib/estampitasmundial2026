@@ -226,137 +226,87 @@
     }
 
     function listenToStickers() {
-        document.getElementById('country-label').innerText = selectedCountry === "Campeones" ? "CAMPEONES DEL MUNDO (FWC)" : selectedCountry.toUpperCase();
+        const isCampeones = selectedCountry === "Campeones";
+        document.getElementById('country-label').innerText = isCampeones ? "CAMPEONES DEL MUNDO (FWC)" : selectedCountry.toUpperCase();
         
+        // Limpiamos listeners previos para evitar fugas de memoria
         activeUnsubs.forEach(unsub => unsub());
         activeUnsubs = [];
 
         const grid = document.getElementById('sticker-grid'); 
         grid.innerHTML = "";
 
-        const isCampeones = selectedCountry === "Campeones";
+        // Definimos el rango numérico (Campeones va del 9 al 19, los países normales del 1 al 20)
+        const startNum = isCampeones ? 9 : 1;
+        const endNum = isCampeones ? 19 : 20;
 
-        if (isCampeones) {
-            const startLoop = 9;
-            const endLoop = 19;
+        // 1. Renderizado e inyección estática inicial basada en lo que ya está en el carrito
+        for (let i = startNum; i <= endNum; i++) {
+            const id = isCampeones ? `FWC ${i}` : `${selectedCountry} #${i}`;
+            const isAlreadySelected = cart.some(x => x.id === id);
 
-            // Inyección estática limpia con validación inmediata del estado del carrito
-            for (let i = startLoop; i <= endLoop; i++) {
-                const itemCartId = `FWC ${i}`;
-                const isAlreadySelected = cart.some(x => x.id === itemCartId);
-                
-                const s = document.createElement('div');
-                s.id = `fwc-container-${i}`;
-                s.className = `stk legend-stk ${isAlreadySelected ? 'selected' : ''}`;
-                s.innerHTML = `<b>FWC ${i}</b><br><small style="opacity:0.5; font-size:0.6rem;">Conectando...</small>`;
-                grid.appendChild(s);
-            }
-
-            // Atamos los Snapshots en tiempo real de Firebase
-            for (let i = startLoop; i <= endLoop; i++) {
-                const docId = `fwc ${i}`; 
-                const itemCartId = `FWC ${i}`; 
-
-                const unsub = db.collection("precios_estampas").doc(docId).onSnapshot((docSnap) => {
-                    const cell = document.getElementById(`fwc-container-${i}`);
-                    if (!cell) return; 
-
-                    const datosCromo = docSnap.exists ? docSnap.data() : {};
-                    let price = datosCromo.price ?? datosCromo.precio ?? 5;
-                    let disponible = datosCromo.disponible ?? true;
-
-                    // Si se agota en Firebase, lo sacamos del carrito de inmediato
-                    if (!disponible) {
-                        const idxEnCarrito = cart.findIndex(x => x.id === itemCartId);
-                        if (idxEnCarrito > -1) {
-                            cart.splice(idxEnCarrito, 1);
-                            updateCartUI();
-                        }
-                    }
-
-                    // Evaluación reactiva forzada para pintar el estado visual correcto
-                    const isSel = cart.some(x => x.id === itemCartId);
-                    
-                    cell.className = `stk ${isSel ? 'selected' : ''} legend-stk ${!disponible ? 'stk-sold-out' : ''}`;
-                    cell.innerHTML = `
-                        <b>FWC ${i}</b>
-                        <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
-                        ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
-                    `;
-                    
-                    cell.onclick = () => {
-                        if (disponible) {
-                            addToCart(itemCartId, price, true, i);
-                        } else {
-                            alert(`El cromo FWC ${i} no cuenta con existencias actualmente.`);
-                        }
-                    };
-                });
-
-                activeUnsubs.push(unsub);
-            }
-        } else {
-            // Inyección estática estructurada para países regulares con lectura del carrito activa
-            for (let i = 1; i <= 20; i++) {
-                const id = `${selectedCountry} #${i}`;
-                const isAlreadySelected = cart.some(x => x.id === id);
-
-                const s = document.createElement('div');
-                s.id = `country-container-${i}`;
-                s.className = `stk ${isAlreadySelected ? 'selected' : ''}`;
-                s.innerHTML = `<b>${i}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
-                grid.appendChild(s);
-            }
-
-            const unsub = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
-                const preciosGuardados = docSnap.exists ? docSnap.data() : {};
-
-                for (let i = 1; i <= 20; i++) {
-                    const cell = document.getElementById(`country-container-${i}`);
-                    if (!cell) continue;
-
-                    const id = `${selectedCountry} #${i}`;
-                    let price = (i === 1) ? 10 : (i === 13 ? 15 : 2);
-                    if (selectedCountry === "Portugal" && i === 15) price = 40;
-                    let disponible = true;
-
-                    if (preciosGuardados.hasOwnProperty(i)) {
-                        if (typeof preciosGuardados[i] === 'object' && preciosGuardados[i] !== null) {
-                            price = preciosGuardados[i].price ?? preciosGuardados[i].precio ?? price;
-                            disponible = preciosGuardados[i].disponible ?? true;
-                        } else {
-                            price = preciosGuardados[i];
-                        }
-                    }
-
-                    if (!disponible) {
-                        const idxEnCarrito = cart.findIndex(x => x.id === id);
-                        if (idxEnCarrito > -1) {
-                            cart.splice(idxEnCarrito, 1);
-                            updateCartUI();
-                        }
-                    }
-
-                    const isSel = cart.some(x => x.id === id);
-                    cell.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
-                    cell.innerHTML = `
-                        <b>${i}</b>
-                        <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
-                        ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
-                    `;
-                    
-                    cell.onclick = () => {
-                        if (disponible) {
-                            addToCart(id, price, false, i);
-                        } else {
-                            alert(`El cromo #${i} de ${selectedCountry} no cuenta con existencias actualmente.`);
-                        }
-                    };
-                }
-            });
-
-            activeUnsubs.push(unsub);
+            const s = document.createElement('div');
+            s.id = `sticker-container-${i}`;
+            s.className = `stk ${isAlreadySelected ? 'selected' : ''} ${isCampeones ? 'legend-stk' : ''}`;
+            s.innerHTML = `<b>${isCampeones ? 'FWC ' + i : i}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
+            grid.appendChild(s);
         }
+
+        // 2. Un solo Snapshot de escucha en tiempo real usando el ID del documento
+        const unsub = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
+            const preciosGuardados = docSnap.exists ? docSnap.data() : {};
+
+            for (let i = startNum; i <= endNum; i++) {
+                const cell = document.getElementById(`sticker-container-${i}`);
+                if (!cell) continue;
+
+                const id = isCampeones ? `FWC ${i}` : `${selectedCountry} #${i}`;
+                
+                // Valores por defecto si no existen en la base de datos
+                let price = isCampeones ? 15 : ((i === 1) ? 10 : (i === 13 ? 15 : 2));
+                if (selectedCountry === "Portugal" && i === 15) price = 40;
+                let disponible = true;
+
+                // Extraemos la información del documento mapeado de Firebase
+                if (preciosGuardados.hasOwnProperty(i)) {
+                    if (typeof preciosGuardados[i] === 'object' && preciosGuardados[i] !== null) {
+                        price = preciosGuardados[i].price ?? preciosGuardados[i].precio ?? price;
+                        disponible = preciosGuardados[i].disponible ?? true;
+                    } else {
+                        price = preciosGuardados[i];
+                    }
+                }
+
+                // Si de la nada se marca como agotado en base de datos, lo sacamos del carrito de inmediato
+                if (!disponible) {
+                    const idxEnCarrito = cart.findIndex(x => x.id === id);
+                    if (idxEnCarrito > -1) {
+                        cart.splice(idxEnCarrito, 1);
+                        updateCartUI();
+                    }
+                }
+
+                // Forzamos evaluación persistente visual con el estado actual del carrito
+                const isSel = cart.some(x => x.id === id);
+                
+                cell.className = `stk ${isSel ? 'selected' : ''} ${(price >= 40 || isCampeones) ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
+                cell.innerHTML = `
+                    <b>${isCampeones ? 'FWC ' + i : i}</b>
+                    <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
+                    ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
+                `;
+                
+                cell.onclick = () => {
+                    if (disponible) {
+                        addToCart(id, price, i);
+                    } else {
+                        alert(`El cromo ${isCampeones ? 'FWC ' + i : '#' + i} no cuenta con existencias actualmente.`);
+                    }
+                };
+            }
+        });
+
+        activeUnsubs.push(unsub);
     }
 
     function listenToRoyalLegends() {
@@ -400,7 +350,7 @@
         });
     }
 
-    function addToCart(id, price, isCampeones = false, indexNum = 0) {
+    function addToCart(id, price, indexNum) {
         const idx = cart.findIndex(x => x.id === id);
         if(idx > -1) {
             cart.splice(idx, 1);
@@ -410,8 +360,7 @@
         updateCartUI();
         
         // Mutación directa e instantánea del nodo activo en pantalla
-        const targetId = isCampeones ? `fwc-container-${indexNum}` : `country-container-${indexNum}`;
-        const cell = document.getElementById(targetId);
+        const cell = document.getElementById(`sticker-container-${indexNum}`);
         if(cell) {
             cell.classList.toggle('selected');
         }
@@ -461,14 +410,14 @@
         cart.splice(i, 1); 
         updateCartUI(); 
         
-        // Remoción reactiva por IDs únicos estables
+        // Remoción reactiva por IDs unificados
         if (item.id.startsWith(selectedCountry + " #")) {
             const num = item.id.split(' #')[1];
-            const cell = document.getElementById(`country-container-${num}`);
+            const cell = document.getElementById(`sticker-container-${num}`);
             if(cell) cell.classList.remove('selected');
         } else if (selectedCountry === "Campeones" && item.id.startsWith("FWC ")) {
             const num = item.id.split("FWC ")[1];
-            const cell = document.getElementById(`fwc-container-${num}`);
+            const cell = document.getElementById(`sticker-container-${num}`);
             if(cell) cell.classList.remove('selected');
         }
         
