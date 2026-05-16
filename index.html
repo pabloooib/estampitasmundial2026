@@ -158,7 +158,7 @@
 
             <!-- User Info View -->
             <div id="profile-view" class="view">
-                <div style="text-align:center; background:var(--glass); padding:60px 20px; border-radius:35px; border:1px solid var(--glass-border);">
+                <div style="text-align:center; background:var(--glass); padding:60px 20px; border-radius:35px; border:1px solid var(--wc-cyan); margin-bottom:20px;">
                     <img id="profile-img" src="" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--wc-cyan); margin-bottom:20px;">
                     <h2 id="profile-name" style="font-family:'Oswald'; font-size:2.2rem;">---</h2>
                     <p id="profile-email" style="opacity:0.5;">---</p>
@@ -195,6 +195,7 @@
     let selectedCountry = "";
     let activeUnsubs = []; 
 
+    // "Campeones" ahora es tratado exactamente igual que cualquier otro país en la lista.
     const grupos = [{id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},{id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},{id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},{id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},{id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},{id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},{id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},{id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},{id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},{id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},{id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},{id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]},{id: "CAMPEONES", paises: ["Campeones"]}];
     const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa", "Campeones":"un" };
 
@@ -229,45 +230,43 @@
         const isCampeones = selectedCountry === "Campeones";
         document.getElementById('country-label').innerText = isCampeones ? "CAMPEONES DEL MUNDO (FWC)" : selectedCountry.toUpperCase();
         
-        // Limpiamos listeners previos para evitar fugas de memoria
+        // Limpiamos los listeners activos previos
         activeUnsubs.forEach(unsub => unsub());
         activeUnsubs = [];
 
         const grid = document.getElementById('sticker-grid'); 
         grid.innerHTML = "";
 
-        // Definimos el rango numérico (Campeones va del 9 al 19, los países normales del 1 al 20)
-        const startNum = isCampeones ? 9 : 1;
-        const endNum = isCampeones ? 19 : 20;
+        // Renderizamos las cajas de forma idéntica de la 1 a la 20 (o las que gustes definir)
+        const totalStickers = 20;
 
-        // 1. Renderizado e inyección estática inicial basada en lo que ya está en el carrito
-        for (let i = startNum; i <= endNum; i++) {
-            const id = isCampeones ? `FWC ${i}` : `${selectedCountry} #${i}`;
+        for (let i = 1; i <= totalStickers; i++) {
+            const id = `${selectedCountry} #${i}`;
             const isAlreadySelected = cart.some(x => x.id === id);
 
             const s = document.createElement('div');
             s.id = `sticker-container-${i}`;
             s.className = `stk ${isAlreadySelected ? 'selected' : ''} ${isCampeones ? 'legend-stk' : ''}`;
-            s.innerHTML = `<b>${isCampeones ? 'FWC ' + i : i}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
+            s.innerHTML = `<b>${i}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
             grid.appendChild(s);
         }
 
-        // 2. Un solo Snapshot de escucha en tiempo real usando el ID del documento
+        // Lectura directa en tiempo real desde la base de datos
         const unsub = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
             const preciosGuardados = docSnap.exists ? docSnap.data() : {};
 
-            for (let i = startNum; i <= endNum; i++) {
+            for (let i = 1; i <= totalStickers; i++) {
                 const cell = document.getElementById(`sticker-container-${i}`);
                 if (!cell) continue;
 
-                const id = isCampeones ? `FWC ${i}` : `${selectedCountry} #${i}`;
+                const id = `${selectedCountry} #${i}`;
                 
-                // Valores por defecto si no existen en la base de datos
+                // Valores de costo base predeterminados si no están mapeados en Firebase
                 let price = isCampeones ? 15 : ((i === 1) ? 10 : (i === 13 ? 15 : 2));
                 if (selectedCountry === "Portugal" && i === 15) price = 40;
                 let disponible = true;
 
-                // Extraemos la información del documento mapeado de Firebase
+                // Extraemos directo del mapa de Firebase del documento activo
                 if (preciosGuardados.hasOwnProperty(i)) {
                     if (typeof preciosGuardados[i] === 'object' && preciosGuardados[i] !== null) {
                         price = preciosGuardados[i].price ?? preciosGuardados[i].precio ?? price;
@@ -277,7 +276,6 @@
                     }
                 }
 
-                // Si de la nada se marca como agotado en base de datos, lo sacamos del carrito de inmediato
                 if (!disponible) {
                     const idxEnCarrito = cart.findIndex(x => x.id === id);
                     if (idxEnCarrito > -1) {
@@ -286,12 +284,12 @@
                     }
                 }
 
-                // Forzamos evaluación persistente visual con el estado actual del carrito
+                // Conserva el estado visual activo basado en el arreglo global del carrito
                 const isSel = cart.some(x => x.id === id);
                 
                 cell.className = `stk ${isSel ? 'selected' : ''} ${(price >= 40 || isCampeones) ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
                 cell.innerHTML = `
-                    <b>${isCampeones ? 'FWC ' + i : i}</b>
+                    <b>${i}</b>
                     <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
                     ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
                 `;
@@ -300,7 +298,7 @@
                     if (disponible) {
                         addToCart(id, price, i);
                     } else {
-                        alert(`El cromo ${isCampeones ? 'FWC ' + i : '#' + i} no cuenta con existencias actualmente.`);
+                        alert(`El cromo #${i} de ${selectedCountry} no cuenta con existencias actualmente.`);
                     }
                 };
             }
@@ -359,7 +357,7 @@
         }
         updateCartUI();
         
-        // Mutación directa e instantánea del nodo activo en pantalla
+        // El cambio de clase se ejecuta directamente sobre la estampa clickeada
         const cell = document.getElementById(`sticker-container-${indexNum}`);
         if(cell) {
             cell.classList.toggle('selected');
@@ -388,14 +386,12 @@
         cart.forEach((item, index) => {
             total += item.price;
             let displayTitle = item.id;
-            let displaySubtitle = "Cromo Especial";
+            let displaySubtitle = "Cromo Regular";
+            
             if (item.id.includes(" #")) {
                 const parts = item.id.split(" #");
                 displayTitle = parts[0];
                 displaySubtitle = `Sticker #${parts[1]}`;
-            } else if (item.id.startsWith("FWC ")) {
-                displayTitle = "Campeones";
-                displaySubtitle = item.id;
             }
             list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #f0f0f0;">
                 <div><b style="font-size:1rem; color:#000;">${displayTitle}</b><br><small style="color:#666;">${displaySubtitle}</small></div>
@@ -410,13 +406,9 @@
         cart.splice(i, 1); 
         updateCartUI(); 
         
-        // Remoción reactiva por IDs unificados
+        // Remoción reactiva vinculada al país activo en vista
         if (item.id.startsWith(selectedCountry + " #")) {
             const num = item.id.split(' #')[1];
-            const cell = document.getElementById(`sticker-container-${num}`);
-            if(cell) cell.classList.remove('selected');
-        } else if (selectedCountry === "Campeones" && item.id.startsWith("FWC ")) {
-            const num = item.id.split("FWC ")[1];
             const cell = document.getElementById(`sticker-container-${num}`);
             if(cell) cell.classList.remove('selected');
         }
