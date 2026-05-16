@@ -195,7 +195,6 @@
     let selectedCountry = "";
     let activeUnsubs = []; 
 
-    // "Campeones" ahora es tratado exactamente igual que cualquier otro país en la lista.
     const grupos = [{id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},{id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},{id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},{id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},{id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},{id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},{id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},{id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},{id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},{id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},{id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},{id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]},{id: "CAMPEONES", paises: ["Campeones"]}];
     const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa", "Campeones":"un" };
 
@@ -230,49 +229,56 @@
         const isCampeones = selectedCountry === "Campeones";
         document.getElementById('country-label').innerText = isCampeones ? "CAMPEONES DEL MUNDO (FWC)" : selectedCountry.toUpperCase();
         
-        // Limpiamos los listeners activos previos
         activeUnsubs.forEach(unsub => unsub());
         activeUnsubs = [];
 
         const grid = document.getElementById('sticker-grid'); 
         grid.innerHTML = "";
 
-        // Renderizamos las cajas de forma idéntica de la 1 a la 20 (o las que gustes definir)
-        const totalStickers = 20;
+        // Generamos el listado de llaves según el tipo de país
+        const itemKeys = [];
+        if (isCampeones) {
+            // Genera llaves de fwc9 a fwc19
+            for (let i = 9; i <= 19; i++) { itemKeys.push(`fwc${i}`); }
+        } else {
+            // Países regulares van del 1 al 20
+            for (let i = 1; i <= 20; i++) { itemKeys.push(String(i)); }
+        }
 
-        for (let i = 1; i <= totalStickers; i++) {
-            const id = `${selectedCountry} #${i}`;
+        // Renderizado inicial con esqueletos visuales limpios
+        itemKeys.forEach(key => {
+            const id = `${selectedCountry} #${key}`;
             const isAlreadySelected = cart.some(x => x.id === id);
 
             const s = document.createElement('div');
-            s.id = `sticker-container-${i}`;
+            s.id = `sticker-container-${key}`;
             s.className = `stk ${isAlreadySelected ? 'selected' : ''} ${isCampeones ? 'legend-stk' : ''}`;
-            s.innerHTML = `<b>${i}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
+            s.innerHTML = `<b>${key.toUpperCase()}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
             grid.appendChild(s);
-        }
+        });
 
-        // Lectura directa en tiempo real desde la base de datos
+        // Conexión directa en tiempo real mediante Snapshot
         const unsub = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
             const preciosGuardados = docSnap.exists ? docSnap.data() : {};
 
-            for (let i = 1; i <= totalStickers; i++) {
-                const cell = document.getElementById(`sticker-container-${i}`);
-                if (!cell) continue;
+            itemKeys.forEach(key => {
+                const cell = document.getElementById(`sticker-container-${key}`);
+                if (!cell) return;
 
-                const id = `${selectedCountry} #${i}`;
+                const id = `${selectedCountry} #${key}`;
                 
-                // Valores de costo base predeterminados si no están mapeados en Firebase
-                let price = isCampeones ? 15 : ((i === 1) ? 10 : (i === 13 ? 15 : 2));
-                if (selectedCountry === "Portugal" && i === 15) price = 40;
+                // Configuración de costos predeterminados por si no existen en Firestore
+                let price = isCampeones ? 15 : ((key === "1") ? 10 : (key === "13" ? 15 : 2));
+                if (selectedCountry === "Portugal" && key === "15") price = 40;
                 let disponible = true;
 
-                // Extraemos directo del mapa de Firebase del documento activo
-                if (preciosGuardados.hasOwnProperty(i)) {
-                    if (typeof preciosGuardados[i] === 'object' && preciosGuardados[i] !== null) {
-                        price = preciosGuardados[i].price ?? preciosGuardados[i].precio ?? price;
-                        disponible = preciosGuardados[i].disponible ?? true;
+                // Lectura directa de la propiedad (funciona perfectamente con "1" o con "fwc9")
+                if (preciosGuardados.hasOwnProperty(key)) {
+                    if (typeof preciosGuardados[key] === 'object' && preciosGuardados[key] !== null) {
+                        price = preciosGuardados[key].price ?? preciosGuardados[key].precio ?? price;
+                        disponible = preciosGuardados[key].disponible ?? true;
                     } else {
-                        price = preciosGuardados[i];
+                        price = preciosGuardados[key];
                     }
                 }
 
@@ -284,24 +290,23 @@
                     }
                 }
 
-                // Conserva el estado visual activo basado en el arreglo global del carrito
                 const isSel = cart.some(x => x.id === id);
                 
                 cell.className = `stk ${isSel ? 'selected' : ''} ${(price >= 40 || isCampeones) ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
                 cell.innerHTML = `
-                    <b>${i}</b>
+                    <b>${key.toUpperCase()}</b>
                     <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
                     ${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}
                 `;
                 
                 cell.onclick = () => {
                     if (disponible) {
-                        addToCart(id, price, i);
+                        addToCart(id, price, key);
                     } else {
-                        alert(`El cromo #${i} de ${selectedCountry} no cuenta con existencias actualmente.`);
+                        alert(`El cromo ${key.toUpperCase()} de ${selectedCountry} no cuenta con existencias actualmente.`);
                     }
                 };
-            }
+            });
         });
 
         activeUnsubs.push(unsub);
@@ -348,7 +353,7 @@
         });
     }
 
-    function addToCart(id, price, indexNum) {
+    function addToCart(id, price, key) {
         const idx = cart.findIndex(x => x.id === id);
         if(idx > -1) {
             cart.splice(idx, 1);
@@ -357,8 +362,7 @@
         }
         updateCartUI();
         
-        // El cambio de clase se ejecuta directamente sobre la estampa clickeada
-        const cell = document.getElementById(`sticker-container-${indexNum}`);
+        const cell = document.getElementById(`sticker-container-${key}`);
         if(cell) {
             cell.classList.toggle('selected');
         }
@@ -391,7 +395,7 @@
             if (item.id.includes(" #")) {
                 const parts = item.id.split(" #");
                 displayTitle = parts[0];
-                displaySubtitle = `Sticker #${parts[1]}`;
+                displaySubtitle = `Sticker #${parts[1].toUpperCase()}`;
             }
             list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #f0f0f0;">
                 <div><b style="font-size:1rem; color:#000;">${displayTitle}</b><br><small style="color:#666;">${displaySubtitle}</small></div>
@@ -406,10 +410,9 @@
         cart.splice(i, 1); 
         updateCartUI(); 
         
-        // Remoción reactiva vinculada al país activo en vista
         if (item.id.startsWith(selectedCountry + " #")) {
-            const num = item.id.split(' #')[1];
-            const cell = document.getElementById(`sticker-container-${num}`);
+            const key = item.id.split(' #')[1];
+            const cell = document.getElementById(`sticker-container-${key}`);
             if(cell) cell.classList.remove('selected');
         }
         
