@@ -185,8 +185,8 @@
     let selectedCountry = "";
     let unsubStickers = null; // Guardar listener activo para evitar duplicados
 
-    const grupos = [{id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},{id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},{id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},{id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},{id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},{id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},{id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},{id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},{id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},{id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},{id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},{id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]}];
-    const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa" };
+    const grupos = [{id: "A", paises: ["México", "Sudáfrica", "Rep. Corea", "Rep. Checa"]},{id: "B", paises: ["Canadá", "Bosnia", "Qatar", "Suiza"]},{id: "C", paises: ["Brasil", "Marruecos", "Haití", "Escocia"]},{id: "D", paises: ["EE.UU.", "Paraguay", "Australia", "Turquía"]},{id: "E", paises: ["Alemania", "Curazao", "C. Marfil", "Ecuador"]},{id: "F", paises: ["Países Bajos", "Japón", "Túnez", "Albania"]},{id: "G", paises: ["Bélgica", "Egipto", "Irán", "N. Zelanda"]},{id: "H", paises: ["España", "Uruguay", "Arabia", "Cabo Verde"]},{id: "I", paises: ["Francia", "Senegal", "Noruega", "Irak"]},{id: "J", paises: ["Argentina", "Austria", "Argelia", "Jordania"]},{id: "K", paises: ["Portugal", "Colombia", "Uzbekistán", "Jamaica"]},{id: "L", paises: ["Inglaterra", "Croacia", "Ghana", "Panamá"]},{id: "CAMPEONES", paises: ["Campeones"]}];
+    const flags = { "México":"mx", "Sudáfrica":"za", "Rep. Corea":"kr", "Rep. Checa":"cz", "Canadá":"ca", "Bosnia":"ba", "Qatar":"qa", "Suiza":"ch", "Brasil":"br", "Marruecos":"ma", "Haití":"ht", "Escocia":"gb-sct", "EE.UU.":"us", "Paraguay":"py", "Australia":"au", "Turquía":"tr", "Alemania":"de", "Curazao":"cw", "C. Marfil":"ci", "Ecuador":"ec", "Países Bajos":"nl", "Japón":"jp", "Túnez":"tn", "Albania":"al", "Bélgica":"be", "Egipto":"eg", "Irán":"ir", "N. Zelanda":"nz", "España":"es", "Uruguay":"uy", "Arabia":"sa", "Cabo Verde":"cv", "Francia":"fr", "Senegal":"sn", "Noruega":"no", "Irak":"iq", "Argentina":"ar", "Austria":"at", "Argelia":"dz", "Jordania":"jo", "Portugal":"pt", "Colombia":"co", "Uzbekistán":"uz", "Jamaica":"jm", "Inglaterra":"gb-eng", "Croacia":"hr", "Ghana":"gh", "Panamá":"pa", "Campeones":"un" };
 
     function initApp(user) {
         document.getElementById('auth-screen').style.display = 'none';
@@ -203,7 +203,7 @@
 
     function renderGroup() {
         const g = grupos[currentGrp];
-        document.getElementById('group-title').innerText = "GRUPO " + g.id;
+        document.getElementById('group-title').innerText = g.id === "CAMPEONES" ? g.id : "GRUPO " + g.id;
         const scroll = document.getElementById('country-scroll'); scroll.innerHTML = "";
         g.paises.forEach(p => {
             const active = selectedCountry === p;
@@ -227,13 +227,17 @@
             grid.innerHTML = "";
             
             const preciosGuardados = docSnap.exists ? docSnap.data() : {};
+            
+            const isCampeones = selectedCountry === "Campeones";
+            const startLoop = isCampeones ? 9 : 1;
+            const endLoop = isCampeones ? 19 : 20;
 
-            for(let i = 1; i <= 20; i++){
-                const id = `${selectedCountry} #${i}`;
+            for(let i = startLoop; i <= endLoop; i++){
+                const id = isCampeones ? `FWC ${i}` : `${selectedCountry} #${i}`;
                 
                 // Valores de fallback por defecto por si no se han editado en el admin
-                let price = (i === 1) ? 10 : (i === 13 ? 15 : 2);
-                if(selectedCountry === "Portugal" && i === 15) price = 40;
+                let price = isCampeones ? 5 : ((i === 1) ? 10 : (i === 13 ? 15 : 2));
+                if(!isCampeones && selectedCountry === "Portugal" && i === 15) price = 40;
                 let disponible = true;
 
                 // Extraer el objeto mapeado del admin {precio, disponible}
@@ -258,20 +262,21 @@
                 const isSel = cart.find(x => x.id === id);
                 const s = document.createElement('div');
                 
-                s.className = `stk ${isSel ? 'selected' : ''} ${price >= 40 ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
+                s.className = `stk ${isSel ? 'selected' : ''} ${(price >= 40 || isCampeones) ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
                 const stockLabel = disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>';
                 
                 s.innerHTML = `
-                    <b>${i}</b>
+                    <b>${isCampeones ? `FWC ${i}` : i}</b>
                     <small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>
                     ${stockLabel}
                 `;
                 
                 s.onclick = () => {
                     if(disponible) {
-                        addToCart(id, price);
+                        addToCart(id, price, isCampeones, i);
                     } else {
-                        alert(`El cromo #${i} de ${selectedCountry} no cuenta con existencias actualmente.`);
+                        const itemLabel = isCampeones ? `El cromo FWC ${i}` : `El cromo #${i} de ${selectedCountry}`;
+                        alert(`${itemLabel} no cuenta con existencias actualmente.`);
                     }
                 };
                 grid.appendChild(s);
@@ -329,7 +334,7 @@
         });
     }
 
-    function addToCart(id, price) {
+    function addToCart(id, price, isCampeones = false, indexNum = 0) {
         const idx = cart.findIndex(x => x.id === id);
         if(idx > -1) cart.splice(idx, 1);
         else cart.push({id, price: parseFloat(price)});
@@ -338,7 +343,7 @@
         // Forzamos redibujado local rápido del estado seleccionado sin romper la escucha
         const grid = document.getElementById('sticker-grid');
         if(grid && grid.children.length > 0) {
-            const num = id.split(' #')[1];
+            const num = isCampeones ? (indexNum - 8) : id.split(' #')[1];
             const items = grid.getElementsByClassName('stk');
             if(items[num-1]) {
                 items[num-1].classList.toggle('selected');
@@ -373,6 +378,9 @@
                 const parts = item.id.split(" #");
                 displayTitle = parts[0];
                 displaySubtitle = `Sticker #${parts[1]}`;
+            } else if (item.id.startsWith("FWC ")) {
+                displayTitle = "Campeones";
+                displaySubtitle = item.id;
             }
             list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #f0f0f0;">
                 <div><b style="font-size:1rem; color:#000;">${displayTitle}</b><br><small style="color:#666;">${displaySubtitle}</small></div>
@@ -390,6 +398,13 @@
         // Si el ítem removido pertenece al país actual visualizándose, deseleccionarlo visualmente
         if (item.id.startsWith(selectedCountry + " #")) {
             const num = item.id.split(' #')[1];
+            const grid = document.getElementById('sticker-grid');
+            if(grid) {
+                const items = grid.getElementsByClassName('stk');
+                if(items[num-1]) items[num-1].classList.remove('selected');
+            }
+        } else if (selectedCountry === "Campeones" && item.id.startsWith("FWC ")) {
+            const num = parseInt(item.id.split("FWC ")[1]) - 8;
             const grid = document.getElementById('sticker-grid');
             if(grid) {
                 const items = grid.getElementsByClassName('stk');
