@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PANINI | SOUVREIGN</title>
     <link rel="icon" type="image/png" href="panini.png">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
@@ -13,316 +14,651 @@
     <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore-compat.js"></script>
 
     <style>
+        /* ════════════════════════════════
+           TOKENS & RESET
+        ════════════════════════════════ */
         :root {
-            --wc-cyan: #00e5ff;
-            --gold: #ffd700;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --card-grad: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-            --insta-grad: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            --bg:        #07080f;
+            --bg-2:      #0d0f1a;
+            --bg-3:      #121525;
+            --cyan:      #00d4e8;
+            --cyan-dim:  rgba(0,212,232,0.12);
+            --cyan-glow: rgba(0,212,232,0.35);
+            --gold:      #c9a84c;
+            --gold-dim:  rgba(201,168,76,0.12);
+            --gold-glow: rgba(201,168,76,0.35);
+            --border:    rgba(255,255,255,0.08);
+            --border-hi: rgba(255,255,255,0.18);
+            --text:      #e8eaf0;
+            --text-dim:  rgba(232,234,240,0.45);
+            --danger:    #e05555;
+            --success:   #2ec97e;
+            --insta:     linear-gradient(45deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888);
+            --radius-sm: 10px;
+            --radius-md: 18px;
+            --radius-lg: 28px;
+            --shadow-cyan: 0 0 40px rgba(0,212,232,0.18);
+            --shadow-gold: 0 0 40px rgba(201,168,76,0.18);
+            --transition: 0.28s cubic-bezier(0.4,0,0.2,1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Poppins', sans-serif; background: #02020a; color: #fff; overflow-x: hidden; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-        /* ── Partículas de fondo ── */
-        #bg-particles {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; overflow: hidden;
-        }
-        .particle {
-            position: absolute; border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,229,255,0.25), transparent 70%);
-            animation: floatParticle linear infinite;
-            opacity: 0;
-        }
-        @keyframes floatParticle {
-            0%   { transform: translateY(110vh) scale(0); opacity: 0; }
-            10%  { opacity: 1; }
-            90%  { opacity: 0.6; }
-            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* ── Scan-line sutil ── */
-        body::after {
+        /* ════════════════════════════════
+           AMBIENT BG ORBS
+        ════════════════════════════════ */
+        .orb {
+            position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+            filter: blur(80px); opacity: 0.07;
+            animation: orbDrift ease-in-out infinite alternate;
+        }
+        .orb-1 { width: 500px; height: 500px; top: -150px; left: -100px; background: var(--cyan); animation-duration: 18s; }
+        .orb-2 { width: 400px; height: 400px; bottom: 10%; right: -80px; background: var(--gold); animation-duration: 22s; }
+        .orb-3 { width: 300px; height: 300px; top: 40%; left: 30%; background: var(--cyan); animation-duration: 14s; }
+        @keyframes orbDrift {
+            from { transform: translate(0,0) scale(1); }
+            to   { transform: translate(30px,40px) scale(1.08); }
+        }
+
+        /* Grain overlay */
+        body::before {
             content: '';
-            position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-            background: repeating-linear-gradient(
-                to bottom,
-                transparent 0px,
-                transparent 3px,
-                rgba(0,0,0,0.04) 3px,
-                rgba(0,0,0,0.04) 4px
-            );
+            position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.025;
         }
 
-        #intro-space { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:10000; display:flex; align-items:center; justify-content:center; pointer-events:none; }
-        .earth-zoom { width:30vw; height:30vw; min-width:150px; background:url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') center/cover; animation: superZoom 4s forwards cubic-bezier(0.7, 0, 0.3, 1); }
-        @keyframes superZoom { 0% { transform: scale(0.1); opacity: 0; } 15% { opacity: 1; } 100% { transform: scale(45); opacity: 0; } }
+        /* ════════════════════════════════
+           INTRO
+        ════════════════════════════════ */
+        #intro-space {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; align-items: center; justify-content: center; pointer-events: none;
+        }
+        .earth-zoom {
+            width: 30vw; height: 30vw; min-width: 150px;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') center/cover;
+            animation: superZoom 4s forwards cubic-bezier(0.7,0,0.3,1);
+        }
+        @keyframes superZoom {
+            0%   { transform: scale(0.1); opacity: 0; }
+            15%  { opacity: 1; }
+            100% { transform: scale(45); opacity: 0; }
+        }
 
-        .auth-container { height:100vh; width:100%; display:none; align-items:center; justify-content:center; background:linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('FIFA-World-Cup-2026.jpg') center/cover; position:fixed; z-index:5000; }
-        .auth-card { background:rgba(255,255,255,0.03); backdrop-filter:blur(20px); padding:50px 30px; border-radius:40px; text-align:center; width:85%; max-width:350px; border:1px solid var(--glass-border); animation: authPulse 3s ease-in-out infinite; }
-        @keyframes authPulse { 0%,100% { box-shadow: 0 0 30px rgba(0,229,255,0.1); } 50% { box-shadow: 0 0 60px rgba(0,229,255,0.25); } }
-        .btn-login { background:var(--wc-cyan); color:#000; border:none; padding:18px; border-radius:20px; font-weight:800; width:100%; margin-top:30px; font-size:1.1rem; box-shadow: 0 10px 30px rgba(0,229,255,0.4); cursor:pointer; transition: transform 0.15s, box-shadow 0.15s; }
-        .btn-login:hover { transform: scale(1.03); box-shadow: 0 14px 40px rgba(0,229,255,0.6); }
+        /* ════════════════════════════════
+           AUTH SCREEN
+        ════════════════════════════════ */
+        .auth-container {
+            height: 100vh; width: 100%; display: none;
+            align-items: center; justify-content: center;
+            background: linear-gradient(160deg, rgba(7,8,15,0.95) 0%, rgba(13,15,26,0.92) 100%),
+                        url('FIFA-World-Cup-2026.jpg') center/cover;
+            position: fixed; z-index: 5000;
+        }
+        .auth-card {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(24px);
+            padding: 56px 36px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            width: 88%; max-width: 360px;
+            border: 1px solid var(--border-hi);
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5), var(--shadow-cyan);
+            animation: fadeUp 0.7s ease;
+        }
+        @keyframes fadeUp { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform: translateY(0); } }
+
+        .auth-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2rem; font-weight: 900;
+            letter-spacing: 10px;
+            background: linear-gradient(135deg, #fff 40%, var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .auth-tagline { color: var(--text-dim); font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; margin: 8px 0 36px; }
+
+        .btn-login {
+            background: var(--cyan); color: #000;
+            border: none; padding: 17px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700; font-size: 0.95rem;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            width: 100%; cursor: pointer;
+            box-shadow: 0 12px 32px var(--cyan-glow);
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+        .btn-login:hover  { transform: translateY(-2px); box-shadow: 0 18px 44px var(--cyan-glow); }
         .btn-login:active { transform: scale(0.97); }
 
-        .navbar { position:fixed; top:0; width:100%; height:70px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:rgba(2,2,10,0.85); backdrop-filter:blur(15px); z-index:1000; border-bottom:1px solid var(--glass-border); }
-        /* Glow inferior del navbar */
-        .navbar::after { content:''; position:absolute; bottom:-1px; left:0; width:100%; height:1px; background: linear-gradient(90deg, transparent, var(--wc-cyan), transparent); animation: navLineScroll 4s linear infinite; }
-        @keyframes navLineScroll { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        /* ════════════════════════════════
+           NAVBAR
+        ════════════════════════════════ */
+        .navbar {
+            position: fixed; top: 0; width: 100%; height: 68px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 22px;
+            background: rgba(7,8,15,0.82);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+        .navbar::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 60px; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            animation: navScan 5s linear infinite;
+        }
+        @keyframes navScan { from { left: -60px; } to { left: 100%; } }
 
-        .nav-right-actions { display: flex; align-items: center; gap: 15px; }
-        .btn-insta-nav { background: var(--insta-grad); color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3); transition: transform 0.15s; }
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem; font-weight: 700;
+            letter-spacing: 5px;
+            background: linear-gradient(135deg, #fff 30%, var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-right-actions { display: flex; align-items: center; gap: 14px; }
+        .btn-insta-nav {
+            background: var(--insta); color: #fff;
+            border: none; padding: 7px 13px;
+            border-radius: 50px; font-size: 0.8rem; font-weight: 600;
+            text-decoration: none; display: flex; align-items: center; gap: 6px;
+            transition: transform var(--transition), box-shadow var(--transition);
+            box-shadow: 0 4px 14px rgba(220,39,67,0.25);
+        }
         .btn-insta-nav:hover { transform: scale(1.05); }
 
-        .sidebar { position:fixed; top:0; left:-300px; width:280px; height:100%; background:#050510; z-index:1500; transition:0.4s cubic-bezier(0.4,0,0.2,1); padding:30px 20px; border-right:1px solid var(--glass-border); }
-        .sidebar.active { left:0; box-shadow: 10px 0 40px rgba(0,229,255,0.08); }
-        .sidebar-item { padding:18px; color:white; font-weight:600; cursor:pointer; border-radius:14px; transition: background 0.2s, transform 0.15s; display:flex; align-items:center; gap:12px; }
-        .sidebar-item:hover { background: rgba(255,255,255,0.06); transform: translateX(4px); }
+        .nav-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            border: 2px solid var(--cyan); cursor: pointer;
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+        .nav-avatar:hover { transform: scale(1.1); box-shadow: 0 0 16px var(--cyan-glow); }
 
-        .view { padding: 90px 15px 120px; max-width: 1000px; margin: auto; display: none; position: relative; z-index: 1; }
-        .view.active { display: block; animation: fadeIn 0.45s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .hamburger { font-size: 1.4rem; cursor: pointer; color: var(--text); transition: color var(--transition); }
+        .hamburger:hover { color: var(--cyan); }
 
-        /* ── Stickers ── */
+        /* ════════════════════════════════
+           SIDEBAR
+        ════════════════════════════════ */
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 270px; height: 100%;
+            background: var(--bg-2);
+            z-index: 1500;
+            transition: left var(--transition), box-shadow var(--transition);
+            padding: 88px 16px 32px;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar.active { left: 0; box-shadow: 12px 0 48px rgba(0,0,0,0.5); }
+
+        .sidebar-section { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); padding: 0 12px 10px; margin-top: 24px; }
+
+        .sidebar-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 13px 14px; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 0.88rem; font-weight: 500;
+            color: var(--text);
+            transition: background var(--transition), transform var(--transition), color var(--transition);
+            border: 1px solid transparent;
+        }
+        .sidebar-item:hover { background: rgba(255,255,255,0.05); transform: translateX(4px); border-color: var(--border); }
+        .sidebar-item.cyan { color: var(--cyan); }
+        .sidebar-item.gold  { color: var(--gold); }
+        .sidebar-item.danger { color: var(--danger); }
+
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 1400; backdrop-filter: blur(4px);
+        }
+        .sidebar-overlay.active { display: block; }
+
+        /* ════════════════════════════════
+           VIEWS
+        ════════════════════════════════ */
+        .view { padding: 88px 18px 120px; max-width: 1020px; margin: auto; display: none; position: relative; z-index: 1; }
+        .view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+        .page-header {
+            margin-bottom: 28px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem; font-weight: 700;
+        }
+        .page-title.cyan { color: var(--cyan); }
+        .page-title.gold  { color: var(--gold); }
+
+        .section-divider {
+            height: 1px; background: linear-gradient(90deg, var(--cyan), transparent);
+            margin: 20px 0 22px; opacity: 0.35;
+        }
+
+        /* ════════════════════════════════
+           GROUP NAV BUTTONS
+        ════════════════════════════════ */
+        .btn-icon {
+            background: var(--bg-3); border: 1px solid var(--border);
+            color: var(--text); width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.9rem;
+            transition: background var(--transition), border-color var(--transition), transform var(--transition);
+        }
+        .btn-icon:hover  { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+        .btn-icon:active { transform: scale(0.92); }
+
+        /* ════════════════════════════════
+           COUNTRY CHIPS
+        ════════════════════════════════ */
+        #country-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; scrollbar-width: none; }
+        #country-scroll::-webkit-scrollbar { display: none; }
+
+        .country-chip {
+            min-width: 108px; padding: 14px 10px;
+            border-radius: var(--radius-md);
+            background: var(--bg-3); color: var(--text);
+            text-align: center; cursor: pointer;
+            border: 1px solid var(--border);
+            transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition);
+            flex-shrink: 0;
+        }
+        .country-chip:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,212,232,0.15); border-color: var(--border-hi); }
+        .country-chip.active {
+            background: var(--cyan); color: #000;
+            border-color: var(--cyan); font-weight: 700;
+            box-shadow: 0 8px 28px var(--cyan-glow);
+        }
+
+        .country-label {
+            display: block; font-size: 0.72rem; font-weight: 600; margin-top: 7px;
+            letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* ════════════════════════════════
+           STICKER GRID
+        ════════════════════════════════ */
+        #sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 10px; }
+
         .stk {
-            aspect-ratio: 0.75; background: var(--glass); border-radius: 12px;
-            display:flex; flex-direction:column; align-items:center; justify-content:center;
-            cursor:pointer; border:1px solid var(--glass-border); transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-            position: relative; padding: 5px; text-align: center;
+            aspect-ratio: 0.75;
+            background: var(--bg-3);
+            border-radius: var(--radius-sm);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; border: 1px solid var(--border);
+            transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition);
+            position: relative; padding: 6px; text-align: center; overflow: hidden;
         }
-        .stk:hover:not(.stk-sold-out) { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 24px rgba(0,229,255,0.2); border-color: rgba(0,229,255,0.35); }
-        .stk:active:not(.stk-sold-out) { transform: scale(0.93); }
+        .stk::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(0,212,232,0.06), transparent);
+            opacity: 0; transition: opacity var(--transition);
+        }
+        .stk:hover:not(.stk-sold-out)::before { opacity: 1; }
+        .stk:hover:not(.stk-sold-out) { transform: translateY(-4px); box-shadow: 0 10px 28px var(--cyan-glow); border-color: rgba(0,212,232,0.4); }
+        .stk:active:not(.stk-sold-out) { transform: scale(0.92); }
+
         .stk.selected {
-            background: var(--wc-cyan) !important; color: #000 !important;
-            border-color: #fff !important; transform: scale(0.95);
-            box-shadow: 0 0 22px rgba(0,229,255,0.55);
-            animation: stkPop 0.25s ease;
+            background: var(--cyan) !important; color: #000 !important;
+            border-color: #fff !important;
+            box-shadow: 0 0 24px var(--cyan-glow);
+            animation: stkPop 0.22s ease;
         }
-        @keyframes stkPop { 0% { transform: scale(1.12); } 100% { transform: scale(0.95); } }
-        .stk.selected .stk-status { color: #000 !important; font-weight: bold; }
-        .stk b { font-family: 'Oswald'; font-size: 1.2rem; line-height: 1.1; }
+        @keyframes stkPop { 0% { transform: scale(1.15); } 100% { transform: scale(0.95); } }
+        .stk.selected::before { display: none; }
+        .stk.selected .stk-status { color: #000 !important; background: rgba(0,0,0,0.15) !important; }
 
-        .stk-status { font-size: 0.55rem; text-transform: uppercase; margin-top: 4px; padding: 1px 5px; border-radius: 4px; }
-        .stk-status.av { color: #25d366; background: rgba(37, 211, 102, 0.1); }
-        .stk.selected .stk-status.av { background: rgba(0,0,0,0.15) !important; color: #000 !important; }
-        .stk-status.so { color: #ff5252; background: rgba(255, 82, 82, 0.1); }
-        .stk.stk-sold-out { opacity: 0.3; cursor: not-allowed; filter: grayscale(0.8); }
+        .stk b { font-family: 'Playfair Display', serif; font-size: 1.1rem; }
+        .stk small { font-size: 0.6rem; opacity: 0.7; font-weight: 500; }
 
-        /* ── Country chip ── */
-        .country-chip { min-width:115px; padding:15px; border-radius:20px; text-align:center; cursor:pointer; border:1px solid var(--glass-border); transition: transform 0.2s, box-shadow 0.2s; }
-        .country-chip:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,229,255,0.15); }
-        .country-chip:active { transform: scale(0.95); }
+        .stk-status {
+            font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;
+            margin-top: 5px; padding: 2px 6px; border-radius: 4px; font-weight: 600;
+        }
+        .stk-status.av { color: var(--success); background: rgba(46,201,126,0.1); }
+        .stk-status.so { color: var(--danger);  background: rgba(224,85,85,0.1); }
+        .stk.stk-sold-out { opacity: 0.28; cursor: not-allowed; filter: grayscale(1); }
 
-        /* ── Special / Legend cards ── */
-        .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; }
+        /* skeleton shimmer */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-3) 25%, rgba(255,255,255,0.06) 50%, var(--bg-3) 75%);
+            background-size: 600px 100%; animation: shimmer 1.4s infinite;
+        }
+        @keyframes shimmer { from { background-position: -600px 0; } to { background-position: 600px 0; } }
+
+        /* ════════════════════════════════
+           SPECIAL / LEGEND CARDS
+        ════════════════════════════════ */
+        .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; }
+
         .legend-card {
-            position: relative; background: var(--card-grad); border-radius: 30px;
-            overflow: hidden; border: 1px solid var(--glass-border);
-            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s;
+            background: var(--bg-2);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
             display: flex; flex-direction: column;
         }
-        .legend-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 50px rgba(0,229,255,0.18); }
-        .legend-card img { width: 100%; height: 260px; object-fit: cover; mask-image: linear-gradient(to bottom, black 70%, transparent 100%); transition: transform 0.5s ease; }
-        .legend-card:hover img { transform: scale(1.06); }
-        .legend-content { padding: 20px; text-align: center; margin-top: -30px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); border-radius: 30px 30px 0 0; z-index: 5; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .legend-content h3 { font-family: 'Oswald'; font-size: 1.4rem; color: #fff; letter-spacing: 1px; }
-        .price-tag { color: var(--wc-cyan); font-weight: 700; font-size: 1.3rem; margin: 10px 0; display: block; }
-        .btn-add-special { background: #fff; color: #000; border: none; padding: 12px; border-radius: 50px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s, transform 0.15s; }
-        .btn-add-special:hover:not([disabled]) { background: var(--wc-cyan); transform: scale(1.03); }
+        .legend-card:hover { transform: translateY(-7px); box-shadow: 0 24px 56px rgba(0,0,0,0.4), var(--shadow-cyan); border-color: var(--border-hi); }
+        .legend-card:hover .card-img { transform: scale(1.05); }
+
+        .card-img-wrap { overflow: hidden; height: 240px; position: relative; background: var(--bg-3); }
+        .card-img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s ease;
+            mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+        }
+        .card-badge {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(7,8,15,0.75); backdrop-filter: blur(8px);
+            border: 1px solid var(--border-hi); border-radius: 50px;
+            font-size: 0.65rem; font-weight: 600; letter-spacing: 1px;
+            padding: 4px 10px; color: var(--gold); text-transform: uppercase;
+        }
+
+        .legend-content {
+            padding: 22px 20px 20px; flex: 1;
+            display: flex; flex-direction: column; gap: 8px;
+            background: linear-gradient(to bottom, transparent, var(--bg-2));
+        }
+        .legend-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem; font-weight: 700; color: var(--text);
+            letter-spacing: 0.5px;
+        }
+        .price-tag { color: var(--cyan); font-weight: 700; font-size: 1.35rem; }
+        .price-tag.gold-price { color: var(--gold); }
+
+        .btn-add-special {
+            margin-top: auto;
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            border: 1px solid var(--border-hi);
+            padding: 12px; border-radius: var(--radius-md);
+            font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px;
+            cursor: pointer; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
+        }
+        .btn-add-special:hover:not([disabled]) { background: var(--cyan); color: #000; border-color: var(--cyan); transform: scale(1.02); }
         .btn-add-special:active:not([disabled]) { transform: scale(0.97); }
-        .legend-card.selected { border: 2px solid var(--wc-cyan); box-shadow: 0 0 18px rgba(0,229,255,0.3); }
-        .legend-card.selected.gold-border { border-color: var(--gold); box-shadow: 0 0 22px rgba(255,215,0,0.3); }
+        .btn-add-special[disabled] { opacity: 0.4; cursor: not-allowed; }
 
-        /* ── Cart trigger ── */
+        .legend-card.selected { border: 1.5px solid var(--cyan); box-shadow: 0 0 24px var(--cyan-glow); }
+        .legend-card.selected .btn-add-special { background: var(--cyan); color: #000; border-color: var(--cyan); }
+        .legend-card.gold-border { border-color: var(--gold) !important; box-shadow: 0 0 24px var(--gold-glow) !important; }
+        .legend-card.gold-border .btn-add-special:hover:not([disabled]) { background: var(--gold); color: #000; border-color: var(--gold); }
+        .legend-card.gold-border.selected .btn-add-special { background: var(--gold); color: #000; border-color: var(--gold); }
+
+        /* ════════════════════════════════
+           CART TRIGGER
+        ════════════════════════════════ */
         .cart-trigger {
-            position: fixed; bottom: 25px; right: 25px;
-            background: var(--wc-cyan); color: #000; width: 65px; height: 65px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; z-index: 1001;
-            box-shadow: 0 10px 30px rgba(0,229,255,0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
-            animation: cartPulse 2.5s ease-in-out infinite;
+            position: fixed; bottom: 28px; right: 24px;
+            background: var(--cyan); color: #000;
+            width: 62px; height: 62px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.35rem; z-index: 1001;
+            box-shadow: 0 8px 28px var(--cyan-glow);
+            transition: transform var(--transition), box-shadow var(--transition);
+            cursor: pointer;
         }
-        @keyframes cartPulse { 0%,100% { box-shadow: 0 10px 30px rgba(0,229,255,0.4); } 50% { box-shadow: 0 10px 50px rgba(0,229,255,0.7); } }
-        .cart-trigger:hover { transform: scale(1.1); }
-        .cart-trigger:active { transform: scale(0.93); }
+        .cart-trigger:hover  { transform: scale(1.1); box-shadow: 0 12px 40px var(--cyan-glow); }
+        .cart-trigger:active { transform: scale(0.92); }
 
-        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100%; background: #fff; color: #000; z-index: 3000; transition: right 0.4s cubic-bezier(0.4,0,0.2,1); padding: 30px; display: flex; flex-direction: column; }
-        .cart-drawer.active { right: 0; box-shadow: -10px 0 50px rgba(0,0,0,0.4); }
-
-        /* ── Shimmer en carga ── */
-        @keyframes shimmer {
-            0%   { background-position: -400px 0; }
-            100% { background-position: 400px 0; }
-        }
-        .skeleton {
-            background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-            background-size: 800px 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 12px;
+        .cart-badge {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--danger); color: #fff;
+            font-size: 0.72rem; padding: 3px 8px;
+            border-radius: 50px; font-weight: 700;
+            min-width: 22px; text-align: center;
+            border: 2px solid var(--bg);
         }
 
-        /* ── Ripple en tap ── */
-        .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); transform: scale(0); animation: rippleAnim 0.5s linear; pointer-events: none; }
-        @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+        /* ════════════════════════════════
+           CART DRAWER
+        ════════════════════════════════ */
+        .cart-drawer {
+            position: fixed; top: 0; right: -105%; width: 100%; max-width: 400px; height: 100%;
+            background: #fff; color: #0a0a0a;
+            z-index: 3000; transition: right var(--transition);
+            padding: 28px; display: flex; flex-direction: column;
+            box-shadow: -12px 0 60px rgba(0,0,0,0.35);
+        }
+        .cart-drawer.active { right: 0; }
 
-        /* ── Toast ── */
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; border-bottom: 1px solid #e8e8e8; padding-bottom: 18px; }
+        .cart-header h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; }
+        .cart-close { font-size: 1.5rem; cursor: pointer; color: #666; transition: color 0.2s; }
+        .cart-close:hover { color: #000; }
+
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f0f0f0; animation: fadeIn 0.25s ease; }
+        .cart-item-info b   { font-size: 0.92rem; color: #111; }
+        .cart-item-info small { color: #777; font-size: 0.78rem; }
+        .cart-item-price { font-weight: 700; font-size: 0.92rem; color: #111; margin-right: 10px; }
+        .cart-trash { color: var(--danger); cursor: pointer; font-size: 1rem; transition: transform 0.15s; }
+        .cart-trash:hover { transform: scale(1.2); }
+
+        .cart-footer { border-top: 2px solid #e8e8e8; padding-top: 20px; margin-top: auto; }
+        .cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .cart-total-label { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: #666; }
+        .cart-total-amount { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; }
+
+        .btn-whatsapp {
+            width: 100%; background: #25d366; color: #fff;
+            border: none; padding: 18px; border-radius: var(--radius-md);
+            font-weight: 700; font-size: 1rem; letter-spacing: 0.5px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 6px 20px rgba(37,211,102,0.3);
+        }
+        .btn-whatsapp:hover  { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,211,102,0.4); }
+        .btn-whatsapp:active { transform: scale(0.97); }
+
+        /* ════════════════════════════════
+           PROFILE
+        ════════════════════════════════ */
+        .profile-card {
+            text-align: center;
+            background: var(--bg-2);
+            padding: 60px 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-cyan);
+        }
+        .profile-avatar {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 3px solid var(--cyan); margin-bottom: 20px;
+            transition: transform var(--transition), box-shadow var(--transition);
+            cursor: default;
+        }
+        .profile-avatar:hover { transform: scale(1.06); box-shadow: 0 0 30px var(--cyan-glow); }
+        .profile-name  { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; }
+        .profile-email { color: var(--text-dim); font-size: 0.88rem; margin-top: 6px; }
+
+        /* ════════════════════════════════
+           TOAST
+        ════════════════════════════════ */
         #toast {
-            position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%) translateY(20px);
-            background: rgba(0,229,255,0.15); border: 1px solid var(--wc-cyan);
-            backdrop-filter: blur(12px); color: #fff; padding: 10px 22px;
-            border-radius: 50px; font-size: 0.85rem; z-index: 5000;
-            opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none;
-            white-space: nowrap;
+            position: fixed; bottom: 108px; left: 50%; transform: translateX(-50%) translateY(12px);
+            background: rgba(13,15,26,0.92); border: 1px solid var(--border-hi);
+            backdrop-filter: blur(14px); color: var(--text);
+            padding: 10px 22px; border-radius: 50px;
+            font-size: 0.82rem; font-weight: 500;
+            z-index: 9000; opacity: 0; transition: opacity 0.28s, transform 0.28s;
+            pointer-events: none; white-space: nowrap;
         }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.toast-remove { border-color: var(--danger); color: var(--danger); }
 
-        /* ── Título de sección con subrayado animado ── */
-        .section-title {
-            position: relative; display: inline-block;
+        /* ════════════════════════════════
+           RIPPLE
+        ════════════════════════════════ */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.25); transform: scale(0);
+            animation: rippleAnim 0.5s linear; pointer-events: none;
         }
-        .section-title::after {
-            content: ''; position: absolute; bottom: -6px; left: 0;
-            width: 0; height: 3px; background: var(--wc-cyan);
-            border-radius: 2px; transition: width 0.6s ease;
+        @keyframes rippleAnim { to { transform: scale(5); opacity: 0; } }
+
+        /* ════════════════════════════════
+           COUNTRY SECTION LABEL
+        ════════════════════════════════ */
+        #country-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem; color: var(--cyan);
+            letter-spacing: 3px; margin: 22px 0 14px;
         }
-        .view.active .section-title::after { width: 100%; }
     </style>
 </head>
 <body>
 
-    <!-- Partículas de fondo -->
-    <div id="bg-particles"></div>
+    <!-- Ambient orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
     <!-- Toast -->
     <div id="toast"></div>
 
+    <!-- Intro zoom -->
     <div id="intro-space"><div class="earth-zoom"></div></div>
 
+    <!-- Auth -->
     <div class="auth-container" id="auth-screen">
         <div class="auth-card">
-            <h1 style="font-family:'Oswald'; letter-spacing:8px; font-size:3rem;">PANINI</h1>
-            <button class="btn-login" onclick="loginWithGoogle()">INGRESAR AL ÁLBUM</button>
+            <div class="auth-logo">PANINI</div>
+            <p class="auth-tagline">World Cup Collection 2026</p>
+            <button class="btn-login" onclick="loginWithGoogle()">
+                <i class="fa-brands fa-google" style="margin-right:8px;"></i> Ingresar al Álbum
+            </button>
         </div>
     </div>
 
+    <!-- App -->
     <div id="app" style="display:none;">
+
+        <!-- Sidebar overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+        <!-- Navbar -->
         <nav class="navbar">
-            <div onclick="toggleSidebar()" style="font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-bars-staggered"></i></div>
-            <span style="font-family:'Oswald'; letter-spacing:4px; font-size:1.4rem;">PANINI</span>
+            <span class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></span>
+            <span class="nav-logo">PANINI</span>
             <div class="nav-right-actions">
-                <a href="https://instagram.com/pablooib" target="_blank" class="btn-insta-nav"><i class="fa-brands fa-instagram"></i> @pablooib</a>
-                <img id="nav-avatar" src="" style="width:40px; border-radius:50%; border:2px solid var(--wc-cyan); cursor:pointer; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" onclick="showView('profile-view')">
+                <a href="https://instagram.com/pablooib" target="_blank" class="btn-insta-nav">
+                    <i class="fa-brands fa-instagram"></i> @pablooib
+                </a>
+                <img id="nav-avatar" src="" class="nav-avatar" onclick="showView('profile-view')">
             </div>
         </nav>
 
+        <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-item" onclick="showView('album-view')"><i class="fa-solid fa-book-open"></i> MI ÁLBUM</div>
-            <div class="sidebar-item" style="color:var(--wc-cyan)" onclick="showView('campeones-view')"><i class="fa-solid fa-trophy"></i> CAMPEONES FWC</div>
-            <div class="sidebar-item" style="color:var(--gold)" onclick="showView('prices-view')"><i class="fa-solid fa-crown"></i> ROYAL LEGENDS</div>
-            <div class="sidebar-item" onclick="showView('profile-view')"><i class="fa-solid fa-user-gear"></i> PERFIL</div>
-            <div class="sidebar-item" style="color:#ff5252; margin-top:40px;" onclick="logout()"><i class="fa-solid fa-power-off"></i> CERRAR SESIÓN</div>
+            <p class="sidebar-section">Colección</p>
+            <div class="sidebar-item" onclick="showView('album-view')">
+                <i class="fa-solid fa-book-open" style="width:18px;"></i> Mi Álbum
+            </div>
+            <div class="sidebar-item cyan" onclick="showView('campeones-view')">
+                <i class="fa-solid fa-trophy" style="width:18px;"></i> Campeones FWC
+            </div>
+            <div class="sidebar-item gold" onclick="showView('prices-view')">
+                <i class="fa-solid fa-crown" style="width:18px;"></i> Royal Legends
+            </div>
+            <p class="sidebar-section">Cuenta</p>
+            <div class="sidebar-item" onclick="showView('profile-view')">
+                <i class="fa-solid fa-user-gear" style="width:18px;"></i> Perfil
+            </div>
+            <div class="sidebar-item danger" onclick="logout()">
+                <i class="fa-solid fa-power-off" style="width:18px;"></i> Cerrar Sesión
+            </div>
         </div>
 
+        <!-- Cart trigger -->
         <div class="cart-trigger" onclick="toggleCart()">
             <i class="fa-solid fa-shopping-basket"></i>
-            <span id="cart-badge" style="position:absolute; top:-5px; right:-5px; background:#ff5252; color:white; font-size:0.8rem; padding:4px 9px; border-radius:50%; font-weight:bold;">0</span>
+            <span class="cart-badge" id="cart-badge">0</span>
         </div>
 
+        <!-- Cart drawer -->
         <div class="cart-drawer" id="cart-drawer">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="font-family:'Oswald'; font-size:1.8rem;">TU PEDIDO</h2>
-                <i class="fa-solid fa-times" onclick="toggleCart()" style="font-size:1.8rem; cursor:pointer;"></i>
+            <div class="cart-header">
+                <h2>Tu Pedido</h2>
+                <i class="fa-solid fa-times cart-close" onclick="toggleCart()"></i>
             </div>
             <div id="cart-list" style="flex:1; overflow-y:auto;"></div>
-            <div style="border-top:2px solid #f0f0f0; padding-top:20px;">
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.5rem; margin-bottom:20px;">
-                    <span>TOTAL</span> <span id="cart-total">Q0.00</span>
+            <div class="cart-footer">
+                <div class="cart-total-row">
+                    <span class="cart-total-label">Total</span>
+                    <span class="cart-total-amount" id="cart-total">Q0.00</span>
                 </div>
-                <button onclick="sendOrder()" style="width:100%; background:#25d366; color:#fff; border:none; padding:20px; border-radius:20px; font-weight:bold; font-size:1.1rem; cursor:pointer; transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    <i class="fa-brands fa-whatsapp"></i> ENVIAR A WHATSAPP
+                <button class="btn-whatsapp" onclick="sendOrder()">
+                    <i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i> Enviar a WhatsApp
                 </button>
             </div>
         </div>
 
         <div class="main-content">
-            <!-- Album View -->
+
+            <!-- ── ÁLBUM VIEW ── -->
             <div id="album-view" class="view active">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2 id="group-title" class="section-title" style="font-family:'Oswald'; font-size:1.8rem;">GRUPO A</h2>
-                    <div style="display:flex; gap:10px;">
-                        <button onclick="changeGroup(-1)" style="background:var(--glass); border:1px solid var(--glass-border); color:white; width:45px; height:45px; border-radius:50%; transition:background 0.2s;" onmouseover="this.style.background='rgba(0,229,255,0.15)'" onmouseout="this.style.background='var(--glass)'"><i class="fa-solid fa-chevron-left"></i></button>
-                        <button onclick="changeGroup(1)"  style="background:var(--glass); border:1px solid var(--glass-border); color:white; width:45px; height:45px; border-radius:50%; transition:background 0.2s;" onmouseover="this.style.background='rgba(0,229,255,0.15)'" onmouseout="this.style.background='var(--glass)'"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="page-header">
+                    <h2 id="group-title" class="page-title">Grupo A</h2>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-icon" onclick="changeGroup(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="btn-icon" onclick="changeGroup(1)"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                 </div>
-                <div id="country-scroll" style="display:flex; gap:15px; overflow-x:auto; padding-bottom:20px;"></div>
-                <h3 id="country-label" style="margin:20px 0 15px; font-family:'Oswald'; color:var(--wc-cyan); letter-spacing:3px;">PAÍS</h3>
-                <div id="sticker-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(85px, 1fr)); gap:12px;"></div>
+                <div id="country-scroll"></div>
+                <div class="section-divider"></div>
+                <h3 id="country-label">País</h3>
+                <div id="sticker-grid"></div>
             </div>
 
-            <!-- Campeones View -->
+            <!-- ── CAMPEONES VIEW ── -->
             <div id="campeones-view" class="view">
-                <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:40px; color:var(--wc-cyan); font-size:2.5rem; letter-spacing:4px;">CAMPEONES DEL MUNDO</h2>
+                <div class="page-header">
+                    <h2 class="page-title cyan">Campeones del Mundo</h2>
+                </div>
                 <div class="special-grid" id="campeones-cards-container"></div>
             </div>
 
-            <!-- Royal Legends View -->
+            <!-- ── ROYAL LEGENDS VIEW ── -->
             <div id="prices-view" class="view">
-                <h2 style="font-family:'Oswald'; text-align:center; margin-bottom:40px; color:var(--gold); font-size:2.5rem; letter-spacing:5px;">ROYAL LEGENDS</h2>
+                <div class="page-header">
+                    <h2 class="page-title gold">Royal Legends</h2>
+                </div>
                 <div class="special-grid" id="royal-legends-container"></div>
             </div>
 
-            <!-- Profile View -->
+            <!-- ── PROFILE VIEW ── -->
             <div id="profile-view" class="view">
-                <div style="text-align:center; background:var(--glass); padding:60px 20px; border-radius:35px; border:1px solid var(--wc-cyan); animation: authPulse 3s ease-in-out infinite;">
-                    <img id="profile-img" src="" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--wc-cyan); margin-bottom:20px; transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
-                    <h2 id="profile-name" style="font-family:'Oswald'; font-size:2.2rem;">---</h2>
-                    <p id="profile-email" style="opacity:0.5;">---</p>
+                <div class="profile-card">
+                    <img id="profile-img" src="" class="profile-avatar">
+                    <h2 id="profile-name" class="profile-name">---</h2>
+                    <p id="profile-email" class="profile-email">---</p>
                 </div>
             </div>
+
         </div>
     </div>
 
+<!-- ════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════ -->
 <script>
-    /* ── Partículas de fondo ── */
-    (function spawnParticles() {
-        const container = document.getElementById('bg-particles');
-        for (let i = 0; i < 18; i++) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            const size = Math.random() * 80 + 20;
-            p.style.cssText = `
-                width:${size}px; height:${size}px;
-                left:${Math.random() * 100}%;
-                animation-duration:${Math.random() * 20 + 15}s;
-                animation-delay:${Math.random() * 15}s;
-            `;
-            container.appendChild(p);
-        }
-    })();
-
-    /* ── Toast helper ── */
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        clearTimeout(t._timer);
-        t._timer = setTimeout(() => t.classList.remove('show'), 2200);
-    }
-
-    /* ── Ripple helper ── */
-    function addRipple(el, e) {
-        const rect = el.getBoundingClientRect();
-        const r = document.createElement('span');
-        r.className = 'ripple';
-        const d = Math.max(rect.width, rect.height);
-        r.style.cssText = `width:${d}px;height:${d}px;left:${(e.clientX||rect.left+rect.width/2)-rect.left-d/2}px;top:${(e.clientY||rect.top+rect.height/2)-rect.top-d/2}px;`;
-        el.appendChild(r);
-        r.addEventListener('animationend', () => r.remove());
-    }
-
     /* ── Firebase ── */
     const firebaseConfig = {
         apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
@@ -332,11 +668,57 @@
         messagingSenderId: "280193902268",
         appId: "1:280193902268:web:743d0e2172641be7a292b9"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db   = firebase.firestore();
 
+    /* ── Mapa de imágenes para Royal Legends ──
+       Agrega aquí cualquier carta especial nueva.
+       La clave es el ID del documento en Firestore. */
+    const LEGEND_IMAGES = {
+        'special-messi':    'imagenmessi.jpg',
+        'special-cr7':      'cristianomundial.jpg',
+        'special-mascotas': 'mascotas.jpg'
+        /* ← para agregar más: 'special-xxxx': 'imagen.jpg' */
+    };
+
+    /* ── Estado global ── */
+    let cart = [];
+    let currentGrp = 0;
+    let selectedCountry = '';
+    let activeUnsubs = [];
+
+    const grupos = [
+        {id:'A',paises:['México','Sudáfrica','Rep. Corea','Rep. Checa']},
+        {id:'B',paises:['Canadá','Bosnia','Qatar','Suiza']},
+        {id:'C',paises:['Brasil','Marruecos','Haití','Escocia']},
+        {id:'D',paises:['EE.UU.','Paraguay','Australia','Turquía']},
+        {id:'E',paises:['Alemania','Curazao','C. Marfil','Ecuador']},
+        {id:'F',paises:['Países Bajos','Japón','Túnez','Albania']},
+        {id:'G',paises:['Bélgica','Egipto','Irán','N. Zelanda']},
+        {id:'H',paises:['España','Uruguay','Arabia','Cabo Verde']},
+        {id:'I',paises:['Francia','Senegal','Noruega','Irak']},
+        {id:'J',paises:['Argentina','Austria','Argelia','Jordania']},
+        {id:'K',paises:['Portugal','Colombia','Uzbekistán','Jamaica']},
+        {id:'L',paises:['Inglaterra','Croacia','Ghana','Panamá']}
+    ];
+
+    const flags = {
+        'México':'mx','Sudáfrica':'za','Rep. Corea':'kr','Rep. Checa':'cz',
+        'Canadá':'ca','Bosnia':'ba','Qatar':'qa','Suiza':'ch',
+        'Brasil':'br','Marruecos':'ma','Haití':'ht','Escocia':'gb-sct',
+        'EE.UU.':'us','Paraguay':'py','Australia':'au','Turquía':'tr',
+        'Alemania':'de','Curazao':'cw','C. Marfil':'ci','Ecuador':'ec',
+        'Países Bajos':'nl','Japón':'jp','Túnez':'tn','Albania':'al',
+        'Bélgica':'be','Egipto':'eg','Irán':'ir','N. Zelanda':'nz',
+        'España':'es','Uruguay':'uy','Arabia':'sa','Cabo Verde':'cv',
+        'Francia':'fr','Senegal':'sn','Noruega':'no','Irak':'iq',
+        'Argentina':'ar','Austria':'at','Argelia':'dz','Jordania':'jo',
+        'Portugal':'pt','Colombia':'co','Uzbekistán':'uz','Jamaica':'jm',
+        'Inglaterra':'gb-eng','Croacia':'hr','Ghana':'gh','Panamá':'pa'
+    };
+
+    /* ── Auth ── */
     auth.onAuthStateChanged(user => {
         setTimeout(() => {
             document.getElementById('intro-space').style.display = 'none';
@@ -345,34 +727,12 @@
         }, 4000);
     });
 
-    let cart = [];
-    let currentGrp = 0;
-    let selectedCountry = "";
-    let activeUnsubs = [];
-
-    const grupos = [
-        {id:"A",paises:["México","Sudáfrica","Rep. Corea","Rep. Checa"]},
-        {id:"B",paises:["Canadá","Bosnia","Qatar","Suiza"]},
-        {id:"C",paises:["Brasil","Marruecos","Haití","Escocia"]},
-        {id:"D",paises:["EE.UU.","Paraguay","Australia","Turquía"]},
-        {id:"E",paises:["Alemania","Curazao","C. Marfil","Ecuador"]},
-        {id:"F",paises:["Países Bajos","Japón","Túnez","Albania"]},
-        {id:"G",paises:["Bélgica","Egipto","Irán","N. Zelanda"]},
-        {id:"H",paises:["España","Uruguay","Arabia","Cabo Verde"]},
-        {id:"I",paises:["Francia","Senegal","Noruega","Irak"]},
-        {id:"J",paises:["Argentina","Austria","Argelia","Jordania"]},
-        {id:"K",paises:["Portugal","Colombia","Uzbekistán","Jamaica"]},
-        {id:"L",paises:["Inglaterra","Croacia","Ghana","Panamá"]}
-    ];
-
-    const flags = { "México":"mx","Sudáfrica":"za","Rep. Corea":"kr","Rep. Checa":"cz","Canadá":"ca","Bosnia":"ba","Qatar":"qa","Suiza":"ch","Brasil":"br","Marruecos":"ma","Haití":"ht","Escocia":"gb-sct","EE.UU.":"us","Paraguay":"py","Australia":"au","Turquía":"tr","Alemania":"de","Curazao":"cw","C. Marfil":"ci","Ecuador":"ec","Países Bajos":"nl","Japón":"jp","Túnez":"tn","Bélgica":"be","Egipto":"eg","Irán":"ir","N. Zelanda":"nz","España":"es","Uruguay":"uy","Arabia":"sa","Cabo Verde":"cv","Francia":"fr","Senegal":"sn","Noruega":"no","Irak":"iq","Argentina":"ar","Austria":"at","Argelia":"dz","Jordania":"jo","Portugal":"pt","Colombia":"co","Uzbekistán":"uz","Jamaica":"jm","Inglaterra":"gb-eng","Croacia":"hr","Ghana":"gh","Panamá":"pa" };
-
     function initApp(user) {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app').style.display = 'block';
-        document.getElementById('nav-avatar').src = user.photoURL;
+        document.getElementById('nav-avatar').src  = user.photoURL;
         document.getElementById('profile-img').src = user.photoURL;
-        document.getElementById('profile-name').innerText = user.displayName;
+        document.getElementById('profile-name').innerText  = user.displayName;
         document.getElementById('profile-email').innerText = user.email;
         selectedCountry = grupos[0].paises[0];
         renderGroup();
@@ -381,72 +741,107 @@
         listenToRoyalLegends();
     }
 
+    /* ── Toast ── */
+    function showToast(msg, isRemove) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = isRemove ? 'toast-remove' : '';
+        t.classList.add('show');
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    /* ── Ripple ── */
+    function addRipple(el, e) {
+        const r   = document.createElement('span');
+        const rect = el.getBoundingClientRect();
+        const d   = Math.max(rect.width, rect.height);
+        const cx  = (e && e.clientX) ? e.clientX - rect.left : rect.width  / 2;
+        const cy  = (e && e.clientY) ? e.clientY - rect.top  : rect.height / 2;
+        r.className = 'ripple';
+        r.style.cssText = `width:${d}px;height:${d}px;left:${cx-d/2}px;top:${cy-d/2}px;`;
+        el.appendChild(r);
+        r.addEventListener('animationend', () => r.remove());
+    }
+
+    /* ── Render group countries ── */
     function renderGroup() {
         const g = grupos[currentGrp];
-        document.getElementById('group-title').innerText = "GRUPO " + g.id;
+        document.getElementById('group-title').innerText = `Grupo ${g.id}`;
         const scroll = document.getElementById('country-scroll');
-        scroll.innerHTML = "";
+        scroll.innerHTML = '';
         g.paises.forEach(p => {
-            const active = selectedCountry === p;
-            const card = document.createElement('div');
-            card.className = 'country-chip';
-            card.style.cssText = `min-width:115px; padding:15px; border-radius:20px; background:${active?'var(--wc-cyan)':'var(--glass)'}; color:${active?'#000':'#fff'}; text-align:center; cursor:pointer; border:1px solid ${active?'#fff':'var(--glass-border)'}; transition:0.3s;`;
-            card.innerHTML = `<img src="https://flagcdn.com/w40/${flags[p]}.png" style="display:block; margin:0 auto 8px; border-radius:4px;"> <b style="font-size:0.85rem;">${p}</b>`;
-            card.onclick = (e) => { addRipple(card, e); selectedCountry = p; renderGroup(); listenToStickers(); };
-            scroll.appendChild(card);
+            const chip = document.createElement('div');
+            chip.className = 'country-chip' + (selectedCountry === p ? ' active' : '');
+            chip.innerHTML = `
+                <img src="https://flagcdn.com/w40/${flags[p] || 'xx'}.png"
+                     style="display:block;margin:0 auto;border-radius:3px;height:26px;object-fit:cover;">
+                <span class="country-label">${p}</span>`;
+            chip.onclick = e => {
+                addRipple(chip, e);
+                selectedCountry = p;
+                renderGroup();
+                listenToStickers();
+            };
+            scroll.appendChild(chip);
         });
     }
 
+    /* ── Listen stickers ── */
     function listenToStickers() {
-        document.getElementById('country-label').innerText = selectedCountry.toUpperCase();
+        document.getElementById('country-label').innerText = selectedCountry;
         activeUnsubs.forEach(u => u());
         activeUnsubs = [];
 
         const grid = document.getElementById('sticker-grid');
-        grid.innerHTML = "";
-        const itemKeys = [];
-        for (let i = 1; i <= 20; i++) itemKeys.push(String(i));
+        grid.innerHTML = '';
+        const keys = Array.from({length:20},(_,i) => String(i+1));
 
-        itemKeys.forEach((key, idx) => {
-            const id = `${selectedCountry} #${key}`;
-            const isAlreadySelected = cart.some(x => x.id === id);
-            const s = document.createElement('div');
-            s.id = `sticker-container-${key}`;
-            s.className = `stk skeleton ${isAlreadySelected ? 'selected' : ''}`;
-            s.style.animationDelay = `${idx * 0.03}s`;
-            s.innerHTML = `<b>#${key}</b><br><small style="opacity:0.5; font-size:0.6rem;">...</small>`;
+        keys.forEach((key, idx) => {
+            const id  = `${selectedCountry} #${key}`;
+            const sel = cart.some(x => x.id === id);
+            const s   = document.createElement('div');
+            s.id        = `sticker-container-${key}`;
+            s.className = `stk skeleton${sel ? ' selected' : ''}`;
+            s.style.animationDelay = `${idx * 0.025}s`;
+            s.innerHTML = `<b>#${key}</b>`;
             grid.appendChild(s);
         });
 
-        const unsub = db.collection("precios_estampas").doc(selectedCountry).onSnapshot((docSnap) => {
-            const preciosGuardados = docSnap.exists ? docSnap.data() : {};
-
-            itemKeys.forEach(key => {
+        const unsub = db.collection('precios_estampas').doc(selectedCountry).onSnapshot(snap => {
+            const saved = snap.exists ? snap.data() : {};
+            keys.forEach(key => {
                 const cell = document.getElementById(`sticker-container-${key}`);
                 if (!cell) return;
-
                 const id = `${selectedCountry} #${key}`;
-                let price = (key === "1") ? 10 : (key === "13" ? 15 : 2);
-                if (selectedCountry === "Portugal" && key === "15") price = 40;
+                let price = key === '1' ? 10 : key === '13' ? 15 : 2;
+                if (selectedCountry === 'Portugal' && key === '15') price = 40;
                 let disponible = true;
 
-                if (preciosGuardados.hasOwnProperty(key)) {
-                    if (typeof preciosGuardados[key] === 'object' && preciosGuardados[key] !== null) {
-                        price = preciosGuardados[key].precio ?? preciosGuardados[key].price ?? price;
-                        disponible = preciosGuardados[key].disponible ?? true;
-                    }
+                if (saved.hasOwnProperty(key) && typeof saved[key] === 'object' && saved[key] !== null) {
+                    price      = saved[key].precio ?? saved[key].price ?? price;
+                    disponible = saved[key].disponible ?? true;
                 }
 
                 if (!disponible) {
-                    const idxEnCarrito = cart.findIndex(x => x.id === id);
-                    if (idxEnCarrito > -1) { cart.splice(idxEnCarrito, 1); updateCartUI(); }
+                    const i = cart.findIndex(x => x.id === id);
+                    if (i > -1) { cart.splice(i, 1); updateCartUI(); }
                 }
 
                 const isSel = cart.some(x => x.id === id);
-                cell.className = `stk ${isSel ? 'selected' : ''} ${(price >= 40) ? 'legend-stk' : ''} ${!disponible ? 'stk-sold-out' : ''}`;
-                cell.innerHTML = `<b>#${key}</b><small style="opacity:0.8; font-size:0.65rem;">Q${parseFloat(price).toFixed(2)}</small>${disponible ? '<span class="stk-status av">Disponible</span>' : '<span class="stk-status so">Agotado</span>'}`;
+                cell.className = [
+                    'stk',
+                    isSel        ? 'selected'    : '',
+                    price >= 40  ? 'legend-stk'  : '',
+                    !disponible  ? 'stk-sold-out' : ''
+                ].filter(Boolean).join(' ');
 
-                cell.onclick = (e) => {
+                cell.innerHTML = `
+                    <b>#${key}</b>
+                    <small>Q${parseFloat(price).toFixed(2)}</small>
+                    <span class="stk-status ${disponible ? 'av' : 'so'}">${disponible ? 'Disponible' : 'Agotado'}</span>`;
+
+                cell.onclick = e => {
                     if (disponible) { addRipple(cell, e); addToCart(id, price, key); }
                     else alert(`El cromo #${key} de ${selectedCountry} está agotado.`);
                 };
@@ -455,177 +850,202 @@
         activeUnsubs.push(unsub);
     }
 
+    /* ── Listen campeones ── */
     function listenToCampeones() {
-        db.collection("config").doc("campeones_config").onSnapshot((docSnap) => {
+        db.collection('config').doc('campeones_config').onSnapshot(snap => {
             const container = document.getElementById('campeones-cards-container');
-            if (!docSnap.exists) return;
-            const data = docSnap.data();
-            let htmlHTML = "";
-
-            Object.entries(data).forEach(([idCard, info]) => {
-                const isSelected = cart.some(x => x.id === info.itemCartName);
-                if (!info.disponible && isSelected) {
-                    const idx = cart.findIndex(x => x.id === info.itemCartName);
-                    cart.splice(idx, 1); updateCartUI();
+            if (!snap.exists) return;
+            let html = '';
+            Object.entries(snap.data()).forEach(([idCard, info]) => {
+                const isSel = cart.some(x => x.id === info.itemCartName);
+                if (!info.disponible && isSel) {
+                    const i = cart.findIndex(x => x.id === info.itemCartName);
+                    cart.splice(i,1); updateCartUI();
                 }
-                const cardClass = isSelected ? "legend-card selected" : "legend-card";
-                let textBtn = isSelected ? "QUITAR" : (info.disponible ? "AGREGAR" : "AGOTADO");
-                let attrDisabled = (!isSelected && !info.disponible) ? "disabled style='opacity:0.5;cursor:not-allowed;'" : "";
-
-                htmlHTML += `
-                    <div id="card-campeon-${idCard}" class="${cardClass}">
-                        <img src="panini.png" style="object-fit:contain; padding:20px; background:rgba(0,0,0,0.2);">
-                        <div class="legend-content">
-                            <h3>${idCard.toUpperCase()}</h3>
-                            <span class="price-tag">Q${parseFloat(info.price).toFixed(2)}</span>
-                            <button class="btn-add-special" ${attrDisabled} onclick="toggleSpecial('${info.itemCartName}',${info.price},'card-campeon-${idCard}')">
-                                <i class="fa-solid fa-trophy"></i> <span class="btn-txt">${textBtn}</span>
-                            </button>
-                        </div>
-                    </div>`;
+                const cls  = isSel ? 'legend-card selected' : 'legend-card';
+                const txt  = isSel ? 'Quitar' : (info.disponible ? 'Agregar' : 'Agotado');
+                const dis  = (!isSel && !info.disponible) ? 'disabled' : '';
+                html += `
+                <div id="card-campeon-${idCard}" class="${cls}">
+                    <div class="card-img-wrap">
+                        <img src="panini.png" class="card-img" style="object-fit:contain;padding:20px;background:rgba(0,0,0,0.2);">
+                        <span class="card-badge"><i class="fa-solid fa-trophy"></i> Campeón</span>
+                    </div>
+                    <div class="legend-content">
+                        <h3>${idCard.toUpperCase()}</h3>
+                        <span class="price-tag">Q${parseFloat(info.price).toFixed(2)}</span>
+                        <button class="btn-add-special" ${dis}
+                            onclick="toggleSpecial('${info.itemCartName}',${info.price},'card-campeon-${idCard}')">
+                            <i class="fa-solid fa-trophy"></i>
+                            <span class="btn-txt">${txt}</span>
+                        </button>
+                    </div>
+                </div>`;
             });
-            container.innerHTML = htmlHTML;
+            container.innerHTML = html;
         });
     }
 
+    /* ── Listen Royal Legends ── */
     function listenToRoyalLegends() {
-        db.collection("config").doc("royal_legends").onSnapshot((docSnap) => {
-            if (!docSnap.exists) return;
-            const data = docSnap.data();
+        db.collection('config').doc('royal_legends').onSnapshot(snap => {
+            if (!snap.exists) return;
             const container = document.getElementById('royal-legends-container');
-            let htmlHTML = "";
+            let html = '';
 
-            Object.entries(data).forEach(([idCard, info]) => {
-                /* ── Mapa de imágenes ── */
-                let sourceImg = "panini.png";
-                if (idCard === "special-messi")    sourceImg = "imagenmessi.jpg";
-                if (idCard === "special-cr7")      sourceImg = "cristianomundial.jpg";
-                if (idCard === "special-mascotas") sourceImg = "mascotas.jpg";   // ← nueva carta
+            Object.entries(snap.data()).forEach(([idCard, info]) => {
+                /*
+                 * MAPA DE IMÁGENES — clave = id del campo en Firestore
+                 * Busca en LEGEND_IMAGES; si no encuentra, usa panini.png
+                 */
+                const sourceImg = LEGEND_IMAGES[idCard] || 'panini.png';
 
-                const isSelected = cart.some(x => x.id === info.itemCartName);
-                if (!info.disponible && isSelected) {
-                    const idx = cart.findIndex(x => x.id === info.itemCartName);
-                    cart.splice(idx, 1); updateCartUI();
+                const isSel = cart.some(x => x.id === info.itemCartName);
+                if (!info.disponible && isSel) {
+                    const i = cart.findIndex(x => x.id === info.itemCartName);
+                    cart.splice(i,1); updateCartUI();
                 }
-                const cardClass = isSelected ? "legend-card selected gold-border" : "legend-card";
-                let textBtn = isSelected ? "QUITAR" : (info.disponible ? "AGREGAR" : "AGOTADO");
-                let attrDisabled = (!isSelected && !info.disponible) ? "disabled style='opacity:0.5;cursor:not-allowed;'" : "";
+                const cls = ['legend-card', isSel ? 'selected gold-border' : ''].filter(Boolean).join(' ');
+                const txt = isSel ? 'Quitar' : (info.disponible ? 'Agregar' : 'Agotado');
+                const dis = (!isSel && !info.disponible) ? 'disabled' : '';
 
-                htmlHTML += `
-                    <div id="${idCard}" class="${cardClass}">
-                        <img src="${sourceImg}">
-                        <div class="legend-content">
-                            <h3>${info.name}</h3>
-                            <span class="price-tag">Q${parseFloat(info.price).toFixed(2)}</span>
-                            <button class="btn-add-special" ${attrDisabled} onclick="toggleSpecial('${info.itemCartName}',${info.price},'${idCard}')">
-                                <i class="fa-solid fa-plus"></i> <span class="btn-txt">${textBtn}</span>
-                            </button>
-                        </div>
-                    </div>`;
+                html += `
+                <div id="${idCard}" class="${cls}">
+                    <div class="card-img-wrap">
+                        <img src="${sourceImg}" class="card-img"
+                             onerror="this.src='panini.png'">
+                        <span class="card-badge" style="color:var(--gold);">
+                            <i class="fa-solid fa-crown"></i> Legend
+                        </span>
+                    </div>
+                    <div class="legend-content">
+                        <h3>${info.name}</h3>
+                        <span class="price-tag gold-price">Q${parseFloat(info.price).toFixed(2)}</span>
+                        <button class="btn-add-special" ${dis}
+                            onclick="toggleSpecial('${info.itemCartName}',${info.price},'${idCard}')">
+                            <i class="fa-solid fa-plus"></i>
+                            <span class="btn-txt">${txt}</span>
+                        </button>
+                    </div>
+                </div>`;
             });
-            container.innerHTML = htmlHTML;
+            container.innerHTML = html;
         });
     }
 
+    /* ── Cart actions ── */
     function addToCart(id, price, key) {
-        const idx = cart.findIndex(x => x.id === id);
+        const idx    = cart.findIndex(x => x.id === id);
         const adding = idx === -1;
         if (adding) cart.push({id, price: parseFloat(price)});
         else cart.splice(idx, 1);
         updateCartUI();
         const cell = document.getElementById(`sticker-container-${key}`);
         if (cell) cell.classList.toggle('selected');
-        showToast(adding ? `✓ ${id} añadido` : `✗ ${id} quitado`);
+        showToast(adding ? `✓ ${id} añadido` : `✗ ${id} quitado`, !adding);
     }
 
     function toggleSpecial(id, price, elementId) {
-        const idx = cart.findIndex(x => x.id === id);
+        const idx    = cart.findIndex(x => x.id === id);
         const adding = idx === -1;
         if (adding) cart.push({id, price: parseFloat(price)});
         else cart.splice(idx, 1);
         updateCartUI();
         const el = document.getElementById(elementId);
         if (el) {
-            const isSelected = cart.some(x => x.id === id);
-            const btn = el.querySelector('.btn-txt');
-            if (isSelected) { el.classList.add('selected'); btn.innerText = "QUITAR"; }
-            else { el.classList.remove('selected'); btn.innerText = "AGREGAR"; }
+            const isSel = cart.some(x => x.id === id);
+            const btn   = el.querySelector('.btn-txt');
+            if (isSel) { el.classList.add('selected','gold-border');    if (btn) btn.innerText = 'Quitar';  }
+            else        { el.classList.remove('selected','gold-border'); if (btn) btn.innerText = 'Agregar'; }
         }
-        showToast(adding ? `✓ Añadido al pedido` : `✗ Quitado del pedido`);
+        showToast(adding ? '✓ Añadido al pedido' : '✗ Quitado del pedido', !adding);
     }
 
     function updateCartUI() {
-        const badge = document.getElementById('cart-badge');
-        badge.innerText = cart.length;
-        if (cart.length > 0) badge.style.animation = 'none';
-        setTimeout(() => { if(badge) badge.style.animation = ''; }, 10);
-
+        document.getElementById('cart-badge').innerText = cart.length;
         const list = document.getElementById('cart-list');
-        list.innerHTML = "";
+        list.innerHTML = '';
         let total = 0;
         cart.forEach((item, index) => {
             total += item.price;
-            let displayTitle    = item.id;
-            let displaySubtitle = "Edición Especial";
-            if (item.id.includes(" #")) {
-                const parts = item.id.split(" #");
-                displayTitle    = parts[0];
-                displaySubtitle = `Sticker #${parts[1].toUpperCase()}`;
+            let title    = item.id;
+            let subtitle = 'Edición Especial';
+            if (item.id.includes(' #')) {
+                const parts = item.id.split(' #');
+                title    = parts[0];
+                subtitle = `Sticker #${parts[1].toUpperCase()}`;
             }
-            list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #f0f0f0; animation:fadeIn 0.3s ease;">
-                <div><b style="font-size:1rem; color:#000;">${displayTitle}</b><br><small style="color:#666;">${displaySubtitle}</small></div>
-                <i class="fa-solid fa-trash-alt" style="color:#ff5252; cursor:pointer;" onclick="removeItem(${index})"></i>
-            </div>`;
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+            div.innerHTML = `
+                <div class="cart-item-info">
+                    <b>${title}</b><br>
+                    <small>${subtitle}</small>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span class="cart-item-price">Q${item.price.toFixed(2)}</span>
+                    <i class="fa-solid fa-trash-alt cart-trash" onclick="removeItem(${index})"></i>
+                </div>`;
+            list.appendChild(div);
         });
         document.getElementById('cart-total').innerText = `Q${total}.00`;
     }
 
     function removeItem(i) {
         const item = cart[i];
-        cart.splice(i, 1); updateCartUI();
-
-        if (item.id.startsWith(selectedCountry + " #")) {
-            const key = item.id.split(' #')[1];
+        cart.splice(i, 1);
+        updateCartUI();
+        if (item.id.startsWith(selectedCountry + ' #')) {
+            const key  = item.id.split(' #')[1];
             const cell = document.getElementById(`sticker-container-${key}`);
             if (cell) cell.classList.remove('selected');
         }
-
         document.querySelectorAll('.legend-card').forEach(card => {
             const btnTxt = card.querySelector('.btn-txt');
             if (card.classList.contains('selected') && !cart.some(x => x.id === card.dataset.cartname)) {
-                card.classList.remove('selected');
-                if (btnTxt) btnTxt.innerText = "AGREGAR";
+                card.classList.remove('selected','gold-border');
+                if (btnTxt) btnTxt.innerText = 'Agregar';
             }
         });
         listenToCampeones();
         listenToRoyalLegends();
+        showToast('✗ Item eliminado', true);
     }
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-    function toggleCart()    { document.getElementById('cart-drawer').classList.toggle('active'); }
+    /* ── Navigation ── */
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('sidebar-overlay').classList.remove('active');
+    }
+    function toggleCart() { document.getElementById('cart-drawer').classList.toggle('active'); }
     function showView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.getElementById('sidebar').classList.remove('active');
+        closeSidebar();
     }
-
     function changeGroup(d) {
-        currentGrp = (currentGrp + d + grupos.length) % grupos.length;
+        currentGrp      = (currentGrp + d + grupos.length) % grupos.length;
         selectedCountry = grupos[currentGrp].paises[0];
         renderGroup();
         listenToStickers();
     }
 
+    /* ── Auth ── */
     function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider).catch(() => auth.signInWithRedirect(provider));
     }
     function logout() { auth.signOut().then(() => location.reload()); }
 
+    /* ── Send order ── */
     function sendOrder() {
-        if (cart.length === 0) { alert("Tu carrito está vacío."); return; }
+        if (cart.length === 0) { alert('Tu carrito está vacío.'); return; }
         let msg = `--- NUEVO PEDIDO PANINI ---\n\nCliente: ${auth.currentUser.displayName}\n\nCartas:\n`;
-        cart.forEach(item => { msg += `* ${item.id} - Q${item.price.toFixed(2)}\n`; });
+        cart.forEach(item => { msg += `* ${item.id} — Q${item.price.toFixed(2)}\n`; });
         msg += `\nTOTAL: ${document.getElementById('cart-total').innerText}`;
         window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msg)}`, '_blank');
     }
