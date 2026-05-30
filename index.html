@@ -57,7 +57,8 @@
            AMBIENT BG ORBS
         ════════════════════════════════ */
         .orb {
-            position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+            position: fixed;
+            border-radius: 50%; pointer-events: none; z-index: 0;
             filter: blur(80px); opacity: 0.07;
             animation: orbDrift ease-in-out infinite alternate;
         }
@@ -81,11 +82,13 @@
            INTRO
         ════════════════════════════════ */
         #intro-space {
-            position: fixed; inset: 0; background: #000; z-index: 10000;
+            position: fixed;
+            inset: 0; background: #000; z-index: 10000;
             display: flex; align-items: center; justify-content: center; pointer-events: none;
         }
         .earth-zoom {
-            width: 30vw; height: 30vw; min-width: 150px;
+            width: 30vw;
+            height: 30vw; min-width: 150px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') center/cover;
             animation: superZoom 4s forwards cubic-bezier(0.7,0,0.3,1);
         }
@@ -99,7 +102,8 @@
            AUTH SCREEN
         ════════════════════════════════ */
         .auth-container {
-            height: 100vh; width: 100%; display: none;
+            height: 100vh;
+            width: 100%; display: none;
             align-items: center; justify-content: center;
             background: linear-gradient(160deg, rgba(7,8,15,0.95) 0%, rgba(13,15,26,0.92) 100%),
                         url('FIFA-World-Cup-2026.jpg') center/cover;
@@ -128,12 +132,14 @@
         .auth-tagline { color: var(--text-dim); font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; margin: 8px 0 36px; }
 
         .btn-login {
-            background: var(--cyan); color: #000;
+            background: var(--cyan);
+            color: #000;
             border: none; padding: 17px 24px;
             border-radius: var(--radius-md);
             font-weight: 700; font-size: 0.95rem;
             letter-spacing: 1.5px; text-transform: uppercase;
-            width: 100%; cursor: pointer;
+            width: 100%;
+            cursor: pointer;
             box-shadow: 0 12px 32px var(--cyan-glow);
             transition: transform var(--transition), box-shadow var(--transition);
         }
@@ -144,7 +150,8 @@
            NAVBAR
         ════════════════════════════════ */
         .navbar {
-            position: fixed; top: 0; width: 100%; height: 68px;
+            position: fixed;
+            top: 0; width: 100%; height: 68px;
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 22px;
             background: rgba(7,8,15,0.82);
@@ -153,7 +160,8 @@
             border-bottom: 1px solid var(--border);
         }
         .navbar::after {
-            content: ''; position: absolute; bottom: 0; left: 0;
+            content: '';
+            position: absolute; bottom: 0; left: 0;
             width: 60px; height: 2px;
             background: linear-gradient(90deg, transparent, var(--cyan), transparent);
             animation: navScan 5s linear infinite;
@@ -169,17 +177,20 @@
         }
         .nav-right-actions { display: flex; align-items: center; gap: 14px; }
         .btn-insta-nav {
-            background: var(--insta); color: #fff;
+            background: var(--insta);
+            color: #fff;
             border: none; padding: 7px 13px;
             border-radius: 50px; font-size: 0.8rem; font-weight: 600;
-            text-decoration: none; display: flex; align-items: center; gap: 6px;
+            text-decoration: none; display: flex; align-items: center;
+            gap: 6px;
             transition: transform var(--transition), box-shadow var(--transition);
             box-shadow: 0 4px 14px rgba(220,39,67,0.25);
         }
         .btn-insta-nav:hover { transform: scale(1.05); }
 
         .nav-avatar {
-            width: 38px; height: 38px; border-radius: 50%;
+            width: 38px;
+            height: 38px; border-radius: 50%;
             border: 2px solid var(--cyan); cursor: pointer;
             transition: transform var(--transition), box-shadow var(--transition);
         }
@@ -192,7 +203,8 @@
            SIDEBAR
         ════════════════════════════════ */
         .sidebar {
-            position: fixed; top: 0; left: -300px; width: 270px; height: 100%;
+            position: fixed;
+            top: 0; left: -300px; width: 270px; height: 100%;
             background: var(--bg-2);
             z-index: 1500;
             transition: left var(--transition), box-shadow var(--transition);
@@ -204,7 +216,8 @@
         .sidebar-section { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); padding: 0 12px 10px; margin-top: 24px; }
 
         .sidebar-item {
-            display: flex; align-items: center; gap: 12px;
+            display: flex;
+            align-items: center; gap: 12px;
             padding: 13px 14px; border-radius: var(--radius-sm);
             cursor: pointer; font-size: 0.88rem; font-weight: 500;
             color: var(--text);
@@ -217,7 +230,8 @@
         .sidebar-item.danger { color: var(--danger); }
 
         .sidebar-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
             z-index: 1400; backdrop-filter: blur(4px);
         }
         .sidebar-overlay.active { display: block; }
@@ -242,7 +256,8 @@
         .page-title.gold  { color: var(--gold); }
 
         .section-divider {
-            height: 1px; background: linear-gradient(90deg, var(--cyan), transparent);
+            height: 1px;
+            background: linear-gradient(90deg, var(--cyan), transparent);
             margin: 20px 0 22px; opacity: 0.35;
         }
 
@@ -250,7 +265,8 @@
            GROUP NAV BUTTONS
         ════════════════════════════════ */
         .btn-icon {
-            background: var(--bg-3); border: 1px solid var(--border);
+            background: var(--bg-3);
+            border: 1px solid var(--border);
             color: var(--text); width: 42px; height: 42px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; font-size: 0.9rem;
@@ -266,7 +282,8 @@
         #country-scroll::-webkit-scrollbar { display: none; }
 
         .country-chip {
-            min-width: 108px; padding: 14px 10px;
+            min-width: 108px;
+            padding: 14px 10px;
             border-radius: var(--radius-md);
             background: var(--bg-3); color: var(--text);
             text-align: center; cursor: pointer;
@@ -276,13 +293,15 @@
         }
         .country-chip:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,212,232,0.15); border-color: var(--border-hi); }
         .country-chip.active {
-            background: var(--cyan); color: #000;
+            background: var(--cyan);
+            color: #000;
             border-color: var(--cyan); font-weight: 700;
             box-shadow: 0 8px 28px var(--cyan-glow);
         }
 
         .country-label {
-            display: block; font-size: 0.72rem; font-weight: 600; margin-top: 7px;
+            display: block;
+            font-size: 0.72rem; font-weight: 600; margin-top: 7px;
             letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
@@ -301,7 +320,8 @@
             position: relative; padding: 6px; text-align: center; overflow: hidden;
         }
         .stk::before {
-            content: ''; position: absolute; inset: 0;
+            content: '';
+            position: absolute; inset: 0;
             background: linear-gradient(135deg, rgba(0,212,232,0.06), transparent);
             opacity: 0; transition: opacity var(--transition);
         }
@@ -310,7 +330,8 @@
         .stk:active:not(.stk-sold-out) { transform: scale(0.92); }
 
         .stk.selected {
-            background: var(--cyan) !important; color: #000 !important;
+            background: var(--cyan) !important;
+            color: #000 !important;
             border-color: #fff !important;
             box-shadow: 0 0 24px var(--cyan-glow);
             animation: stkPop 0.22s ease;
@@ -323,7 +344,8 @@
         .stk small { font-size: 0.6rem; opacity: 0.7; font-weight: 500; }
 
         .stk-status {
-            font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;
+            font-size: 0.5rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
             margin-top: 5px; padding: 2px 6px; border-radius: 4px; font-weight: 600;
         }
         .stk-status.av { color: var(--success); background: rgba(46,201,126,0.1); }
@@ -355,12 +377,14 @@
 
         .card-img-wrap { overflow: hidden; height: 240px; position: relative; background: var(--bg-3); }
         .card-img {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%;
+            height: 100%; object-fit: cover;
             transition: transform 0.5s ease;
             mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
         }
         .card-badge {
-            position: absolute; top: 12px; right: 12px;
+            position: absolute;
+            top: 12px; right: 12px;
             background: rgba(7,8,15,0.75); backdrop-filter: blur(8px);
             border: 1px solid var(--border-hi); border-radius: 50px;
             font-size: 0.65rem; font-weight: 600; letter-spacing: 1px;
@@ -368,7 +392,8 @@
         }
 
         .legend-content {
-            padding: 22px 20px 20px; flex: 1;
+            padding: 22px 20px 20px;
+            flex: 1;
             display: flex; flex-direction: column; gap: 8px;
             background: linear-gradient(to bottom, transparent, var(--bg-2));
         }
@@ -387,7 +412,8 @@
             border: 1px solid var(--border-hi);
             padding: 12px; border-radius: var(--radius-md);
             font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px;
-            cursor: pointer; width: 100%;
+            cursor: pointer;
+            width: 100%;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
         }
@@ -405,7 +431,8 @@
            CART TRIGGER
         ════════════════════════════════ */
         .cart-trigger {
-            position: fixed; bottom: 28px; right: 24px;
+            position: fixed;
+            bottom: 28px; right: 24px;
             background: var(--cyan); color: #000;
             width: 62px; height: 62px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -418,11 +445,13 @@
         .cart-trigger:active { transform: scale(0.92); }
 
         .cart-badge {
-            position: absolute; top: -6px; right: -6px;
+            position: absolute;
+            top: -6px; right: -6px;
             background: var(--danger); color: #fff;
             font-size: 0.72rem; padding: 3px 8px;
             border-radius: 50px; font-weight: 700;
-            min-width: 22px; text-align: center;
+            min-width: 22px;
+            text-align: center;
             border: 2px solid var(--bg);
         }
 
@@ -430,7 +459,8 @@
            CART DRAWER
         ════════════════════════════════ */
         .cart-drawer {
-            position: fixed; top: 0; right: -105%; width: 100%; max-width: 400px; height: 100%;
+            position: fixed;
+            top: 0; right: -105%; width: 100%; max-width: 400px; height: 100%;
             background: #fff; color: #0a0a0a;
             z-index: 3000; transition: right var(--transition);
             padding: 28px; display: flex; flex-direction: column;
@@ -456,10 +486,12 @@
         .cart-total-amount { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; }
 
         .btn-whatsapp {
-            width: 100%; background: #25d366; color: #fff;
+            width: 100%;
+            background: #25d366; color: #fff;
             border: none; padding: 18px; border-radius: var(--radius-md);
             font-weight: 700; font-size: 1rem; letter-spacing: 0.5px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 10px;
             transition: transform 0.15s, box-shadow 0.15s;
             box-shadow: 0 6px 20px rgba(37,211,102,0.3);
         }
@@ -478,7 +510,8 @@
             box-shadow: var(--shadow-cyan);
         }
         .profile-avatar {
-            width: 110px; height: 110px; border-radius: 50%;
+            width: 110px;
+            height: 110px; border-radius: 50%;
             border: 3px solid var(--cyan); margin-bottom: 20px;
             transition: transform var(--transition), box-shadow var(--transition);
             cursor: default;
@@ -491,10 +524,12 @@
            TOAST
         ════════════════════════════════ */
         #toast {
-            position: fixed; bottom: 108px; left: 50%; transform: translateX(-50%) translateY(12px);
+            position: fixed;
+            bottom: 108px; left: 50%; transform: translateX(-50%) translateY(12px);
             background: rgba(13,15,26,0.92); border: 1px solid var(--border-hi);
             backdrop-filter: blur(14px); color: var(--text);
-            padding: 10px 22px; border-radius: 50px;
+            padding: 10px 22px;
+            border-radius: 50px;
             font-size: 0.82rem; font-weight: 500;
             z-index: 9000; opacity: 0; transition: opacity 0.28s, transform 0.28s;
             pointer-events: none; white-space: nowrap;
@@ -506,7 +541,8 @@
            RIPPLE
         ════════════════════════════════ */
         .ripple {
-            position: absolute; border-radius: 50%;
+            position: absolute;
+            border-radius: 50%;
             background: rgba(255,255,255,0.25); transform: scale(0);
             animation: rippleAnim 0.5s linear; pointer-events: none;
         }
@@ -654,14 +690,11 @@
     const auth = firebase.auth();
     const db   = firebase.firestore();
 
-    /* ── Mapa de imágenes para Royal Legends ──
-       Agrega aquí cualquier carta especial nueva.
-       La clave es el ID del documento en Firestore. */
+    /* ── Mapa de imágenes para Royal Legends ── */
     const LEGEND_IMAGES = {
         'special-messi':    'imagenmessi.jpg',
         'special-cr7':      'cristianomundial.jpg',
         'special-mascotas': 'mascotas.jpg'
-        /* ← para agregar más: 'special-xxxx': 'imagen.jpg' */
     };
 
     /* ── Estado global ── */
@@ -778,7 +811,6 @@
         const grid = document.getElementById('sticker-grid');
         grid.innerHTML = '';
         const keys = Array.from({length:20},(_,i) => String(i+1));
-
         keys.forEach((key, idx) => {
             const id  = `${selectedCountry} #${key}`;
             const sel = cart.some(x => x.id === id);
@@ -796,6 +828,7 @@
                 const cell = document.getElementById(`sticker-container-${key}`);
                 if (!cell) return;
                 const id = `${selectedCountry} #${key}`;
+                
                 let price = key === '1' ? 10 : key === '13' ? 15 : 2;
                 if (selectedCountry === 'Portugal' && key === '15') price = 40;
                 let disponible = true;
@@ -824,8 +857,12 @@
                     <span class="stk-status ${disponible ? 'av' : 'so'}">${disponible ? 'Disponible' : 'Agotado'}</span>`;
 
                 cell.onclick = e => {
-                    if (disponible) { addRipple(cell, e); addToCart(id, price, key); }
-                    else alert(`El cromo #${key} de ${selectedCountry} está agotado.`);
+                    if (disponible) { 
+                        addRipple(cell, e);
+                        addToCart(id, price, key); 
+                    } else {
+                        alert(`El cromo #${key} de ${selectedCountry} está agotado.`);
+                    }
                 };
             });
         });
@@ -836,17 +873,23 @@
     function listenToCampeones() {
         db.collection('config').doc('campeones_config').onSnapshot(snap => {
             const container = document.getElementById('campeones-cards-container');
-            if (!snap.exists) return;
+            if (!container) return;
+            if (!snap.exists) {
+                container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;">No hay datos disponibles.</p>`;
+                return;
+            }
             let html = '';
             Object.entries(snap.data()).forEach(([idCard, info]) => {
                 const isSel = cart.some(x => x.id === info.itemCartName);
                 if (!info.disponible && isSel) {
                     const i = cart.findIndex(x => x.id === info.itemCartName);
-                    cart.splice(i,1); updateCartUI();
+                    if(i > -1) { cart.splice(i,1); updateCartUI(); }
                 }
+                
                 const cls  = isSel ? 'legend-card selected' : 'legend-card';
                 const txt  = isSel ? 'Quitar' : (info.disponible ? 'Agregar' : 'Agotado');
                 const dis  = (!isSel && !info.disponible) ? 'disabled' : '';
+                
                 html += `
                 <div id="card-campeon-${idCard}" class="${cls}">
                     <div class="card-img-wrap">
@@ -855,9 +898,9 @@
                     </div>
                     <div class="legend-content">
                         <h3>${idCard.toUpperCase()}</h3>
-                        <span class="price-tag">Q${parseFloat(info.price).toFixed(2)}</span>
+                        <span class="price-tag">Q${parseFloat(info.price || 0).toFixed(2)}</span>
                         <button class="btn-add-special" ${dis}
-                            onclick="toggleSpecial('${info.itemCartName}',${info.price},'card-campeon-${idCard}')">
+                            onclick="toggleSpecial('${info.itemCartName}',${info.price || 0},'card-campeon-${idCard}')">
                             <i class="fa-solid fa-trophy"></i>
                             <span class="btn-txt">${txt}</span>
                         </button>
@@ -871,22 +914,23 @@
     /* ── Listen Royal Legends ── */
     function listenToRoyalLegends() {
         db.collection('config').doc('royal_legends').onSnapshot(snap => {
-            if (!snap.exists) return;
             const container = document.getElementById('royal-legends-container');
+            if (!container) return;
+            if (!snap.exists) {
+                container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;">No hay datos disponibles.</p>`;
+                return;
+            }
             let html = '';
 
             Object.entries(snap.data()).forEach(([idCard, info]) => {
-                /*
-                 * MAPA DE IMÁGENES — clave = id del campo en Firestore
-                 * Busca en LEGEND_IMAGES; si no encuentra, usa panini.png
-                 */
                 const sourceImg = LEGEND_IMAGES[idCard] || 'panini.png';
-
                 const isSel = cart.some(x => x.id === info.itemCartName);
+                
                 if (!info.disponible && isSel) {
                     const i = cart.findIndex(x => x.id === info.itemCartName);
-                    cart.splice(i,1); updateCartUI();
+                    if(i > -1) { cart.splice(i,1); updateCartUI(); }
                 }
+                
                 const cls = ['legend-card', isSel ? 'selected gold-border' : ''].filter(Boolean).join(' ');
                 const txt = isSel ? 'Quitar' : (info.disponible ? 'Agregar' : 'Agotado');
                 const dis = (!isSel && !info.disponible) ? 'disabled' : '';
@@ -894,17 +938,13 @@
                 html += `
                 <div id="${idCard}" class="${cls}">
                     <div class="card-img-wrap">
-                        <img src="${sourceImg}" class="card-img"
-                             onerror="this.src='panini.png'">
-                        <span class="card-badge" style="color:var(--gold);">
-                            <i class="fa-solid fa-crown"></i> Legend
-                        </span>
+                        <img src="${sourceImg}" class="card-img" onerror="this.src='panini.png'">
+                        <span class="card-badge" style="color:var(--gold);"><i class="fa-solid fa-crown"></i> Legend</span>
                     </div>
                     <div class="legend-content">
-                        <h3>${info.name}</h3>
-                        <span class="price-tag gold-price">Q${parseFloat(info.price).toFixed(2)}</span>
-                        <button class="btn-add-special" ${dis}
-                            onclick="toggleSpecial('${info.itemCartName}',${info.price},'${idCard}')">
+                        <h3>${info.name || 'Leyenda'}</h3>
+                        <span class="price-tag gold-price">Q${parseFloat(info.price || 0).toFixed(2)}</span>
+                        <button class="btn-add-special" ${dis} onclick="toggleSpecial('${info.itemCartName}',${info.price || 0},'${idCard}')">
                             <i class="fa-solid fa-plus"></i>
                             <span class="btn-txt">${txt}</span>
                         </button>
@@ -933,12 +973,18 @@
         if (adding) cart.push({id, price: parseFloat(price)});
         else cart.splice(idx, 1);
         updateCartUI();
+        
         const el = document.getElementById(elementId);
         if (el) {
             const isSel = cart.some(x => x.id === id);
             const btn   = el.querySelector('.btn-txt');
-            if (isSel) { el.classList.add('selected','gold-border');    if (btn) btn.innerText = 'Quitar';  }
-            else        { el.classList.remove('selected','gold-border'); if (btn) btn.innerText = 'Agregar'; }
+            if (isSel) { 
+                el.classList.add('selected','gold-border');    
+                if (btn) btn.innerText = 'Quitar';
+            } else { 
+                el.classList.remove('selected','gold-border');
+                if (btn) btn.innerText = 'Agregar'; 
+            }
         }
         showToast(adding ? '✓ Añadido al pedido' : '✗ Quitado del pedido', !adding);
     }
@@ -970,7 +1016,7 @@
                 </div>`;
             list.appendChild(div);
         });
-        document.getElementById('cart-total').innerText = `Q${total}.00`;
+        document.getElementById('cart-total').innerText = `Q${total.toFixed(2)}`;
     }
 
     function removeItem(i) {
@@ -982,13 +1028,8 @@
             const cell = document.getElementById(`sticker-container-${key}`);
             if (cell) cell.classList.remove('selected');
         }
-        document.querySelectorAll('.legend-card').forEach(card => {
-            const btnTxt = card.querySelector('.btn-txt');
-            if (card.classList.contains('selected') && !cart.some(x => x.id === card.dataset.cartname)) {
-                card.classList.remove('selected','gold-border');
-                if (btnTxt) btnTxt.innerText = 'Agregar';
-            }
-        });
+        
+        // Sincronizar el estado visual de las tarjetas especiales tras remover
         listenToCampeones();
         listenToRoyalLegends();
         showToast('✗ Item eliminado', true);
@@ -1025,7 +1066,10 @@
 
     /* ── Send order ── */
     function sendOrder() {
-        if (cart.length === 0) { alert('Tu carrito está vacío.'); return; }
+        if (cart.length === 0) { 
+            alert('Tu carrito está vacío.');
+            return; 
+        }
         let msg = `--- NUEVO PEDIDO PANINI ---\n\nCliente: ${auth.currentUser.displayName}\n\nCartas:\n`;
         cart.forEach(item => { msg += `* ${item.id} — Q${item.price.toFixed(2)}\n`; });
         msg += `\nTOTAL: ${document.getElementById('cart-total').innerText}`;
