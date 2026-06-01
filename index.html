@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -60,8 +61,7 @@
         }
 
         *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0; padding: 0;
+            box-sizing: border-box; margin: 0; padding: 0;
             -webkit-tap-highlight-color: transparent;
         }
         html { scroll-behavior: smooth; }
@@ -95,8 +95,7 @@
 
         /* ── Orbs ── */
         .orb {
-            position: fixed;
-            border-radius: 50%;
+            position: fixed; border-radius: 50%;
             pointer-events: none; z-index: 0;
             filter: blur(100px); opacity: 0.06;
             animation: orbDrift ease-in-out infinite alternate;
@@ -114,15 +113,13 @@
            INTRO
         ══════════════════════════════════════ */
         #intro-space {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: #000; z-index: 10000;
             display: flex; align-items: center; justify-content: center;
             pointer-events: none;
         }
         .earth-zoom {
-            width: 28vw;
-            height: 28vw; min-width: 140px;
+            width: 28vw; height: 28vw; min-width: 140px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') center/cover;
             animation: superZoom 4s forwards cubic-bezier(0.7,0,0.3,1);
         }
@@ -133,81 +130,233 @@
         }
 
         /* ══════════════════════════════════════
-           AUTH SCREEN
+           AUTH SCREEN — FOOTBALL STADIUM EDITION
         ══════════════════════════════════════ */
         .auth-container {
-            height: 100vh;
-            width: 100%;
+            height: 100vh; width: 100%;
             display: none; align-items: center; justify-content: center;
-            background:
-                linear-gradient(170deg, rgba(5,6,9,0.96) 0%, rgba(9,9,15,0.92) 100%),
-                url('FIFA-World-Cup-2026.jpg') center/cover;
             position: fixed; z-index: 5000;
-        }
-        .auth-card {
-            background: rgba(255,255,255,0.025);
-            backdrop-filter: blur(30px) saturate(120%);
-            -webkit-backdrop-filter: blur(30px) saturate(120%);
-            padding: 64px 40px;
-            border-radius: var(--radius-xl);
-            text-align: center;
-            width: 90%; max-width: 380px;
-            border: 1px solid var(--border-glow);
-            box-shadow: var(--shadow-deep), var(--shadow-cyan), inset 0 1px 0 rgba(255,255,255,0.08);
-            animation: fadeUp 0.8s var(--ease);
-            position: relative;
             overflow: hidden;
         }
+
+        /* ── Fondo: imagen del mundial con capas de ambiente ── */
+        .auth-bg {
+            position: absolute; inset: 0; z-index: 0;
+            background: url('FIFA-World-Cup-2026.jpg') center/cover no-repeat;
+        }
+        .auth-bg::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                linear-gradient(180deg,
+                    rgba(2,4,8,0.55) 0%,
+                    rgba(5,8,15,0.40) 35%,
+                    rgba(5,8,15,0.75) 70%,
+                    rgba(2,4,8,0.97) 100%),
+                linear-gradient(90deg,
+                    rgba(0,0,0,0.35) 0%,
+                    transparent 40%,
+                    transparent 60%,
+                    rgba(0,0,0,0.35) 100%);
+        }
+        /* Luz de estadio — destello superior */
+        .auth-bg::after {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 70% 45% at 50% -5%, rgba(0,200,255,0.13) 0%, transparent 65%),
+                radial-gradient(ellipse 50% 30% at 20% 110%, rgba(226,185,110,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 30% at 80% 110%, rgba(226,185,110,0.10) 0%, transparent 60%);
+        }
+
+        /* ── Líneas del campo de fútbol (decorativas) ── */
+        .auth-field-lines {
+            position: absolute; inset: 0; z-index: 1;
+            pointer-events: none; overflow: hidden; opacity: 0.06;
+        }
+        .auth-field-lines svg {
+            position: absolute; bottom: -10%; left: 50%;
+            transform: translateX(-50%);
+            width: 110vw; height: auto;
+        }
+
+        /* ── Partículas flotantes ── */
+        .auth-particle {
+            position: absolute; border-radius: 50%;
+            pointer-events: none; z-index: 1;
+            animation: particleDrift linear infinite;
+        }
+        @keyframes particleDrift {
+            0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ── Card login ── */
+        .auth-card {
+            position: relative; z-index: 2;
+            background: rgba(6,7,14,0.60);
+            backdrop-filter: blur(36px) saturate(130%);
+            -webkit-backdrop-filter: blur(36px) saturate(130%);
+            padding: 56px 44px 52px;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            width: 92%; max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.10);
+            box-shadow:
+                var(--shadow-deep),
+                0 0 80px rgba(0,229,255,0.08),
+                0 0 160px rgba(226,185,110,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.09),
+                inset 0 -1px 0 rgba(226,185,110,0.06);
+            animation: fadeUp 1s var(--ease) 0.2s both;
+        }
+
+        /* Top glow line */
         .auth-card::before {
             content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0,229,255,0.6), rgba(226,185,110,0.4), transparent);
+            position: absolute; top: 0; left: 10%; right: 10%; height: 1.5px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(0,229,255,0.7) 30%,
+                rgba(255,255,255,0.9) 50%,
+                rgba(226,185,110,0.7) 70%,
+                transparent 100%);
+            border-radius: 2px;
         }
-        @keyframes fadeUp { from { opacity:0; transform: translateY(28px); } to { opacity:1; transform: translateY(0); } }
+        /* Bottom subtle glow */
+        .auth-card::after {
+            content: '';
+            position: absolute; bottom: 0; left: 20%; right: 20%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226,185,110,0.4), transparent);
+        }
+
+        @keyframes fadeUp { from { opacity:0; transform: translateY(36px) scale(0.97); } to { opacity:1; transform: translateY(0) scale(1); } }
+
+        /* ── Logo zona ── */
+        .auth-trophy-icon {
+            font-size: 2.6rem;
+            background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: block; margin-bottom: 8px;
+            filter: drop-shadow(0 0 18px rgba(226,185,110,0.5));
+            animation: trophyPulse 3s ease-in-out infinite;
+        }
+        @keyframes trophyPulse {
+            0%, 100% { filter: drop-shadow(0 0 12px rgba(226,185,110,0.4)); transform: scale(1); }
+            50%       { filter: drop-shadow(0 0 28px rgba(226,185,110,0.75)); transform: scale(1.05); }
+        }
 
         .auth-logo {
             font-family: 'Cinzel', serif;
-            font-size: 3.4rem; font-weight: 900;
+            font-size: 3.2rem; font-weight: 900;
             letter-spacing: 14px;
-            background: linear-gradient(135deg, #fff 20%, var(--cyan) 60%, var(--gold-bright) 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #e0f7ff 30%, var(--cyan) 65%, var(--gold-bright) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             text-shadow: none;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+        .auth-edition {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.95rem; font-weight: 400; font-style: italic;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            opacity: 0.85;
         }
         .auth-tagline {
-            color: var(--text-dim);
-            font-size: 0.72rem;
-            letter-spacing: 4px; text-transform: uppercase;
-            margin: 0 0 40px;
+            color: var(--text-dim); font-size: 0.65rem;
+            letter-spacing: 5px; text-transform: uppercase;
+            margin: 0 0 36px;
             font-family: 'DM Sans', sans-serif; font-weight: 300;
         }
+
+        /* Divider con balón de fútbol */
         .auth-divider {
-            width: 48px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            margin: 0 auto 32px;
+            display: flex; align-items: center; gap: 12px;
+            margin: 0 0 32px;
         }
+        .auth-divider-line {
+            flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226,185,110,0.35));
+        }
+        .auth-divider-line.rev {
+            background: linear-gradient(90deg, rgba(226,185,110,0.35), transparent);
+        }
+        .auth-divider-icon {
+            font-size: 0.85rem; color: var(--gold);
+            opacity: 0.6;
+            animation: spinSlow 12s linear infinite;
+        }
+        @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Sedes del mundial */
+        .auth-hosts {
+            display: flex; justify-content: center; gap: 14px;
+            margin-bottom: 32px;
+        }
+        .auth-host-flag {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            opacity: 0.75;
+            transition: opacity var(--t-fast);
+        }
+        .auth-host-flag:hover { opacity: 1; }
+        .auth-host-flag img {
+            width: 28px; height: 18px; object-fit: cover;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .auth-host-flag span {
+            font-size: 0.52rem; letter-spacing: 1.5px;
+            text-transform: uppercase; color: var(--text-dim);
+            font-family: 'DM Sans', sans-serif;
+        }
+
         .btn-login {
             background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-mid) 100%);
             color: #000; border: none;
             padding: 18px 28px; border-radius: var(--radius-md);
             font-weight: 700; font-size: 0.9rem;
             letter-spacing: 2px; text-transform: uppercase;
-            width: 100%;
-            cursor: pointer;
+            width: 100%; cursor: pointer;
             box-shadow: 0 14px 36px var(--cyan-glow), 0 4px 12px rgba(0,0,0,0.4);
             transition: transform var(--t-med) var(--ease-spring), box-shadow var(--t-med);
             font-family: 'DM Sans', sans-serif;
+            position: relative; overflow: hidden;
         }
-        .btn-login:hover  { transform: translateY(-3px) scale(1.01); box-shadow: 0 20px 50px var(--cyan-glow), 0 4px 12px rgba(0,0,0,0.4); }
+        .btn-login::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent 60%);
+            opacity: 0; transition: opacity var(--t-fast);
+        }
+        .btn-login:hover  {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 20px 50px var(--cyan-glow), 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .btn-login:hover::before { opacity: 1; }
         .btn-login:active { transform: scale(0.97); }
+
+        /* Año del mundial abajo */
+        .auth-year {
+            margin-top: 28px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.65rem; letter-spacing: 6px;
+            color: var(--text-dim); text-transform: uppercase;
+        }
+        .auth-year span {
+            background: linear-gradient(90deg, var(--cyan), var(--gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 700; letter-spacing: 3px;
+        }
 
         /* ══════════════════════════════════════
            NAVBAR
         ══════════════════════════════════════ */
         .navbar {
-            position: fixed;
-            top: 0; width: 100%; height: 66px;
+            position: fixed; top: 0; width: 100%; height: 66px;
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 20px;
             background: rgba(5,6,9,0.78);
@@ -234,8 +383,7 @@
         }
         .nav-right-actions { display: flex; align-items: center; gap: 12px; }
         .btn-insta-nav {
-            background: var(--insta);
-            color: #fff;
+            background: var(--insta); color: #fff;
             border: none; padding: 7px 12px; border-radius: 50px;
             font-size: 0.76rem; font-weight: 600;
             text-decoration: none; display: flex; align-items: center; gap: 5px;
@@ -244,8 +392,7 @@
         }
         .btn-insta-nav:hover { transform: scale(1.06); box-shadow: 0 6px 22px rgba(220,39,67,0.38); }
         .nav-avatar {
-            width: 36px;
-            height: 36px; border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 50%;
             border: 2px solid transparent;
             background: linear-gradient(var(--bg), var(--bg)) padding-box,
                         linear-gradient(135deg, var(--cyan), var(--gold)) border-box;
@@ -261,12 +408,12 @@
            AUDIO BUTTON (Navbar)
         ══════════════════════════════════════ */
         .btn-audio {
-            width: 38px;
-            height: 38px; border-radius: 50%;
+            width: 38px; height: 38px; border-radius: 50%;
             background: rgba(255,255,255,0.04);
             border: 1px solid var(--border-hi);
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--text-dim); font-size: 0.88rem;
+            cursor: pointer; color: var(--text-dim);
+            font-size: 0.88rem;
             transition:
                 background var(--t-fast) var(--ease-premium),
                 border-color var(--t-fast) var(--ease-premium),
@@ -296,15 +443,16 @@
             50%       { box-shadow: 0 0 28px var(--cyan-glow), 0 0 50px rgba(0,229,255,0.15); }
         }
 
+        /* Audio visualizer bars inside button when playing */
         .btn-audio .audio-bars {
-            display: none; align-items: flex-end;
+            display: none;
+            align-items: flex-end;
             gap: 2px; height: 14px;
         }
         .btn-audio.playing .audio-bars { display: flex; }
         .btn-audio.playing .audio-icon { display: none; }
         .audio-bar {
-            width: 2.5px;
-            background: var(--cyan); border-radius: 2px;
+            width: 2.5px; background: var(--cyan); border-radius: 2px;
             animation: barBounce 0.8s ease-in-out infinite alternate;
         }
         .audio-bar:nth-child(1) { height: 5px;  animation-delay: 0s;    animation-duration: 0.6s; }
@@ -313,15 +461,14 @@
         .audio-bar:nth-child(4) { height: 14px; animation-delay: 0.2s;  animation-duration: 0.9s; }
         @keyframes barBounce {
             from { transform: scaleY(0.35); opacity: 0.6; }
-            to   { transform: scaleY(1); opacity: 1; }
+            to   { transform: scaleY(1);    opacity: 1; }
         }
 
         /* ══════════════════════════════════════
            SIDEBAR
         ══════════════════════════════════════ */
         .sidebar {
-            position: fixed;
-            top: 0; left: -310px; width: 272px; height: 100%;
+            position: fixed; top: 0; left: -310px; width: 272px; height: 100%;
             background: rgba(9,9,15,0.96);
             backdrop-filter: blur(28px);
             -webkit-backdrop-filter: blur(28px);
@@ -356,8 +503,7 @@
             position: relative; overflow: hidden;
         }
         .sidebar-item::before {
-            content: '';
-            position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
             background: var(--cyan); transform: scaleY(0); transition: transform var(--t-fast);
             border-radius: 2px;
         }
@@ -370,6 +516,7 @@
         .sidebar-item.danger { color: var(--danger); }
         .sidebar-item.danger::before { background: var(--danger); }
 
+        /* Sidebar audio toggle item */
         .sidebar-audio-btn {
             display: flex; align-items: center; justify-content: space-between;
             padding: 12px 12px; border-radius: var(--radius-sm);
@@ -391,7 +538,8 @@
         .sidebar-overlay {
             display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.6); z-index: 1400;
-            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         .sidebar-overlay.active { display: block; animation: fadeIn 0.22s ease; }
 
@@ -416,8 +564,14 @@
             font-size: 1.7rem; font-weight: 700;
             letter-spacing: 3px;
         }
-        .page-title.cyan { background: linear-gradient(135deg, #fff 0%, var(--cyan) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .page-title.gold { background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .page-title.cyan {
+            background: linear-gradient(135deg, #fff 0%, var(--cyan) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .page-title.gold {
+            background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
         .section-divider {
             height: 1px; margin: 20px 0 22px; opacity: 0.4;
             background: linear-gradient(90deg, var(--cyan), rgba(226,185,110,0.5), transparent);
@@ -426,7 +580,13 @@
         /* ══════════════════════════════════════
            GROUP NAV BUTTONS
         ══════════════════════════════════════ */
-        .btn-icon { background: var(--bg-3); border: 1px solid var(--border); color: var(--text); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.88rem; transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast), color var(--t-fast); }
+        .btn-icon {
+            background: var(--bg-3); border: 1px solid var(--border);
+            color: var(--text); width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.88rem;
+            transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast), color var(--t-fast);
+        }
         .btn-icon:hover  { background: var(--cyan-dim); border-color: var(--cyan-border); color: var(--cyan); }
         .btn-icon:active { transform: scale(0.90); }
 
@@ -459,14 +619,17 @@
         #sticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
 
         .stk {
-            aspect-ratio: 0.72; background: var(--bg-3); border-radius: var(--radius-sm);
+            aspect-ratio: 0.72; background: var(--bg-3);
+            border-radius: var(--radius-sm);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; border: 1px solid var(--border);
-            transition: transform var(--t-med) var(--ease-spring), box-shadow var(--t-med), background var(--t-fast), border-color var(--t-fast);
+            transition: transform var(--t-med) var(--ease-spring), box-shadow var(--t-med),
+                        background var(--t-fast), border-color var(--t-fast);
             position: relative; padding: 6px; text-align: center; overflow: hidden;
         }
         .stk::before {
-            content: ''; position: absolute; inset: 0;
+            content: '';
+            position: absolute; inset: 0;
             background: linear-gradient(135deg, rgba(0,229,255,0.07), transparent 60%, rgba(226,185,110,0.03));
             opacity: 0; transition: opacity var(--t-fast);
         }
@@ -483,718 +646,1422 @@
         @keyframes stkPop { 0% { transform: scale(1.18); } 60% { transform: scale(0.94); } 100% { transform: scale(1); } }
         .stk.selected::before { display: none; }
         .stk.selected .stk-status { color: rgba(0,0,0,0.7) !important; background: rgba(0,0,0,0.15) !important; }
+
         .stk b { font-family: 'Cinzel', serif; font-size: 1.05rem; }
         .stk small { font-size: 0.59rem; opacity: 0.72; font-weight: 500; }
-        .stk-status { font-size: 0.48rem; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 5px; padding: 2px 7px; border-radius: 4px; font-weight: 700; }
+
+        .stk-status {
+            font-size: 0.48rem; text-transform: uppercase; letter-spacing: 0.8px;
+            margin-top: 5px; padding: 2px 7px; border-radius: 4px; font-weight: 700;
+        }
         .stk-status.av { color: var(--success); background: rgba(0,230,118,0.10); }
         .stk-status.so { color: var(--danger); background: rgba(255,76,106,0.10); }
 
-        .stk.stk-sold-out { opacity: 0.36; cursor: not-allowed; filter: grayscale(1) brightness(0.65) contrast(0.9); }
-        .stk.stk-sold-out::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.25), transparent); border-radius: inherit; }
-
-        .skeleton {
-            background: linear-gradient( 105deg, var(--bg-3) 0%, var(--bg-3) 30%, rgba(255,255,255,0.065) 50%, var(--bg-3) 70%, var(--bg-3) 100% );
-            background-size: 800px 100%; animation: shimmer 1.8s ease-in-out infinite;
+        /* Sold-out sticker — elegant desaturated overlay */
+        .stk.stk-sold-out {
+            opacity: 0.36;
+            cursor: not-allowed;
+            filter: grayscale(1) brightness(0.65) contrast(0.9);
         }
-        @keyframes shimmer { 0% { background-position: -800px 0; } 100% { background-position: 800px 0; } }
+        .stk.stk-sold-out::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.25), transparent);
+            border-radius: inherit;
+        }
+
+        /* Skeleton shimmer — premium fluid sweep */
+        .skeleton {
+            background: linear-gradient(
+                105deg,
+                var(--bg-3) 0%,
+                var(--bg-3) 30%,
+                rgba(255,255,255,0.065) 50%,
+                var(--bg-3) 70%,
+                var(--bg-3) 100%
+            );
+            background-size: 800px 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0%   { background-position: -800px 0; }
+            100% { background-position:  800px 0; }
+        }
 
         /* ══════════════════════════════════════
            SPECIAL / LEGEND CARDS — SOVEREIGN V2
+           Ultra-premium collectible card aesthetic
         ══════════════════════════════════════ */
         .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
-        
+
+        /* Base card */
         .legend-card {
-            background: linear-gradient(160deg, rgba(14,15,27,0.98) 0%, rgba(9,9,15,0.99) 100%);
-            border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.07);
-            transition: transform var(--t-slow) var(--ease-premium), box-shadow var(--t-slow) var(--ease-premium), border-color var(--t-med) var(--ease-premium);
-            display: flex; flex-direction: column; position: relative; cursor: default;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+            background:
+                linear-gradient(160deg, rgba(14,15,27,0.98) 0%, rgba(9,9,15,0.99) 100%);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.07);
+            transition:
+                transform var(--t-slow) var(--ease-premium),
+                box-shadow var(--t-slow) var(--ease-premium),
+                border-color var(--t-med) var(--ease-premium);
+            display: flex; flex-direction: column;
+            position: relative;
+            cursor: default;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.05);
         }
-        
-        .legend-card::before, .legend-card::after {
-            content: ''; position: absolute; width: 24px; height: 24px; border-style: solid; z-index: 3; opacity: 0;
-            transition: opacity var(--t-med) var(--ease-premium); pointer-events: none;
+
+        /* Corner accent marks — physical card feel */
+        .legend-card::before,
+        .legend-card::after {
+            content: '';
+            position: absolute; width: 24px; height: 24px;
+            border-style: solid; z-index: 3; opacity: 0;
+            transition: opacity var(--t-med) var(--ease-premium);
+            pointer-events: none;
         }
-        .legend-card::before { top: 11px; left: 11px; border-width: 2px 0 0 2px; border-color: var(--cyan); border-radius: 5px 0 0 0; }
-        .legend-card::after { bottom: 11px; right: 11px; border-width: 0 2px 2px 0; border-color: var(--cyan); border-radius: 0 0 5px 0; }
-        .legend-card:hover::before, .legend-card:hover::after { opacity: 1; }
-        
+        .legend-card::before {
+            top: 11px; left: 11px;
+            border-width: 2px 0 0 2px;
+            border-color: var(--cyan);
+            border-radius: 5px 0 0 0;
+        }
+        .legend-card::after {
+            bottom: 11px; right: 11px;
+            border-width: 0 2px 2px 0;
+            border-color: var(--cyan);
+            border-radius: 0 0 5px 0;
+        }
+        .legend-card:hover::before,
+        .legend-card:hover::after { opacity: 1; }
+
+        /* Hover lift — Cyan (Campeones) */
         .legend-card:hover {
             transform: translateY(-12px) scale(1.013);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.65), 0 0 50px var(--cyan-glow), inset 0 1px 0 rgba(0,229,255,0.1);
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.65),
+                0 0 50px var(--cyan-glow),
+                inset 0 1px 0 rgba(0,229,255,0.1);
             border-color: var(--cyan-border);
         }
-        .legend-card:hover .card-img { transform: scale(1.06) translateY(-3px); }
-        
-        .legend-card.gold-border::before, .legend-card.gold-border::after { border-color: var(--gold); }
+        .legend-card:hover .card-img {
+            transform: scale(1.06) translateY(-3px);
+        }
+
+        /* Gold variant (Royal Legends) */
+        .legend-card.gold-border::before,
+        .legend-card.gold-border::after { border-color: var(--gold); }
         .legend-card.gold-border:hover {
-            box-shadow: 0 40px 80px rgba(0,0,0,0.65), 0 0 50px var(--gold-glow), inset 0 1px 0 rgba(226,185,110,0.1);
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.65),
+                0 0 50px var(--gold-glow),
+                inset 0 1px 0 rgba(226,185,110,0.1);
             border-color: var(--gold-border);
         }
-        
-        .legend-card.selected { border: 1.5px solid var(--cyan-border); box-shadow: 0 0 40px var(--cyan-glow), inset 0 0 28px rgba(0,229,255,0.04); }
-        .legend-card.gold-border.selected { border-color: var(--gold-border) !important; box-shadow: 0 0 40px var(--gold-glow), inset 0 0 28px rgba(226,185,110,0.04) !important; }
-        
-        .legend-card.card-sold-out { filter: grayscale(0.85) brightness(0.7) contrast(0.9); opacity: 0.55; }
-        .legend-card.card-sold-out::after { content: ''; position: absolute; inset: 0; background: rgba(5,6,9,0.35); z-index: 5; border-radius: inherit; pointer-events: none; }
-        
-        .legend-card-inner-glow { position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 2; background: linear-gradient(90deg, transparent 5%, var(--cyan) 50%, transparent 95%); opacity: 0.45; pointer-events: none; }
-        .legend-card.gold-border .legend-card-inner-glow { background: linear-gradient(90deg, transparent 5%, var(--gold) 50%, transparent 95%); }
-        
-        .card-img-frame { width: 100%; aspect-ratio: 1.28; overflow: hidden; position: relative; background: var(--bg-2); border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--t-slow) var(--ease-premium); }
-        
-        .card-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1; z-index: 2; }
-        .card-badge { align-self: flex-start; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; padding: 4px 10px; border-radius: 50px; background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,229,255,0.15); }
-        .legend-card.gold-border .card-badge { background: var(--gold-dim); color: var(--gold-bright); border-color: rgba(226,185,110,0.15); }
-        .card-badge.sold-out-badge { background: var(--danger-dim) !important; color: var(--danger) !important; border-color: rgba(255,76,106,0.15) !important; }
-        
-        .card-title { font-family: 'Cinzel', serif; font-size: 1.35rem; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
-        .card-price-row { display: flex; align-items: baseline; gap: 4px; }
-        .card-q { font-size: 0.82rem; font-weight: 500; opacity: 0.6; }
-        .card-amt { font-size: 1.5rem; font-weight: 700; font-family: 'Cinzel', serif; color: var(--text-bright); }
-        
-        .btn-card-action {
-            margin-top: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border-hi); color: var(--text); padding: 14px; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: all var(--t-med) var(--ease-premium); display: flex; align-items: center; justify-content: center; gap: 8px;
+
+        /* Selected states */
+        .legend-card.selected {
+            border: 1.5px solid var(--cyan-border);
+            box-shadow:
+                0 0 40px var(--cyan-glow),
+                inset 0 0 28px rgba(0,229,255,0.04);
         }
-        .btn-card-action:hover:not(:disabled) { background: var(--text-bright); color: #000; border-color: var(--text-bright); box-shadow: 0 12px 30px rgba(255,255,255,0.1); transform: translateY(-2px); }
-        .legend-card.gold-border .btn-card-action:hover:not(:disabled) { background: linear-gradient(135deg, var(--gold-bright), var(--gold)); border-color: var(--gold-bright); box-shadow: 0 12px 30px var(--gold-glow); }
-        .btn-card-action:disabled { opacity: 0.4; cursor: not-allowed; }
+        .legend-card.gold-border.selected {
+            border-color: var(--gold-border) !important;
+            box-shadow:
+                0 0 40px var(--gold-glow),
+                inset 0 0 28px rgba(226,185,110,0.04) !important;
+        }
+
+        /* Sold-out legend card */
+        .legend-card.card-sold-out {
+            filter: grayscale(0.85) brightness(0.7) contrast(0.9);
+            opacity: 0.55;
+        }
+        .legend-card.card-sold-out::after {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(5,6,9,0.35);
+            z-index: 5; border-radius: inherit;
+            pointer-events: none;
+        }
+
+        /* Inner top border glow strip */
+        .legend-card-inner-glow {
+            position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 2;
+            background: linear-gradient(90deg, transparent 5%, var(--cyan) 50%, transparent 95%);
+            opacity: 0.45;
+            pointer-events: none;
+        }
+        .legend-card.gold-border .legend-card-inner-glow {
+            background: linear-gradient(90deg, transparent 5%, var(--gold) 50%, transparent 95%);
+        }
+
+        /* Image wrap */
+        .card-img-wrap {
+            overflow: hidden; height: 260px; position: relative;
+            background: var(--bg-3);
+        }
+        .card-img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.65s var(--ease-premium);
+        }
+
+        /* Badge on card image */
+        .card-badge {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(5,6,9,0.82);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-hi); border-radius: 50px;
+            font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px;
+            padding: 4px 12px; color: var(--gold); text-transform: uppercase;
+            font-family: 'DM Sans', sans-serif;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .card-badge.cyan-badge { color: var(--cyan); }
+
+        /* Card content */
+        .legend-content {
+            padding: 22px 22px 20px; flex: 1;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .legend-content h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.15rem; font-weight: 700; color: var(--text-bright);
+            letter-spacing: 1px;
+        }
+        .price-tag {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem; font-weight: 600;
+            color: var(--cyan); letter-spacing: 0.5px;
+        }
+        .price-tag.gold-price { color: var(--gold); }
+
+        /* Add button */
+        .btn-add-special {
+            margin-top: auto;
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
+            border: 1px solid var(--border-hi);
+            padding: 13px 16px; border-radius: var(--radius-sm);
+            font-weight: 600; font-size: 0.82rem; letter-spacing: 0.8px;
+            cursor: pointer; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: 'DM Sans', sans-serif; text-transform: uppercase;
+            transition:
+                background var(--t-fast) var(--ease-premium),
+                color var(--t-fast) var(--ease-premium),
+                border-color var(--t-fast) var(--ease-premium),
+                transform var(--t-fast) var(--ease-spring),
+                box-shadow var(--t-fast) var(--ease-premium);
+        }
+        .btn-add-special:hover:not([disabled]) {
+            background: linear-gradient(135deg, var(--cyan), var(--cyan-mid));
+            color: #000; border-color: var(--cyan);
+            transform: scale(1.03);
+            box-shadow: 0 6px 24px var(--cyan-glow);
+        }
+        .btn-add-special:active:not([disabled]) { transform: scale(0.96); }
+        .btn-add-special[disabled] { opacity: 0.30; cursor: not-allowed; }
+
+        /* Gold button hover */
+        .legend-card.gold-border .btn-add-special:hover:not([disabled]) {
+            background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+            color: #000; border-color: var(--gold);
+            box-shadow: 0 6px 24px var(--gold-glow);
+        }
+
+        /* Selected button states */
+        .legend-card.selected .btn-add-special {
+            background: linear-gradient(135deg, var(--cyan), var(--cyan-mid));
+            color: #000; border-color: var(--cyan);
+        }
+        .legend-card.gold-border.selected .btn-add-special {
+            background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+            color: #000; border-color: var(--gold);
+        }
 
         /* ══════════════════════════════════════
-           CART DRAWER
+           CART TRIGGER FAB
+        ══════════════════════════════════════ */
+        .cart-trigger {
+            position: fixed; bottom: 26px; right: 22px;
+            background: linear-gradient(135deg, var(--cyan), var(--cyan-mid));
+            color: #000; width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; z-index: 1001;
+            box-shadow: 0 10px 32px var(--cyan-glow), 0 4px 12px rgba(0,0,0,0.5);
+            transition: transform var(--t-med) var(--ease-spring), box-shadow var(--t-med);
+            cursor: pointer;
+        }
+        .cart-trigger:hover  { transform: scale(1.12) translateY(-2px); box-shadow: 0 16px 44px var(--cyan-glow); }
+        .cart-trigger:active { transform: scale(0.91); }
+
+        .cart-badge {
+            position: absolute; top: -7px; right: -7px;
+            background: var(--danger); color: #fff;
+            font-size: 0.7rem; padding: 3px 7px;
+            border-radius: 50px; font-weight: 700; min-width: 22px;
+            text-align: center; border: 2px solid var(--bg);
+        }
+
+        /* ══════════════════════════════════════
+           CART DRAWER — Dark Premium Mode
         ══════════════════════════════════════ */
         .cart-drawer {
-            position: fixed; top: 0; right: -420px; width: 100%; max-width: 380px; height: 100%;
-            background: #06070c; z-index: 2000; transition: right 0.45s var(--ease);
-            border-left: 1px solid var(--border-hi); display: flex; flex-direction: column;
-            box-shadow: var(--shadow-deep);
+            position: fixed; top: 0; right: -105%;
+            width: 100%; max-width: 410px; height: 100%;
+            background: rgba(9,9,15,0.98);
+            backdrop-filter: blur(30px) saturate(120%);
+            -webkit-backdrop-filter: blur(30px) saturate(120%);
+            color: var(--text);
+            z-index: 3000;
+            transition: right var(--t-med) var(--ease);
+            padding: 32px 24px 24px;
+            display: flex; flex-direction: column;
+            box-shadow: -16px 0 80px rgba(0,0,0,0.6);
+            border-left: 1px solid var(--border-hi);
         }
         .cart-drawer.active { right: 0; }
-        .cart-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-        .cart-title { font-family: 'Cinzel', serif; font-size: 1.15rem; letter-spacing: 1px; }
-        .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
-        .cart-items::-webkit-scrollbar { display: none; }
-        
+
+        .cart-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cart-header-title {
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .cart-header-title h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem; font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        .cart-header-sub {
+            font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--text-dim); font-family: 'DM Sans', sans-serif;
+        }
+        .cart-close {
+            font-size: 1.4rem; cursor: pointer; color: var(--text-dim);
+            transition: color var(--t-fast), transform var(--t-fast);
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+        }
+        .cart-close:hover { color: var(--text-bright); transform: rotate(90deg); background: rgba(255,255,255,0.08); }
+
+        /* Cart list — invisible scrollbar */
+        #cart-list {
+            flex: 1; overflow-y: auto;
+            scrollbar-width: none;
+            margin: 0 -4px; padding: 0 4px;
+        }
+        #cart-list::-webkit-scrollbar { display: none; }
+
         .cart-item {
-            background: var(--bg-3); border: 1px solid var(--border); padding: 14px 16px; border-radius: var(--radius-sm);
-            display: flex; align-items: center; justify-content: space-between; gap: 12px; animation: itemIn 0.3s var(--ease);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 0; border-bottom: 1px solid var(--border);
+            animation: fadeIn 0.25s ease;
         }
-        @keyframes itemIn { from { opacity:0; transform: translateX(15px); } to { opacity:1; transform: translateX(0); } }
-        .cart-item-info h4 { font-size: 0.88rem; font-weight: 600; color: #fff; margin-bottom: 2px; }
-        .cart-item-info p { font-size: 0.8rem; color: var(--cyan); font-weight: 500; font-family: 'Cinzel', serif; }
-        .cart-item.gold-variant .cart-item-info p { color: var(--gold); }
-        
-        .btn-remove { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 6px; font-size: 0.95rem; transition: color var(--t-fast); }
-        .btn-remove:hover { color: var(--danger); }
-        
-        .cart-footer { padding: 24px; border-top: 1px solid var(--border); background: var(--bg-2); display: flex; flex-direction: column; gap: 16px; }
-        .cart-total-row { display: flex; align-items: center; justify-content: space-between; }
-        .total-lbl { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
-        .total-val { font-size: 1.6rem; font-weight: 700; font-family: 'Cinzel', serif; color: var(--text-bright); }
-        
-        .btn-checkout {
-            background: linear-gradient(135deg, #25d366 0%, #1ebd59 100%); color: #fff; border: none;
-            padding: 16px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.88rem;
-            letter-spacing: 1px; text-transform: uppercase; width: 100%; cursor: pointer;
-            box-shadow: 0 10px 28px rgba(37,211,102,0.18); transition: all var(--t-med) var(--ease-spring);
-            display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'DM Sans', sans-serif;
+        .cart-item-info b   { font-size: 0.9rem; color: var(--text-bright); font-weight: 600; }
+        .cart-item-info small { color: var(--text-dim); font-size: 0.75rem; display: block; margin-top: 2px; }
+
+        .cart-item-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600; font-size: 1.1rem;
+            color: var(--gold); margin-right: 10px;
         }
-        .btn-checkout:hover { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(37,211,102,0.3); }
-        .btn-checkout:active { transform: scale(0.98); }
-        
-        .cart-empty-state { text-align: center; color: var(--text-dim); font-size: 0.84rem; margin: auto; padding: 40px; display: flex; flex-direction: column; gap: 10px; }
-        .cart-empty-state i { font-size: 2rem; opacity: 0.25; }
+        .cart-trash {
+            color: var(--danger); cursor: pointer; font-size: 0.95rem;
+            transition: transform var(--t-fast), color var(--t-fast);
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--danger-dim);
+        }
+        .cart-trash:hover { transform: scale(1.2); color: #fff; background: var(--danger); }
+
+        .cart-footer {
+            border-top: 1px solid var(--border-hi);
+            padding-top: 20px; margin-top: 12px;
+        }
+        .cart-total-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 18px;
+        }
+        .cart-total-label {
+            font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--text-dim);
+        }
+        .cart-total-amount {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem; font-weight: 600;
+            background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .btn-whatsapp {
+            width: 100%;
+            background: linear-gradient(135deg, #25d366, #1aac50);
+            color: #fff; border: none; padding: 17px; border-radius: var(--radius-md);
+            font-weight: 700; font-size: 0.9rem; letter-spacing: 0.8px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform var(--t-fast) var(--ease-spring), box-shadow var(--t-fast);
+            box-shadow: 0 8px 28px rgba(37,211,102,0.25);
+            text-transform: uppercase; font-family: 'DM Sans', sans-serif;
+        }
+        .btn-whatsapp:hover  { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(37,211,102,0.38); }
+        .btn-whatsapp:active { transform: scale(0.97); }
 
         /* ══════════════════════════════════════
-           TOAST NOTIFICATIONS
+           PROFILE
         ══════════════════════════════════════ */
-        .toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; width: 90%; max-width: 340px; pointer-events: none; }
-        .toast { background: rgba(9,9,15,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-hi); padding: 14px 18px; border-radius: var(--radius-sm); color: #fff; font-size: 0.82rem; font-weight: 500; box-shadow: var(--shadow-deep); display: flex; align-items: center; gap: 10px; pointer-events: auto; animation: toastIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards, toastOut 0.3s var(--ease-premium) 2.7s forwards; }
-        @keyframes toastIn  { from { opacity: 0; transform: translateY(30px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes toastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-15px) scale(0.92); } }
-        .toast.success i { color: var(--success); }
-        .toast.info i { color: var(--cyan); }
-        .toast.danger i { color: var(--danger); }
+        .profile-card {
+            text-align: center;
+            background: rgba(9,9,15,0.85);
+            backdrop-filter: blur(20px);
+            padding: 64px 28px;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-deep), var(--shadow-cyan);
+            position: relative; overflow: hidden;
+        }
+        .profile-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        }
+        .profile-avatar {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 2px solid transparent;
+            background: linear-gradient(var(--bg), var(--bg)) padding-box,
+                        linear-gradient(135deg, var(--cyan), var(--gold)) border-box;
+            margin-bottom: 22px;
+            transition: transform var(--t-med) var(--ease-spring), box-shadow var(--t-med);
+            cursor: default; object-fit: cover;
+        }
+        .profile-avatar:hover { transform: scale(1.07); box-shadow: 0 0 40px var(--cyan-glow); }
+        .profile-name  {
+            font-family: 'Cinzel', serif;
+            font-size: 1.9rem; font-weight: 700;
+            background: linear-gradient(135deg, #fff 30%, var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .profile-email { color: var(--text-dim); font-size: 0.84rem; margin-top: 8px; letter-spacing: 0.5px; }
 
         /* ══════════════════════════════════════
-           RESPONSIVE BREAKPOINTS
+           TOAST
         ══════════════════════════════════════ */
-        @media (max-width: 768px) {
-            .view { padding-top: 84px; padding-bottom: 110px; }
-            .special-grid { grid-template-columns: 1fr; gap: 20px; }
-            .auth-card { padding: 48px 24px; }
-            .auth-logo { font-size: 2.8rem; }
+        #toast {
+            position: fixed; bottom: 106px; left: 50%;
+            transform: translateX(-50%) translateY(14px);
+            background: rgba(9,9,15,0.95);
+            border: 1px solid var(--border-hi);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            color: var(--text);
+            padding: 10px 22px; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 500;
+            z-index: 9000; opacity: 0;
+            transition: opacity 0.28s, transform 0.28s var(--ease);
+            pointer-events: none; white-space: nowrap;
         }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.toast-remove { border-color: var(--danger); color: var(--danger); }
+
+        /* ══════════════════════════════════════
+           RIPPLE
+        ══════════════════════════════════════ */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.22); transform: scale(0);
+            animation: rippleAnim 0.5s linear; pointer-events: none;
+        }
+        @keyframes rippleAnim { to { transform: scale(5); opacity: 0; } }
+
+        /* ══════════════════════════════════════
+           COUNTRY SECTION LABEL
+        ══════════════════════════════════════ */
+        #country-label {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem; letter-spacing: 4px;
+            background: linear-gradient(135deg, #fff 20%, var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin: 22px 0 14px;
+        }
+
+        /* ══════════════════════════════════════
+           MAIN CONTENT WRAPPER
+        ══════════════════════════════════════ */
+        .main-content { position: relative; z-index: 1; }
+
+        /* ══════════════════════════════════════
+           EMPTY CART STATE
+        ══════════════════════════════════════ */
+        .cart-empty {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            color: var(--text-dim); text-align: center;
+        }
+        .cart-empty-icon { font-size: 3rem; opacity: 0.25; }
+        .cart-empty p { font-size: 0.84rem; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
-
-    <audio id="bg-audio" src="we-are-one.mp3.mp3" loop preload="auto"></audio>
 
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
 
-    <div id="intro-space">
-        <div class="earth-zoom"></div>
-    </div>
+    <div id="toast"></div>
 
-    <div id="auth-screen" class="auth-container">
+    <!-- Hidden audio element -->
+    <audio id="bg-audio" src="we-are-one.mp3.mp3" loop preload="none"></audio>
+
+    <div id="intro-space"><div class="earth-zoom"></div></div>
+
+    <!-- ── AUTH SCREEN ── -->
+    <div class="auth-container" id="auth-screen">
+
+        <!-- Fondo con imagen del mundial -->
+        <div class="auth-bg"></div>
+
+        <!-- Líneas del campo de fútbol (decorativas SVG) -->
+        <div class="auth-field-lines">
+            <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2.5">
+                <!-- Borde del campo -->
+                <rect x="60" y="30" width="1080" height="440" rx="4"/>
+                <!-- Línea central -->
+                <line x1="600" y1="30" x2="600" y2="470"/>
+                <!-- Círculo central -->
+                <circle cx="600" cy="250" r="80"/>
+                <circle cx="600" cy="250" r="4" fill="white"/>
+                <!-- Área grande izquierda -->
+                <rect x="60" y="110" width="170" height="280"/>
+                <!-- Área pequeña izquierda -->
+                <rect x="60" y="170" width="70" height="160"/>
+                <!-- Punto penal izquierdo -->
+                <circle cx="170" cy="250" r="4" fill="white"/>
+                <!-- Arco penal izquierdo -->
+                <path d="M230,155 A100,100 0 0,1 230,345"/>
+                <!-- Área grande derecha -->
+                <rect x="970" y="110" width="170" height="280"/>
+                <!-- Área pequeña derecha -->
+                <rect x="1070" y="170" width="70" height="160"/>
+                <!-- Punto penal derecho -->
+                <circle cx="1030" cy="250" r="4" fill="white"/>
+                <!-- Arco penal derecho -->
+                <path d="M970,155 A100,100 0 0,0 970,345"/>
+                <!-- Esquinas -->
+                <path d="M60,30 Q80,30 80,50"/>
+                <path d="M1140,30 Q1120,30 1120,50"/>
+                <path d="M60,470 Q80,470 80,450"/>
+                <path d="M1140,470 Q1120,470 1120,450"/>
+            </svg>
+        </div>
+
+        <!-- Partículas tipo confeti/estrellas de estadio -->
+        <div id="auth-particles"></div>
+
+        <!-- Card principal -->
         <div class="auth-card">
-            <h1 class="auth-logo">PANINI</h1>
-            <p class="auth-tagline">Sovereign Edition</p>
-            <div class="auth-divider"></div>
+            <i class="fa-solid fa-trophy auth-trophy-icon"></i>
+            <div class="auth-logo">PANINI</div>
+            <div class="auth-edition">Sovereign Collection</div>
+            <p class="auth-tagline">FIFA World Cup · 2026</p>
+
+            <div class="auth-divider">
+                <div class="auth-divider-line"></div>
+                <i class="fa-solid fa-futbol auth-divider-icon"></i>
+                <div class="auth-divider-line rev"></div>
+            </div>
+
+            <!-- Banderas sedes: USA, Canadá, México -->
+            <div class="auth-hosts">
+                <div class="auth-host-flag">
+                    <img src="https://flagcdn.com/w40/us.png" onerror="this.style.display='none'">
+                    <span>USA</span>
+                </div>
+                <div class="auth-host-flag">
+                    <img src="https://flagcdn.com/w40/ca.png" onerror="this.style.display='none'">
+                    <span>Canadá</span>
+                </div>
+                <div class="auth-host-flag">
+                    <img src="https://flagcdn.com/w40/mx.png" onerror="this.style.display='none'">
+                    <span>México</span>
+                </div>
+            </div>
+
             <button class="btn-login" onclick="loginWithGoogle()">
-                <i class="fab fa-google" style="margin-right: 8px;"></i> Ingresar con Google
+                <i class="fa-brands fa-google" style="margin-right:8px;"></i> Ingresar al Álbum
             </button>
+
+            <p class="auth-year">Edición oficial &nbsp;<span>2026</span></p>
         </div>
     </div>
 
-    <nav class="navbar">
-        <div class="hamburger" onclick="openSidebar()"><i class="fas fa-bars"></i></div>
-        <div class="nav-logo">PANINI</div>
-        <div class="nav-right-actions">
-            <button id="nav-audio-btn" class="btn-audio" onclick="toggleAudio()" title="Música oficial">
-                <i class="fas fa-music audio-icon"></i>
-                <div class="audio-bars">
-                    <div class="audio-bar"></div>
-                    <div class="audio-bar"></div>
-                    <div class="audio-bar"></div>
-                    <div class="audio-bar"></div>
+    <!-- ── APP ── -->
+    <div id="app" style="display:none;">
+
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+        <nav class="navbar">
+            <span class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></span>
+            <span class="nav-logo">PANINI</span>
+            <div class="nav-right-actions">
+                <!-- Audio control button -->
+                <button class="btn-audio" id="btn-audio-nav" onclick="toggleAudio()" title="Música oficial">
+                    <i class="fa-solid fa-music audio-icon"></i>
+                    <div class="audio-bars">
+                        <span class="audio-bar"></span>
+                        <span class="audio-bar"></span>
+                        <span class="audio-bar"></span>
+                        <span class="audio-bar"></span>
+                    </div>
+                </button>
+                <a href="https://instagram.com/pablooib" target="_blank" class="btn-insta-nav">
+                    <i class="fa-brands fa-instagram"></i> @pablooib
+                </a>
+                <img id="nav-avatar" src="" class="nav-avatar" onclick="showView('profile-view')">
+            </div>
+        </nav>
+
+        <!-- ── SIDEBAR ── -->
+        <div class="sidebar" id="sidebar">
+            <p class="sidebar-section">Colección</p>
+            <div class="sidebar-item" onclick="showView('album-view')">
+                <i class="fa-solid fa-book-open" style="width:18px;"></i> Mi Álbum
+            </div>
+            <div class="sidebar-item cyan" onclick="showView('campeones-view')">
+                <i class="fa-solid fa-trophy" style="width:18px;"></i> Campeones FWC
+            </div>
+            <div class="sidebar-item gold" onclick="showView('prices-view')">
+                <i class="fa-solid fa-crown" style="width:18px;"></i> Royal Legends
+            </div>
+            <p class="sidebar-section">Cuenta</p>
+            <div class="sidebar-item" onclick="showView('profile-view')">
+                <i class="fa-solid fa-user-gear" style="width:18px;"></i> Perfil
+            </div>
+            <!-- Audio toggle in sidebar -->
+            <div class="sidebar-audio-btn" id="sidebar-audio-btn" onclick="toggleAudio()">
+                <div style="display:flex;align-items:center;gap:11px;">
+                    <i class="fa-solid fa-headphones" style="width:18px;"></i>
+                    <div>
+                        <div style="font-size:0.86rem;font-weight:500;">Música oficial</div>
+                        <div class="sidebar-audio-track" id="sidebar-audio-track">We Are One — FIFA 2026</div>
+                    </div>
                 </div>
-            </button>
-            <a href="https://www.instagram.com/techstore_gt/" target="_blank" class="btn-insta-nav">
-                <i class="fab fa-instagram"></i> <span>TechStore</span>
-            </a>
-            <img id="user-avatar" class="nav-avatar" src="" alt="Avatar" onclick="toggleCart()">
-        </div>
-    </nav>
-
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-section">Álbum Base</div>
-        <div class="sidebar-item cyan" onclick="showView('stickers-view')"><i class="fas fa-th-large"></i> Láminas Regulares</div>
-        
-        <div class="sidebar-section">Ediciones Especiales</div>
-        <div id="side-nav-campeones" class="sidebar-item cyan" onclick="showView('campeones-view')"><i class="fas fa-trophy"></i> Campeones del Mundo</div>
-        <div id="side-nav-royal" class="sidebar-item gold" onclick="showView('royal-view')"><i class="fas fa-crown"></i> Royal Legends</div>
-        
-        <div class="sidebar-section">Controles</div>
-        <div id="sidebar-audio-toggle" class="sidebar-audio-btn" onclick="toggleAudio()">
-            <div style="display: flex; align-items: center; gap: 11px;">
-                <i class="fas fa-volume-up"></i>
-                <span>Música de Fondo</span>
+                <i class="fa-solid fa-play" id="sidebar-audio-icon" style="font-size:0.75rem;opacity:0.6;"></i>
             </div>
-            <span class="sidebar-audio-track">We Are One</span>
+            <div class="sidebar-item danger" onclick="logout()">
+                <i class="fa-solid fa-power-off" style="width:18px;"></i> Cerrar Sesión
+            </div>
         </div>
-        <div class="sidebar-item danger" style="margin-top: 24px;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</div>
-    </div>
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-    <main>
-        <div id="stickers-view" class="view active">
-            <div class="page-header">
-                <h2 id="group-title" class="page-title cyan">Cargando...</h2>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-icon" onclick="changeGroup(-1)"><i class="fas fa-chevron-left"></i></button>
-                    <button class="btn-icon" onclick="changeGroup(1)"><i class="fas fa-chevron-right"></i></button>
+        <!-- ── CART FAB ── -->
+        <div class="cart-trigger" onclick="toggleCart()">
+            <i class="fa-solid fa-shopping-basket"></i>
+            <span class="cart-badge" id="cart-badge">0</span>
+        </div>
+
+        <!-- ── CART DRAWER ── -->
+        <div class="cart-drawer" id="cart-drawer">
+            <div class="cart-header">
+                <div class="cart-header-title">
+                    <h2>Tu Pedido</h2>
+                    <span class="cart-header-sub">Panini Sovereign 2026</span>
+                </div>
+                <div class="cart-close" onclick="toggleCart()">
+                    <i class="fa-solid fa-times"></i>
                 </div>
             </div>
-            <div id="country-scroll"></div>
-            <div class="section-divider"></div>
-            <div id="sticker-grid"></div>
-        </div>
-
-        <div id="campeones-view" class="view">
-            <div class="page-header">
-                <h2 class="page-title cyan">Campeones del Mundo</h2>
+            <div id="cart-list" style="flex:1; overflow-y:auto;"></div>
+            <div class="cart-footer">
+                <div class="cart-total-row">
+                    <span class="cart-total-label">Total</span>
+                    <span class="cart-total-amount" id="cart-total">Q0.00</span>
+                </div>
+                <button class="btn-whatsapp" onclick="sendOrder()">
+                    <i class="fa-brands fa-whatsapp" style="font-size:1.15rem;"></i> Enviar a WhatsApp
+                </button>
             </div>
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin-top:-18px; margin-bottom:28px;">Colección exclusiva de las selecciones legendarias y momentos históricos en alta fidelidad.</p>
-            <div id="campeones-grid" class="special-grid"></div>
         </div>
 
-        <div id="royal-view" class="view">
-            <div class="page-header">
-                <h2 class="page-title gold">Royal Legends</h2>
+        <!-- ── MAIN VIEWS ── -->
+        <div class="main-content">
+
+            <!-- ALBUM VIEW -->
+            <div id="album-view" class="view active">
+                <div class="page-header">
+                    <h2 id="group-title" class="page-title">Grupo A</h2>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-icon" onclick="changeGroup(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="btn-icon" onclick="changeGroup(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div id="country-scroll"></div>
+                <div class="section-divider"></div>
+                <h3 id="country-label">País</h3>
+                <div id="sticker-grid"></div>
             </div>
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin-top:-18px; margin-bottom:28px;">Tarjetas míticas con acabados forjados en oro de los reyes inmortales del fútbol mundial.</p>
-            <div id="royal-grid" class="special-grid"></div>
-        </div>
-    </main>
 
-    <div id="cart-drawer" class="cart-drawer">
-        <div class="cart-header">
-            <h3 class="cart-title">Tu Carrito</h3>
-            <button class="btn-icon" onclick="toggleCart()"><i class="fas fa-times"></i></button>
-        </div>
-        <div id="cart-items-container" class="cart-items"></div>
-        <div class="cart-footer">
-            <div class="cart-total-row">
-                <span class="total-lbl">Total estimado</span>
-                <span id="cart-total-value" class="total-val">Q0.00</span>
+            <!-- CAMPEONES VIEW -->
+            <div id="campeones-view" class="view">
+                <div class="page-header">
+                    <h2 class="page-title cyan">Campeones del Mundo</h2>
+                </div>
+                <div class="special-grid" id="campeones-cards-container"></div>
             </div>
-            <button class="btn-checkout" onclick="sendOrder()">
-                <i class="fab fa-whatsapp"></i> Confirmar Pedido
-            </button>
-        </div>
-    </div>
 
-    <div id="toast-box" class="toast-container"></div>
+            <!-- ROYAL LEGENDS VIEW -->
+            <div id="prices-view" class="view">
+                <div class="page-header">
+                    <h2 class="page-title gold">Royal Legends</h2>
+                </div>
+                <div class="special-grid" id="royal-legends-container"></div>
+            </div>
 
-    <script>
-        /* ════════════════════════════════════════
-           FIREBASE INITIALIZATION & CONFIGURATION
-        ════════════════════════════════════════ */
-        const firebaseConfig = {
-            apiKey: "AIzaSyC2imp-RHzbgawKd6CK44LxsB1XgH4uE88",
-            authDomain: "mundial2026-be127.firebaseapp.com",
-            projectId: "mundial2026-be127",
-            storageBucket: "mundial2026-be127.firebasestorage.app",
-            messagingSenderId: "148485363809",
-            appId: "1:148485363809:web:bd926afb7040f65deb7220",
-            measurementId: "G-QK134XSE9V"
-        };
+            <!-- PROFILE VIEW -->
+            <div id="profile-view" class="view">
+                <div class="profile-card">
+                    <img id="profile-img" src="" class="profile-avatar">
+                    <h2 id="profile-name" class="profile-name">---</h2>
+                    <p id="profile-email" class="profile-email">---</p>
+                </div>
+            </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db   = firebase.firestore();
+        </div><!-- /main-content -->
+    </div><!-- /app -->
 
-        /* ════════════════════════════════════════
-           DATA STRUCTURES & IMAGES DICTIONARY
-        ════════════════════════════════════════ */
-        const LEGEND_IMAGES = {
-            "Cristiano Ronaldo": "cristianomundial.jpg",
-            "Lionel Messi": "imagenmessi.jpg",
-            "Mascotas Históricas": "mascotas.jpg",
-            "Mundiales": "imagenmundial.jpg"
-        };
+<script>
+    /* ════════════════════════════════════════
+       FIREBASE INIT
+    ════════════════════════════════════════ */
+    const firebaseConfig = {
+        apiKey: "AIzaSyC2imp-RHzbgawKd6CK44LxsB1XgH4uE88",
+        authDomain: "mundial2026-be127.firebaseapp.com",
+        projectId: "mundial2026-be127",
+        storageBucket: "mundial2026-be127.firebasestorage.app",
+        messagingSenderId: "148485363809",
+        appId: "1:148485363809:web:bd926afb7040f65deb7220",
+        measurementId: "G-QK134XSE9V"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db   = firebase.firestore();
 
-        const grupos = [
-            { name: "GRUPO A", paises: ["Guatemala", "México", "USA", "Canadá"] },
-            { name: "GRUPO B", paises: ["Argentina", "Brasil", "Uruguay", "Colombia"] },
-            { name: "GRUPO C", paises: ["España", "Francia", "Inglaterra", "Alemania"] },
-            { name: "GRUPO D", paises: ["Portugal", "Italia", "Holanda", "Bélgica"] },
-            { name: "GRUPO E", paises: ["Japón", "Marruecos", "Arabia", "Catar"] }
+    /* ════════════════════════════════════════
+       IMAGEN MAP — Royal Legends
+    ════════════════════════════════════════ */
+    const LEGEND_IMAGES = {
+        'special-messi':    'imagenmessi.jpg',
+        'special-cr7':      'cristianomundial.jpg',
+        'special-mascotas': 'mascotas.jpg'
+    };
+
+    /* ════════════════════════════════════════
+       ESTADO GLOBAL
+    ════════════════════════════════════════ */
+    let cart = [];
+    let currentGrp = 0;
+    let selectedCountry = '';
+    let activeUnsubs = [];
+
+    let unsubCampeones    = null;
+    let unsubRoyalLegends = null;
+
+    const grupos = [
+        {id:'A',paises:['México','Sudáfrica','Corea del Sur','Chequia']},
+        {id:'B',paises:['Canadá','Bosnia y Herzegovina','Catar','Suiza']},
+        {id:'C',paises:['Brasil','Marruecos','Haití','Escocia']},
+        {id:'D',paises:['Estados Unidos','Paraguay','Australia','Turquía']},
+        {id:'E',paises:['Alemania','Curazao','Costa de Marfil','Ecuador']},
+        {id:'F',paises:['Países Bajos','Japón','Suecia','Túnez']},
+        {id:'G',paises:['Bélgica','Egipto','Irán','Nueva Zelanda']},
+        {id:'H',paises:['España','Cabo Verde','Arabia Saudita','Uruguay']},
+        {id:'I',paises:['Francia','Senegal','Irak','Noruega']},
+        {id:'J',paises:['Argentina','Argelia','Austria','Jordania']},
+        {id:'K',paises:['Portugal','RD Congo','Uzbekistán','Colombia']},
+        {id:'L',paises:['Inglaterra','Croacia','Ghana','Panamá']}
+    ];
+
+    const flags = {
+        'México':'mx','Sudáfrica':'za','Corea del Sur':'kr','Chequia':'cz',
+        'Canadá':'ca','Bosnia y Herzegovina':'ba','Catar':'qa','Suiza':'ch',
+        'Brasil':'br','Marruecos':'ma','Haití':'ht','Escocia':'gb-sct',
+        'Estados Unidos':'us','Paraguay':'py','Australia':'au','Turquía':'tr',
+        'Alemania':'de','Curazao':'cw','Costa de Marfil':'ci','Ecuador':'ec',
+        'Países Bajos':'nl','Japón':'jp','Suecia':'se','Túnez':'tn',
+        'Bélgica':'be','Egipto':'eg','Irán':'ir','Nueva Zelanda':'nz',
+        'España':'es','Cabo Verde':'cv','Arabia Saudita':'sa','Uruguay':'uy',
+        'Francia':'fr','Senegal':'sn','Irak':'iq','Noruega':'no',
+        'Argentina':'ar','Argelia':'dz','Austria':'at','Jordania':'jo',
+        'Portugal':'pt','RD Congo':'cd','Uzbekistán':'uz','Colombia':'co',
+        'Inglaterra':'gb-eng','Croacia':'hr','Ghana':'gh','Panamá':'pa'
+    };
+
+    /* ════════════════════════════════════════
+       AUTH PARTICLES — Confetti estrellas de
+       estadio flotando en la pantalla de login
+    ════════════════════════════════════════ */
+    (function spawnAuthParticles() {
+        const container = document.getElementById('auth-particles');
+        if (!container) return;
+        const colors = [
+            'rgba(0,229,255,0.55)',
+            'rgba(226,185,110,0.5)',
+            'rgba(255,255,255,0.4)',
+            'rgba(0,229,255,0.3)',
+            'rgba(245,212,138,0.45)'
         ];
-
-        let currentGrp      = 0;
-        let selectedCountry = grupos[0].paises[0];
-        let cart            = [];
-
-        /* ════════════════════════════════════════
-           UI CONTROLS & SIDEBAR ANIMATION ENGINE
-        ════════════════════════════════════════ */
-        window.addEventListener('load', () => {
-            const intro = document.getElementById('intro-space');
-            setTimeout(() => {
-                if(intro) {
-                    intro.style.transition = 'opacity 0.6s ease';
-                    intro.style.opacity = '0';
-                    setTimeout(() => intro.remove(), 600);
-                }
-            }, 3200);
-        });
-
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('active');
-            document.getElementById('sidebar-overlay').classList.add('active');
+        for (let i = 0; i < 28; i++) {
+            const p = document.createElement('div');
+            const size = Math.random() * 4 + 1.5;
+            const left = Math.random() * 100;
+            const delay = Math.random() * 14;
+            const duration = Math.random() * 10 + 12;
+            p.className = 'auth-particle';
+            p.style.cssText = `
+                width:${size}px; height:${size}px;
+                left:${left}%;
+                bottom:-${size}px;
+                background:${colors[Math.floor(Math.random()*colors.length)]};
+                animation-duration:${duration}s;
+                animation-delay:${delay}s;
+                box-shadow: 0 0 ${size*2}px ${colors[Math.floor(Math.random()*colors.length)]};
+            `;
+            container.appendChild(p);
         }
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('sidebar-overlay').classList.remove('active');
-        }
-        function toggleCart() { document.getElementById('cart-drawer').classList.toggle('active'); }
-        
-        function showView(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            closeSidebar();
-        }
-        
-        function changeGroup(d) {
-            currentGrp      = (currentGrp + d + grupos.length) % grupos.length;
-            selectedCountry = grupos[currentGrp].paises[0];
-            renderGroup();
-            listenToStickers();
-        }
+    })();
 
-        /* ════════════════════════════════════════
-           AUDIO ENGINE (SYSTEM BROADCAST CONTROL)
-        ════════════════════════════════════════ */
-        function toggleAudio() {
-            const audio = document.getElementById('bg-audio');
-            const btn = document.getElementById('nav-audio-btn');
-            const sideBtn = document.getElementById('sidebar-audio-toggle');
-            
-            if (audio.paused) {
-                audio.play().then(() => {
-                    btn.classList.add('playing');
-                    sideBtn.classList.add('active');
-                }).catch(e => console.log("Audio play blocked by browser sandbox policy:", e));
-            } else {
-                audio.pause();
-                btn.classList.remove('playing');
-                sideBtn.classList.remove('active');
-            }
-        }
+    /* ════════════════════════════════════════
+       AUDIO CONTROL
+    ════════════════════════════════════════ */
+    let audioPlaying = false;
 
-        /* ════════════════════════════════════════
-           FEEDBACK TOAST PIPELINE ENGINE
-        ════════════════════════════════════════ */
-        function spawnToast(text, type = "info") {
-            const box = document.getElementById('toast-box');
-            if(!box) return;
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            let icon = '<i class="fas fa-info-circle"></i>';
-            if(type === "success") icon = '<i class="fas fa-check-circle"></i>';
-            if(type === "danger")  icon = '<i class="fas fa-exclamation-triangle"></i>';
-            
-            toast.innerHTML = `${icon} <span>${text}</span>`;
-            box.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
+    function toggleAudio() {
+        const audio      = document.getElementById('bg-audio');
+        const btnNav     = document.getElementById('btn-audio-nav');
+        const btnSidebar = document.getElementById('sidebar-audio-btn');
+        const icon       = document.getElementById('sidebar-audio-icon');
 
-        /* ════════════════════════════════════════
-           CORE AUTH LIFECYCLE PLATFORM
-        ════════════════════════════════════════ */
-        auth.onAuthStateChanged(user => {
-            const authScreen = document.getElementById('auth-screen');
+        if (audioPlaying) {
+            audio.pause();
+            audioPlaying = false;
+            btnNav.classList.remove('playing');
+            btnSidebar.classList.remove('active');
+            if (icon) { icon.className = 'fa-solid fa-play'; icon.style.opacity = '0.6'; }
+        } else {
+            audio.play().catch(() => {});
+            audioPlaying = true;
+            btnNav.classList.add('playing');
+            btnSidebar.classList.add('active');
+            if (icon) { icon.className = 'fa-solid fa-pause'; icon.style.opacity = '1'; }
+        }
+    }
+
+    /* ════════════════════════════════════════
+       AUTH LIFECYCLE
+    ════════════════════════════════════════ */
+    auth.onAuthStateChanged(user => {
+        setTimeout(() => {
+            document.getElementById('intro-space').style.display = 'none';
             if (user) {
-                authScreen.style.display = 'none';
-                document.getElementById('user-avatar').src = user.photoURL || 'panini.png';
-                
-                // Iniciar sincronización de datos en tiempo real
+                initApp(user);
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+            }
+        }, 4000);
+    });
+
+    function initApp(user) {
+        document.getElementById('auth-screen').style.display  = 'none';
+        document.getElementById('app').style.display          = 'block';
+        document.getElementById('nav-avatar').src             = user.photoURL  || '';
+        document.getElementById('profile-img').src            = user.photoURL  || '';
+        document.getElementById('profile-name').innerText     = user.displayName || 'Usuario';
+        document.getElementById('profile-email').innerText    = user.email || '';
+
+        selectedCountry = grupos[0].paises[0];
+        renderGroup();
+        listenToStickers();
+
+        /* ── BUG FIX: listeners de secciones especiales iniciados aquí,
+           tras confirmar usuario autenticado, garantizando que db y DOM
+           estén listos. Cada función cancela su listener previo. ── */
+        listenToCampeones();
+        listenToRoyalLegends();
+    }
+
+    /* ════════════════════════════════════════
+       TOAST
+    ════════════════════════════════════════ */
+    function showToast(msg, isRemove) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = isRemove ? 'toast-remove' : '';
+        t.classList.add('show');
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    /* ════════════════════════════════════════
+       RIPPLE
+    ════════════════════════════════════════ */
+    function addRipple(el, e) {
+        const r    = document.createElement('span');
+        const rect = el.getBoundingClientRect();
+        const d    = Math.max(rect.width, rect.height);
+        const cx   = (e && e.clientX) ? e.clientX - rect.left : rect.width  / 2;
+        const cy   = (e && e.clientY) ? e.clientY - rect.top  : rect.height / 2;
+        r.className = 'ripple';
+        r.style.cssText = `width:${d}px;height:${d}px;left:${cx-d/2}px;top:${cy-d/2}px;`;
+        el.appendChild(r);
+        r.addEventListener('animationend', () => r.remove());
+    }
+
+    /* ════════════════════════════════════════
+       RENDER GROUP COUNTRIES
+    ════════════════════════════════════════ */
+    function renderGroup() {
+        const g = grupos[currentGrp];
+        document.getElementById('group-title').innerText = `Grupo ${g.id}`;
+        const scroll = document.getElementById('country-scroll');
+        scroll.innerHTML = '';
+        g.paises.forEach(p => {
+            const chip = document.createElement('div');
+            chip.className = 'country-chip' + (selectedCountry === p ? ' active' : '');
+            chip.innerHTML = `
+                <img src="https://flagcdn.com/w40/${flags[p] || 'xx'}.png"
+                     style="display:block;margin:0 auto;border-radius:3px;height:26px;object-fit:cover;"
+                     onerror="this.style.display='none'">
+                <span class="country-label">${p}</span>`;
+            chip.onclick = e => {
+                addRipple(chip, e);
+                selectedCountry = p;
                 renderGroup();
                 listenToStickers();
-                listenToCampeones();
-                listenToRoyalLegends();
-            } else {
-                authScreen.style.display = 'flex';
-            }
+            };
+            scroll.appendChild(chip);
+        });
+    }
+
+    /* ════════════════════════════════════════
+       LISTEN — STICKERS
+    ════════════════════════════════════════ */
+    function listenToStickers() {
+        document.getElementById('country-label').innerText = selectedCountry;
+        activeUnsubs.forEach(u => u());
+        activeUnsubs = [];
+
+        const grid = document.getElementById('sticker-grid');
+        grid.innerHTML = '';
+        const keys = Array.from({length: 20}, (_, i) => String(i + 1));
+
+        keys.forEach((key, idx) => {
+            const id  = `${selectedCountry} #${key}`;
+            const sel = cart.some(x => x.id === id);
+            const s   = document.createElement('div');
+            s.id        = `sticker-container-${key}`;
+            s.className = `stk skeleton${sel ? ' selected' : ''}`;
+            s.style.animationDelay = `${idx * 0.024}s`;
+            s.innerHTML = `<b>#${key}</b>`;
+            grid.appendChild(s);
         });
 
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(() => auth.signInWithRedirect(provider));
-        }
-        function logout() { auth.signOut().then(() => location.reload()); }
+        const unsub = db.collection('precios_estampas').doc(selectedCountry).onSnapshot(snap => {
+            const saved = snap.exists ? snap.data() : {};
+            keys.forEach(key => {
+                const cell = document.getElementById(`sticker-container-${key}`);
+                if (!cell) return;
+                const id = `${selectedCountry} #${key}`;
 
-        /* ════════════════════════════════════════
-           FIRESTORE WORKSPACE SYNC & RENDERING
-        ════════════════════════════════════════ */
-        function renderGroup() {
-            document.getElementById('group-title').innerText = grupos[currentGrp].name;
-            const scr = document.getElementById('country-scroll');
-            scr.innerHTML = '';
-            grupos[currentGrp].paises.forEach(p => {
-                const active = p === selectedCountry ? 'active' : '';
-                scr.innerHTML += `
-                    <div class="country-chip ${active}" onclick="selectCountry('${p}')">
-                        <div class="country-label">${p.toUpperCase()}</div>
-                    </div>
-                `;
-            });
-        }
+                let price = key === '1' ? 10 : key === '13' ? 15 : 2;
+                if (selectedCountry === 'Portugal' && key === '15') price = 40;
+                let disponible = true;
 
-        function selectCountry(p) {
-            selectedCountry = p;
-            renderGroup();
-            listenToStickers();
-        }
-
-        function listenToStickers() {
-            const grid = document.getElementById('sticker-grid');
-            grid.innerHTML = Array(8).fill('<div class="stk skeleton"></div>').join('');
-            
-            db.collection('stickers').doc(selectedCountry).onSnapshot(doc => {
-                grid.innerHTML = '';
-                if (!doc.exists) {
-                    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:20px; font-size:0.85rem;">No hay láminas en este país.</div>';
-                    return;
+                if (saved.hasOwnProperty(key) && typeof saved[key] === 'object' && saved[key] !== null) {
+                    price      = saved[key].precio ?? saved[key].price ?? price;
+                    disponible = saved[key].disponible ?? true;
                 }
-                const data = doc.data() || {};
-                
-                // Ordenar claves alfabética o numéricamente
-                Object.keys(data).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).forEach(key => {
-                    const info = data[key];
-                    const isSoldOut = !info.disponible;
-                    const inCart = cart.some(item => item.id === `${selectedCountry} - ${key}`);
-                    
-                    let cardClass = "stk";
-                    if(isSoldOut) cardClass += " stk-sold-out";
-                    if(inCart) cardClass += " selected";
-                    
-                    let statusHtml = `<div class="stk-status av">Disponible</div>`;
-                    if(isSoldOut) statusHtml = `<div class="stk-status so">Agotada</div>`;
-                    
-                    grid.innerHTML += `
-                        <div class="${cardClass}" onclick="toggleStickerToCart('${selectedCountry}','${key}',${info.price || 0},${info.disponible})">
-                            <small>${selectedCountry.substring(0,3).toUpperCase()}</small>
-                            <b>${key}</b>
-                            <span style="font-size:0.68rem; margin-top:2px; opacity:0.9; font-weight:600; font-family:'Cinzel',serif;">Q${(info.price || 0).toFixed(2)}</span>
-                            ${statusHtml}
-                        </div>
-                    `;
+
+                if (!disponible) {
+                    const i = cart.findIndex(x => x.id === id);
+                    if (i > -1) { cart.splice(i, 1); updateCartUI(); }
+                }
+
+                const isSel = cart.some(x => x.id === id);
+                cell.className = [
+                    'stk',
+                    isSel       ? 'selected'    : '',
+                    price >= 40 ? 'legend-stk'  : '',
+                    !disponible ? 'stk-sold-out' : ''
+                ].filter(Boolean).join(' ');
+
+                cell.innerHTML = `
+                    <b>#${key}</b>
+                    <small>Q${parseFloat(price).toFixed(2)}</small>
+                    <span class="stk-status ${disponible ? 'av' : 'so'}">${disponible ? 'Disponible' : 'Agotado'}</span>`;
+
+                cell.onclick = e => {
+                    if (disponible) {
+                        addRipple(cell, e);
+                        addToCart(id, price, key);
+                    } else {
+                        alert(`El cromo #${key} de ${selectedCountry} está agotado.`);
+                    }
+                };
+            });
+        });
+        activeUnsubs.push(unsub);
+    }
+
+    /* ════════════════════════════════════════
+       HELPER — Normaliza un snapshot de
+       Firestore a un array de {idCard, info}
+       sin importar si los datos vienen de:
+         a) Un único doc con mapa de objetos
+            (config/campeones_config → {k: {...}})
+         b) Una colección de docs individuales
+            (config/campeones/items/{docId})
+       Ambos esquemas quedan cubiertos de forma
+       defensiva y tolerante a fallos.
+    ════════════════════════════════════════ */
+    function normalizeSpecialData(snapOrSnaps) {
+        const items = [];
+
+        /* Caso A: snapshot único (QueryDocumentSnapshot con .data()) */
+        if (snapOrSnaps && typeof snapOrSnaps.data === 'function') {
+            const raw = snapOrSnaps.exists ? snapOrSnaps.data() : null;
+            if (!raw) return items;
+
+            /* ¿El doc tiene campos que son objetos con price/precio? → mapa */
+            Object.entries(raw).forEach(([idCard, info]) => {
+                if (info && typeof info === 'object' && !Array.isArray(info)) {
+                    items.push({ idCard, info });
+                }
+            });
+            return items;
+        }
+
+        /* Caso B: QuerySnapshot (colección de múltiples docs) */
+        if (snapOrSnaps && typeof snapOrSnaps.forEach === 'function') {
+            snapOrSnaps.forEach(doc => {
+                const info = doc.data();
+                if (info && typeof info === 'object') {
+                    items.push({ idCard: doc.id, info });
+                }
+            });
+            return items;
+        }
+
+        return items;
+    }
+
+    /* ════════════════════════════════════════
+       LISTEN — CAMPEONES DEL MUNDO
+       Estrategia dual: intenta primero leer
+       como doc único (mapa); si el doc no
+       existe o está vacío, escucha la
+       colección 'campeones_items'.
+    ════════════════════════════════════════ */
+    function listenToCampeones() {
+        if (unsubCampeones) { unsubCampeones(); unsubCampeones = null; }
+
+        const container = document.getElementById('campeones-cards-container');
+        if (!container) return;
+
+        container.innerHTML = buildSkeletons('cyan');
+
+        /* Listener principal: doc único con mapa de campos */
+        const unsubDoc = db.collection('config').doc('campeones_config').onSnapshot(snap => {
+            let items = normalizeSpecialData(snap);
+
+            if (items.length > 0) {
+                renderCampeonesCards(container, items);
+                return;
+            }
+
+            /* Si el doc no existe o está vacío, escuchamos la subcolección */
+            if (unsubCampeones === unsubDoc) {
+                /* Cancelamos y montamos listener de colección alternativa */
+                unsubDoc();
+                const unsubCol = db.collection('campeones').onSnapshot(colSnap => {
+                    const colItems = normalizeSpecialData(colSnap);
+                    if (colItems.length > 0) {
+                        renderCampeonesCards(container, colItems);
+                    } else {
+                        container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay campeones cargados aún.</p>`;
+                    }
+                }, err => {
+                    console.error('Error colección campeones:', err);
+                    container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;grid-column:1/-1;">Error al cargar datos.</p>`;
                 });
-            }, () => {
-                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--danger); padding:20px; font-size:0.85rem;">Error de permisos de lectura.</div>';
-            });
-        }
-
-        /* ════════════════════════════════════════
-           REESTRUCTURACIÓN DEFENSIVA DE COLECCIONES
-        ════════════════════════════════════════ */
-        function listenToCampeones() {
-            const grid = document.getElementById('campeones-grid');
-            grid.innerHTML = Array(3).fill('<div class="legend-card skeleton" style="height:320px;"></div>').join('');
-
-            // Intenta leer flexiblemente si es un documento único o una colección completa
-            db.collection('config').doc('campeones_config').onSnapshot(doc => {
-                if (doc.exists) {
-                    processSingleDocSpecialGrid(doc.data(), grid, 'campeones', false);
-                } else {
-                    // Si el documento de configuración no existe, busca directamente la colección raíz 'campeones'
-                    db.collection('campeones').onSnapshot(snap => {
-                        if (!snap.empty) {
-                            processCollectionSpecialGrid(snap.docs, grid, false);
-                        } else {
-                            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:40px; font-size:0.85rem;"><i class="fas fa-folder-open" style="display:block; margin-bottom:10px; font-size:1.5rem;"></i>No hay datos disponibles en Campeones del Mundo.</div>';
-                        }
-                    }, () => handleGridError(grid));
+                unsubCampeones = unsubCol;
+            }
+        }, err => {
+            console.error('Error en listenToCampeones doc:', err);
+            /* Fallback directo a colección */
+            const unsubCol = db.collection('campeones').onSnapshot(colSnap => {
+                const colItems = normalizeSpecialData(colSnap);
+                renderCampeonesCards(container, colItems.length > 0 ? colItems : []);
+                if (colItems.length === 0) {
+                    container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay datos disponibles.</p>`;
                 }
             }, () => {
-                db.collection('campeones').onSnapshot(snap => {
-                    if (!snap.empty) {
-                        processCollectionSpecialGrid(snap.docs, grid, false);
-                    } else {
-                        handleGridError(grid);
-                    }
-                }, () => handleGridError(grid));
+                container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;grid-column:1/-1;">Error al cargar datos.</p>`;
             });
+            unsubCampeones = unsubCol;
+        });
+
+        unsubCampeones = unsubDoc;
+    }
+
+    function renderCampeonesCards(container, items) {
+        if (!items || items.length === 0) {
+            container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay campeones cargados aún.</p>`;
+            return;
         }
+        let html = '';
+        items.forEach(({ idCard, info }) => {
+            /* Normalizar campos: soporta price / precio */
+            const price  = parseFloat(info.price ?? info.precio ?? 0);
+            const disp   = info.disponible ?? true;
+            const name   = info.name || info.nombre || idCard;
+            const cartId = info.itemCartName || info.cartName || idCard;
 
-        function listenToRoyalLegends() {
-            const grid = document.getElementById('royal-grid');
-            grid.innerHTML = Array(3).fill('<div class="legend-card skeleton" style="height:320px;"></div>').join('');
-
-            // Intenta leer flexiblemente si es un documento único o una colección completa
-            db.collection('config').doc('royal_legends').onSnapshot(doc => {
-                if (doc.exists) {
-                    processSingleDocSpecialGrid(doc.data(), grid, 'royal', true);
-                } else {
-                    // Si el documento de configuración no existe, busca directamente la colección raíz 'royal_legends'
-                    db.collection('royal_legends').onSnapshot(snap => {
-                        if (!snap.empty) {
-                            processCollectionSpecialGrid(snap.docs, grid, true);
-                        } else {
-                            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:40px; font-size:0.85rem;"><i class="fas fa-folder-open" style="display:block; margin-bottom:10px; font-size:1.5rem;"></i>No hay datos disponibles en Royal Legends.</div>';
-                        }
-                    }, () => handleGridError(grid));
-                }
-            }, () => {
-                db.collection('royal_legends').onSnapshot(snap => {
-                    if (!snap.empty) {
-                        processCollectionSpecialGrid(snap.docs, grid, true);
-                    } else {
-                        handleGridError(grid);
-                    }
-                }, () => handleGridError(grid));
-            });
-        }
-
-        /* Procesador para Documento Único (Estructura de Mapa Anidado) */
-        function processSingleDocSpecialGrid(data, grid, typeGroup, isGold) {
-            grid.innerHTML = '';
-            const entries = Object.entries(data);
-            if (entries.length === 0) {
-                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:40px; font-size:0.85rem;">El documento está vacío.</div>';
-                return;
+            if (!disp) {
+                const i = cart.findIndex(x => x.id === cartId);
+                if (i > -1) { cart.splice(i, 1); updateCartUI(); }
             }
 
-            entries.forEach(([key, item]) => {
-                renderSpecialCardItem(grid, key, item, typeGroup, isGold);
-            });
-        }
+            const isSel   = cart.some(x => x.id === cartId);
+            const cls     = ['legend-card', isSel ? 'selected' : '', !disp && !isSel ? 'card-sold-out' : ''].filter(Boolean).join(' ');
+            const txt     = isSel ? 'Quitar' : (disp ? 'Agregar' : 'Agotado');
+            const dis     = (!isSel && !disp) ? 'disabled' : '';
 
-        /* Procesador para Múltiples Documentos (Estructura de Colección Tradicional) */
-        function processCollectionSpecialGrid(docs, grid, isGold) {
-            grid.innerHTML = '';
-            docs.forEach(doc => {
-                const item = doc.data();
-                // Usar el ID del documento o la propiedad interna "name"/"itemCartName" como identificador único
-                const nameKey = item.name || item.itemCartName || doc.id;
-                const typeGroup = isGold ? 'royal' : 'campeones';
-                renderSpecialCardItem(grid, nameKey, item, typeGroup, isGold);
-            });
-        }
-
-        /* Renderizador Unificado de Tarjetas Premium con Micro-interacciones */
-        function renderSpecialCardItem(grid, key, item, typeGroup, isGold) {
-            // Mitigación tolerante a mapeo de nombres cruzados de campos de la base de datos (price/precio, disponible/stock)
-            const price = parseFloat(item.price || item.precio || 0);
-            const disponible = item.disponible !== undefined ? item.disponible : (item.stock !== undefined ? !!item.stock : true);
-            const itemCartName = item.itemCartName || key;
-
-            const isSoldOut = !disponible;
-            const uniqueCartId = `${typeGroup.toUpperCase()} - ${itemCartName}`;
-            const inCart = cart.some(i => i.id === uniqueCartId);
-
-            // Mapeo adaptativo dinámico de imágenes locales del repositorio
-            let imagePath = "imagenmundial.jpg"; // Asset global por defecto
-            if (LEGEND_IMAGES[itemCartName]) {
-                imagePath = LEGEND_IMAGES[itemCartName];
-            } else {
-                // Intento heurístico por aproximación de nombres si no coincide exactamente
-                for (const [name, path] of Object.entries(LEGEND_IMAGES)) {
-                    if (itemCartName.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(itemCartName.toLowerCase())) {
-                        imagePath = path;
-                        break;
-                    }
-                }
-            }
-
-            let cardClasses = "legend-card";
-            if (isGold) cardClasses += " gold-border";
-            if (isSoldOut) cardClasses += " card-sold-out";
-            if (inCart) cardClasses += " selected";
-
-            grid.innerHTML += `
-                <div class="${cardClasses}">
-                    <div class="legend-card-inner-glow"></div>
-                    <div class="card-img-frame">
-                        <img class="card-img" src="${imagePath}" alt="${itemCartName}" onerror="this.src='imagenmundial.jpg'">
-                    </div>
-                    <div class="card-body">
-                        <span class="card-badge ${isSoldOut ? 'sold-out-badge' : ''}">
-                            ${isSoldOut ? 'Agotado' : (isGold ? 'Royal Legend' : 'Mundial Especial')}
-                        </span>
-                        <h3 class="card-title">${itemCartName}</h3>
-                        <div class="card-price-row">
-                            <span class="card-q">Q</span>
-                            <span class="card-amt">${price.toFixed(2)}</span>
-                        </div>
-                        <button class="btn-card-action" ${isSoldOut ? 'disabled' : ''} onclick="toggleSpecialToCart('${uniqueCartId}', ${price}, ${disponible})">
-                            <i class="${inCart ? 'fas fa-check' : 'fas fa-shopping-cart'}"></i>
-                            ${isSoldOut ? 'Agotado' : (inCart ? 'En Carrito' : 'Agregar al Carrito')}
-                        </button>
-                    </div>
+            html += `
+            <div id="card-campeon-${idCard}" class="${cls}">
+                <div class="legend-card-inner-glow"></div>
+                <div class="card-img-wrap">
+                    <img src="panini.png" class="card-img"
+                         style="object-fit:contain;padding:20px;background:rgba(0,0,0,0.25);"
+                         onerror="this.src='panini.png'">
+                    <span class="card-badge cyan-badge"><i class="fa-solid fa-trophy"></i> Campeón</span>
                 </div>
-            `;
-        }
+                <div class="legend-content">
+                    <h3>${String(name).toUpperCase()}</h3>
+                    <span class="price-tag">Q${price.toFixed(2)}</span>
+                    <button class="btn-add-special" ${dis}
+                            onclick="toggleSpecial('${cartId}',${price},'card-campeon-${idCard}')">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span class="btn-txt">${txt}</span>
+                    </button>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
 
-        function handleGridError(grid) {
-            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--danger); padding:40px; font-size:0.85rem;"><i class="fas fa-exclamation-circle" style="display:block; margin-bottom:10px; font-size:1.5rem;"></i>Error de conexión con Firestore o restricciones de seguridad.</div>';
-        }
+    /* ════════════════════════════════════════
+       LISTEN — ROYAL LEGENDS
+       Misma estrategia dual defensiva.
+    ════════════════════════════════════════ */
+    function listenToRoyalLegends() {
+        if (unsubRoyalLegends) { unsubRoyalLegends(); unsubRoyalLegends = null; }
 
-        /* ════════════════════════════════════════
-           CARRITO DE COMPRAS & LÓGICA CORE DE TRANSACCIONES
-        ════════════════════════════════════════ */
-        function toggleStickerToCart(country, key, price, disponible) {
-            if(!disponible) { spawnToast('Esta lámina se encuentra agotada.', 'danger'); return; }
-            const itemId = `${country} - ${key}`;
-            const idx = cart.findIndex(item => item.id === itemId);
-            
-            if (idx > -1) {
-                cart.splice(idx, 1);
-                spawnToast('Lámina removida del carrito.', 'info');
-            } else {
-                cart.push({ id: itemId, price: parseFloat(price), isSpecial: false });
-                spawnToast('Lámina añadida correctamente.', 'success');
-            }
-            updateCartUi();
-            listenToStickers();
-        }
+        const container = document.getElementById('royal-legends-container');
+        if (!container) return;
 
-        function toggleSpecialToCart(uniqueCartId, price, disponible) {
-            if(!disponible) { spawnToast('Esta tarjeta especial se encuentra agotada.', 'danger'); return; }
-            const idx = cart.findIndex(item => item.id === uniqueCartId);
-            const isGold = uniqueCartId.startsWith('ROYAL');
-            
-            if (idx > -1) {
-                cart.splice(idx, 1);
-                spawnToast('Elemento removido del carrito.', 'info');
-            } else {
-                cart.push({ id: uniqueCartId, price: parseFloat(price), isSpecial: true, isGold: isGold });
-                spawnToast('Elemento especial añadido.', 'success');
-            }
-            updateCartUi();
-            listenToCampeones();
-            listenToRoyalLegends();
-        }
+        container.innerHTML = buildSkeletons('gold');
 
-        function removeCartItem(itemId) {
-            cart = cart.filter(item => item.id !== itemId);
-            spawnToast('Elemento removido.', 'info');
-            updateCartUi();
-            listenToStickers();
-            listenToCampeones();
-            listenToRoyalLegends();
-        }
+        const unsubDoc = db.collection('config').doc('royal_legends').onSnapshot(snap => {
+            let items = normalizeSpecialData(snap);
 
-        function updateCartUi() {
-            const container = document.getElementById('cart-items-container');
-            const totalLabel = document.getElementById('cart-total-value');
-            
-            if (cart.length === 0) {
-                container.innerHTML = `
-                    <div class="cart-empty-state">
-                        <i class="fas fa-shopping-basket"></i>
-                        <p>Tu carrito está vacío</p>
-                    </div>
-                `;
-                totalLabel.innerText = "Q0.00";
+            if (items.length > 0) {
+                renderLegendsCards(container, items);
                 return;
             }
-            
-            container.innerHTML = '';
-            let totalSum = 0;
-            
-            cart.forEach(item => {
-                totalSum += item.price;
-                const variantClass = item.isGold ? 'gold-variant' : '';
-                container.innerHTML += `
-                    <div class="cart-item ${variantClass}">
-                        <div class="cart-item-info">
-                            <h4>${item.id}</h4>
-                            <p>Q${item.price.toFixed(2)}</p>
-                        </div>
-                        <button class="btn-remove" onclick="removeCartItem('${item.id}')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                `;
+
+            if (unsubRoyalLegends === unsubDoc) {
+                unsubDoc();
+                const unsubCol = db.collection('royal_legends').onSnapshot(colSnap => {
+                    const colItems = normalizeSpecialData(colSnap);
+                    if (colItems.length > 0) {
+                        renderLegendsCards(container, colItems);
+                    } else {
+                        container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay legends cargadas aún.</p>`;
+                    }
+                }, err => {
+                    console.error('Error colección royal_legends:', err);
+                    container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;grid-column:1/-1;">Error al cargar datos.</p>`;
+                });
+                unsubRoyalLegends = unsubCol;
+            }
+        }, err => {
+            console.error('Error en listenToRoyalLegends doc:', err);
+            const unsubCol = db.collection('royal_legends').onSnapshot(colSnap => {
+                const colItems = normalizeSpecialData(colSnap);
+                renderLegendsCards(container, colItems.length > 0 ? colItems : []);
+                if (colItems.length === 0) {
+                    container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay datos disponibles.</p>`;
+                }
+            }, () => {
+                container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;grid-column:1/-1;">Error al cargar datos.</p>`;
             });
-            
-            totalLabel.innerText = `Q${totalSum.toFixed(2)}`;
+            unsubRoyalLegends = unsubCol;
+        });
+
+        unsubRoyalLegends = unsubDoc;
+    }
+
+    function renderLegendsCards(container, items) {
+        if (!items || items.length === 0) {
+            container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay legends cargadas aún.</p>`;
+            return;
+        }
+        let html = '';
+        items.forEach(({ idCard, info }) => {
+            const price     = parseFloat(info.price ?? info.precio ?? 0);
+            const disp      = info.disponible ?? true;
+            const name      = info.name || info.nombre || 'Leyenda';
+            const cartId    = info.itemCartName || info.cartName || idCard;
+            const sourceImg = LEGEND_IMAGES[idCard] || 'panini.png';
+
+            if (!disp) {
+                const i = cart.findIndex(x => x.id === cartId);
+                if (i > -1) { cart.splice(i, 1); updateCartUI(); }
+            }
+
+            const isSel = cart.some(x => x.id === cartId);
+            const cls   = ['legend-card', 'gold-border', isSel ? 'selected' : '', !disp && !isSel ? 'card-sold-out' : ''].filter(Boolean).join(' ');
+            const txt   = isSel ? 'Quitar' : (disp ? 'Agregar' : 'Agotado');
+            const dis   = (!isSel && !disp) ? 'disabled' : '';
+
+            html += `
+            <div id="${idCard}" class="${cls}">
+                <div class="legend-card-inner-glow"></div>
+                <div class="card-img-wrap">
+                    <img src="${sourceImg}" class="card-img" onerror="this.src='panini.png'">
+                    <span class="card-badge"><i class="fa-solid fa-crown"></i> Legend</span>
+                </div>
+                <div class="legend-content">
+                    <h3>${name}</h3>
+                    <span class="price-tag gold-price">Q${price.toFixed(2)}</span>
+                    <button class="btn-add-special" ${dis}
+                            onclick="toggleSpecial('${cartId}',${price},'${idCard}')">
+                        <i class="fa-solid fa-star"></i>
+                        <span class="btn-txt">${txt}</span>
+                    </button>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    /* ════════════════════════════════════════
+       HELPER — Skeleton placeholders
+    ════════════════════════════════════════ */
+    function buildSkeletons(type) {
+        const isCyan = type !== 'gold';
+        const cardCls = isCyan ? 'legend-card' : 'legend-card gold-border';
+        let s = '';
+        for (let i = 0; i < 2; i++) {
+            s += `
+            <div class="${cardCls}" style="min-height:340px;">
+                <div class="card-img-wrap skeleton" style="height:260px;"></div>
+                <div class="legend-content" style="gap:10px;">
+                    <div class="skeleton" style="height:18px;border-radius:6px;width:${70 - i*8}%;"></div>
+                    <div class="skeleton" style="height:28px;border-radius:6px;width:${40 - i*4}%;"></div>
+                    <div class="skeleton" style="height:44px;border-radius:10px;width:100%;margin-top:auto;"></div>
+                </div>
+            </div>`;
+        }
+        return s;
+    }
+
+    /* ════════════════════════════════════════
+       CART ACTIONS
+    ════════════════════════════════════════ */
+    function addToCart(id, price, key) {
+        const idx    = cart.findIndex(x => x.id === id);
+        const adding = idx === -1;
+        if (adding) cart.push({id, price: parseFloat(price)});
+        else cart.splice(idx, 1);
+        updateCartUI();
+        const cell = document.getElementById(`sticker-container-${key}`);
+        if (cell) cell.classList.toggle('selected');
+        showToast(adding ? `✓ ${id} añadido` : `✗ ${id} quitado`, !adding);
+    }
+
+    function toggleSpecial(id, price, elementId) {
+        const idx    = cart.findIndex(x => x.id === id);
+        const adding = idx === -1;
+        if (adding) cart.push({id, price: parseFloat(price)});
+        else cart.splice(idx, 1);
+        updateCartUI();
+
+        const el = document.getElementById(elementId);
+        if (el) {
+            const isSel = cart.some(x => x.id === id);
+            const btn   = el.querySelector('.btn-txt');
+            if (isSel) {
+                el.classList.add('selected');
+                if (btn) btn.innerText = 'Quitar';
+            } else {
+                el.classList.remove('selected');
+                if (btn) btn.innerText = 'Agregar';
+            }
+        }
+        showToast(adding ? '✓ Añadido al pedido' : '✗ Quitado del pedido', !adding);
+    }
+
+    function updateCartUI() {
+        document.getElementById('cart-badge').innerText = cart.length;
+        const list = document.getElementById('cart-list');
+        list.innerHTML = '';
+
+        if (cart.length === 0) {
+            list.innerHTML = `
+                <div class="cart-empty">
+                    <i class="fa-solid fa-basket-shopping cart-empty-icon"></i>
+                    <p>Tu pedido está vacío</p>
+                </div>`;
+            document.getElementById('cart-total').innerText = 'Q0.00';
+            return;
         }
 
-        /* ════════════════════════════════════════
-           SEND ORDER → INTEGRACIÓN CON WHATSAPP API
-        ════════════════════════════════════════ */
-        function sendOrder() {
-            if (cart.length === 0) {
-                spawnToast('Tu carrito está totalmente vacío.', 'danger');
-                return;
+        let total = 0;
+        cart.forEach((item, index) => {
+            total += item.price;
+            let title    = item.id;
+            let subtitle = 'Edición Especial';
+            if (item.id.includes(' #')) {
+                const parts = item.id.split(' #');
+                title    = parts[0];
+                subtitle = `Sticker #${parts[1].toUpperCase()}`;
             }
-            
-            let msg = `--- NUEVO PEDIDO PANINI ---\n\n`;
-            msg += `👤 Cliente: ${auth.currentUser.displayName || 'Usuario Álbum'}\n`;
-            msg += `📧 Correo: ${auth.currentUser.email}\n\n`;
-            msg += `📋 Detalle de Compra:\n`;
-            
-            let totalSum = 0;
-            cart.forEach(item => {
-                msg += `* ${item.id} — Q${item.price.toFixed(2)}\n`;
-                totalSum += item.price;
-            });
-            
-            msg += `\n💰 TOTAL A PAGAR: Q${totalSum.toFixed(2)}`;
-            
-            const encoded = encodeURIComponent(msg);
-            // Redirección directa al número de WhatsApp de soporte técnico/ventas
-            window.open(`https://api.whatsapp.com/send?phone=50258385208&text=${encoded}`, '_blank');
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+            div.innerHTML = `
+                <div class="cart-item-info">
+                    <b>${title}</b>
+                    <small>${subtitle}</small>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="cart-item-price">Q${item.price.toFixed(2)}</span>
+                    <div class="cart-trash" onclick="removeItem(${index})">
+                        <i class="fa-solid fa-trash-alt"></i>
+                    </div>
+                </div>`;
+            list.appendChild(div);
+        });
+        document.getElementById('cart-total').innerText = `Q${total.toFixed(2)}`;
+    }
+
+    function removeItem(i) {
+        const item = cart[i];
+        cart.splice(i, 1);
+        updateCartUI();
+
+        if (item.id.startsWith(selectedCountry + ' #')) {
+            const key  = item.id.split(' #')[1];
+            const cell = document.getElementById(`sticker-container-${key}`);
+            if (cell) cell.classList.remove('selected');
         }
-    </script>
+
+        /*
+         * Re-sincronizamos el DOM de tarjetas especiales de forma síncrona
+         * a partir del estado actual del carrito, sin recrear los listeners
+         * de Firestore que ya están activos y son válidos.
+         */
+        refreshSpecialCardsDOM();
+        showToast('✗ Item eliminado', true);
+    }
+
+    /*
+     * refreshSpecialCardsDOM — Re-sincroniza estado visual (clase selected,
+     * texto del botón) de todas las tarjetas ya renderizadas
+     * sin necesitar un nuevo onSnapshot.
+     */
+    function refreshSpecialCardsDOM() {
+        /* Campeones */
+        document.querySelectorAll('[id^="card-campeon-"]').forEach(el => {
+            const btn = el.querySelector('.btn-txt');
+            if (!btn) return;
+            const btnEl  = el.querySelector('.btn-add-special');
+            const cartId = btnEl ? btnEl.getAttribute('onclick').match(/'([^']+)'/)?.[1] : null;
+            if (!cartId) return;
+            const isSel = cart.some(x => x.id === cartId);
+            el.classList.toggle('selected', isSel);
+            btn.innerText = isSel ? 'Quitar' : (btnEl.hasAttribute('disabled') ? 'Agotado' : 'Agregar');
+        });
+
+        /* Royal Legends */
+        Object.keys(LEGEND_IMAGES).forEach(idCard => {
+            const el = document.getElementById(idCard);
+            if (!el) return;
+            const btn    = el.querySelector('.btn-txt');
+            const btnEl  = el.querySelector('.btn-add-special');
+            if (!btn || !btnEl) return;
+            const cartId = btnEl.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+            if (!cartId) return;
+            const isSel = cart.some(x => x.id === cartId);
+            el.classList.toggle('selected', isSel);
+            btn.innerText = isSel ? 'Quitar' : (btnEl.hasAttribute('disabled') ? 'Agotado' : 'Agregar');
+        });
+    }
+
+    /* ════════════════════════════════════════
+       NAVIGATION
+    ════════════════════════════════════════ */
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('sidebar-overlay').classList.remove('active');
+    }
+    function toggleCart() { document.getElementById('cart-drawer').classList.toggle('active'); }
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        closeSidebar();
+    }
+    function changeGroup(d) {
+        currentGrp      = (currentGrp + d + grupos.length) % grupos.length;
+        selectedCountry = grupos[currentGrp].paises[0];
+        renderGroup();
+        listenToStickers();
+    }
+
+    /* ════════════════════════════════════════
+       AUTH
+    ════════════════════════════════════════ */
+    function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(() => auth.signInWithRedirect(provider));
+    }
+    function logout() { auth.signOut().then(() => location.reload()); }
+
+    /* ════════════════════════════════════════
+       SEND ORDER → WHATSAPP
+    ════════════════════════════════════════ */
+    function sendOrder() {
+        if (cart.length === 0) {
+            alert('Tu carrito está vacío.');
+            return;
+        }
+        let msg = `--- NUEVO PEDIDO PANINI ---\n\nCliente: ${auth.currentUser.displayName}\n\nCartas:\n`;
+        cart.forEach(item => { msg += `* ${item.id} — Q${item.price.toFixed(2)}\n`; });
+        msg += `\nTOTAL: ${document.getElementById('cart-total').innerText}`;
+        window.open(`https://wa.me/50246199644?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+</script>
 </body>
 </html>
