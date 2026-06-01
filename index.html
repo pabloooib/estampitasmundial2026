@@ -15,7 +15,7 @@
 
     <style>
         /* ══════════════════════════════════════
-           DESIGN TOKENS — SOVEREIGN EDITION
+           DESIGN TOKENS — SOVEREIGN EDITION V2
         ══════════════════════════════════════ */
         :root {
             --bg:           #050609;
@@ -54,6 +54,7 @@
             --shadow-deep:  0 32px 80px rgba(0,0,0,0.65);
             --ease:         cubic-bezier(0.32,0.72,0,1);
             --ease-spring:  cubic-bezier(0.34,1.56,0.64,1);
+            --ease-premium: cubic-bezier(0.4,0,0.2,1);
             --t-fast:       0.18s;
             --t-med:        0.32s;
             --t-slow:       0.55s;
@@ -208,7 +209,6 @@
             z-index: 1000;
             border-bottom: 1px solid var(--border);
         }
-        /* Thin glowing scan line on navbar bottom */
         .navbar::after {
             content: '';
             position: absolute; bottom: 0; left: -80px;
@@ -249,6 +249,66 @@
         .hamburger:hover { color: var(--cyan); }
 
         /* ══════════════════════════════════════
+           AUDIO BUTTON (Navbar)
+        ══════════════════════════════════════ */
+        .btn-audio {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-hi);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-dim);
+            font-size: 0.88rem;
+            transition:
+                background var(--t-fast) var(--ease-premium),
+                border-color var(--t-fast) var(--ease-premium),
+                color var(--t-fast) var(--ease-premium),
+                box-shadow var(--t-fast) var(--ease-premium),
+                transform var(--t-fast) var(--ease-spring);
+            position: relative;
+            flex-shrink: 0;
+        }
+        .btn-audio:hover {
+            background: var(--cyan-dim);
+            border-color: var(--cyan-border);
+            color: var(--cyan);
+            transform: scale(1.1);
+            box-shadow: 0 0 18px var(--cyan-glow);
+        }
+        .btn-audio:active { transform: scale(0.9); }
+        .btn-audio.playing {
+            background: var(--cyan-dim);
+            border-color: var(--cyan-border);
+            color: var(--cyan);
+            box-shadow: 0 0 20px var(--cyan-glow), 0 0 8px rgba(0,229,255,0.5);
+            animation: audioPulse 2s ease-in-out infinite;
+        }
+        @keyframes audioPulse {
+            0%, 100% { box-shadow: 0 0 12px var(--cyan-glow); }
+            50%       { box-shadow: 0 0 28px var(--cyan-glow), 0 0 50px rgba(0,229,255,0.15); }
+        }
+
+        /* Audio visualizer bars inside button when playing */
+        .btn-audio .audio-bars {
+            display: none;
+            align-items: flex-end;
+            gap: 2px; height: 14px;
+        }
+        .btn-audio.playing .audio-bars { display: flex; }
+        .btn-audio.playing .audio-icon { display: none; }
+        .audio-bar {
+            width: 2.5px; background: var(--cyan); border-radius: 2px;
+            animation: barBounce 0.8s ease-in-out infinite alternate;
+        }
+        .audio-bar:nth-child(1) { height: 5px;  animation-delay: 0s;    animation-duration: 0.6s; }
+        .audio-bar:nth-child(2) { height: 12px; animation-delay: 0.15s; animation-duration: 0.8s; }
+        .audio-bar:nth-child(3) { height: 8px;  animation-delay: 0.05s; animation-duration: 0.7s; }
+        .audio-bar:nth-child(4) { height: 14px; animation-delay: 0.2s;  animation-duration: 0.9s; }
+        @keyframes barBounce {
+            from { transform: scaleY(0.35); opacity: 0.6; }
+            to   { transform: scaleY(1);    opacity: 1; }
+        }
+
+        /* ══════════════════════════════════════
            SIDEBAR
         ══════════════════════════════════════ */
         .sidebar {
@@ -260,10 +320,12 @@
             transition: left var(--t-med) var(--ease), box-shadow var(--t-med);
             padding: 90px 14px 32px;
             border-right: 1px solid var(--border);
+            overflow-y: auto;
+            scrollbar-width: none;
         }
+        .sidebar::-webkit-scrollbar { display: none; }
         .sidebar.active { left: 0; box-shadow: 16px 0 60px rgba(0,0,0,0.7), var(--shadow-cyan); }
 
-        /* Sidebar top accent line */
         .sidebar::before {
             content: '';
             position: absolute; top: 66px; left: 0; right: 0; height: 1px;
@@ -297,6 +359,25 @@
         .sidebar-item.gold::before { background: var(--gold); }
         .sidebar-item.danger { color: var(--danger); }
         .sidebar-item.danger::before { background: var(--danger); }
+
+        /* Sidebar audio toggle item */
+        .sidebar-audio-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 12px; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 0.86rem; font-weight: 500;
+            color: var(--text-dim);
+            transition: background var(--t-fast), color var(--t-fast);
+            border: 1px solid transparent;
+            position: relative; overflow: hidden;
+            margin-top: 4px;
+        }
+        .sidebar-audio-btn:hover { background: rgba(255,255,255,0.04); color: var(--cyan); }
+        .sidebar-audio-btn.active { color: var(--cyan); }
+        .sidebar-audio-track {
+            font-size: 0.65rem; letter-spacing: 0.5px; color: var(--text-dim);
+            text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+            max-width: 140px;
+        }
 
         .sidebar-overlay {
             display: none; position: fixed; inset: 0;
@@ -390,7 +471,6 @@
                         background var(--t-fast), border-color var(--t-fast);
             position: relative; padding: 6px; text-align: center; overflow: hidden;
         }
-        /* Inner shimmer gradient */
         .stk::before {
             content: '';
             position: absolute; inset: 0;
@@ -421,99 +501,144 @@
         .stk-status.av { color: var(--success); background: rgba(0,230,118,0.10); }
         .stk-status.so { color: var(--danger); background: rgba(255,76,106,0.10); }
 
-        /* Sold-out sticker: elegant desaturated with faint overlay */
+        /* Sold-out sticker — elegant desaturated overlay */
         .stk.stk-sold-out {
-            opacity: 0.32; cursor: not-allowed;
-            filter: grayscale(1) brightness(0.7);
+            opacity: 0.36;
+            cursor: not-allowed;
+            filter: grayscale(1) brightness(0.65) contrast(0.9);
         }
         .stk.stk-sold-out::after {
             content: '';
             position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.3), transparent);
+            background: linear-gradient(135deg, rgba(0,0,0,0.25), transparent);
+            border-radius: inherit;
         }
 
-        /* Skeleton shimmer */
+        /* Skeleton shimmer — premium fluid sweep */
         .skeleton {
-            background: linear-gradient(90deg, var(--bg-3) 25%, rgba(255,255,255,0.055) 50%, var(--bg-3) 75%);
-            background-size: 600px 100%; animation: shimmer 1.5s infinite;
+            background: linear-gradient(
+                105deg,
+                var(--bg-3) 0%,
+                var(--bg-3) 30%,
+                rgba(255,255,255,0.065) 50%,
+                var(--bg-3) 70%,
+                var(--bg-3) 100%
+            );
+            background-size: 800px 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
         }
-        @keyframes shimmer { from { background-position: -600px 0; } to { background-position: 600px 0; } }
+        @keyframes shimmer {
+            0%   { background-position: -800px 0; }
+            100% { background-position:  800px 0; }
+        }
 
         /* ══════════════════════════════════════
-           SPECIAL / LEGEND CARDS — SOVEREIGN STYLE
+           SPECIAL / LEGEND CARDS — SOVEREIGN V2
+           Ultra-premium collectible card aesthetic
         ══════════════════════════════════════ */
-        .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+        .special-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
 
-        /* Base card — collectible physical card aesthetic */
+        /* Base card */
         .legend-card {
-            background: var(--bg-2);
+            background:
+                linear-gradient(160deg, rgba(14,15,27,0.98) 0%, rgba(9,9,15,0.99) 100%);
             border-radius: 18px;
             overflow: hidden;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255,255,255,0.07);
             transition:
-                transform var(--t-slow) var(--ease-spring),
-                box-shadow var(--t-slow),
-                border-color var(--t-med);
+                transform var(--t-slow) var(--ease-premium),
+                box-shadow var(--t-slow) var(--ease-premium),
+                border-color var(--t-med) var(--ease-premium);
             display: flex; flex-direction: column;
             position: relative;
             cursor: default;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
-        /* Corner accent marks (physical card feel) */
+        /* Corner accent marks — physical card feel */
         .legend-card::before,
         .legend-card::after {
             content: '';
-            position: absolute; width: 22px; height: 22px;
-            border-style: solid; z-index: 2; opacity: 0;
-            transition: opacity var(--t-med);
+            position: absolute; width: 24px; height: 24px;
+            border-style: solid; z-index: 3; opacity: 0;
+            transition: opacity var(--t-med) var(--ease-premium);
             pointer-events: none;
         }
         .legend-card::before {
-            top: 10px; left: 10px;
+            top: 11px; left: 11px;
             border-width: 2px 0 0 2px;
             border-color: var(--cyan);
-            border-radius: 4px 0 0 0;
+            border-radius: 5px 0 0 0;
         }
         .legend-card::after {
-            bottom: 10px; right: 10px;
+            bottom: 11px; right: 11px;
             border-width: 0 2px 2px 0;
             border-color: var(--cyan);
-            border-radius: 0 0 4px 0;
+            border-radius: 0 0 5px 0;
         }
         .legend-card:hover::before,
         .legend-card:hover::after { opacity: 1; }
 
-        /* Hover lift — Cyan cards (Campeones) */
+        /* Hover lift — Cyan (Campeones) */
         .legend-card:hover {
-            transform: translateY(-10px) scale(1.012);
-            box-shadow: 0 30px 70px rgba(0,0,0,0.55), 0 0 40px var(--cyan-glow);
+            transform: translateY(-12px) scale(1.013);
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.65),
+                0 0 50px var(--cyan-glow),
+                inset 0 1px 0 rgba(0,229,255,0.1);
             border-color: var(--cyan-border);
         }
-        .legend-card:hover .card-img { transform: scale(1.08) translateY(-4px); }
+        .legend-card:hover .card-img {
+            transform: scale(1.06) translateY(-3px);
+        }
 
-        /* Gold variant override (Royal Legends) */
+        /* Gold variant (Royal Legends) */
         .legend-card.gold-border::before,
         .legend-card.gold-border::after { border-color: var(--gold); }
         .legend-card.gold-border:hover {
-            box-shadow: 0 30px 70px rgba(0,0,0,0.55), 0 0 40px var(--gold-glow);
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.65),
+                0 0 50px var(--gold-glow),
+                inset 0 1px 0 rgba(226,185,110,0.1);
             border-color: var(--gold-border);
         }
 
         /* Selected states */
         .legend-card.selected {
             border: 1.5px solid var(--cyan-border);
-            box-shadow: 0 0 36px var(--cyan-glow), inset 0 0 24px rgba(0,229,255,0.04);
+            box-shadow:
+                0 0 40px var(--cyan-glow),
+                inset 0 0 28px rgba(0,229,255,0.04);
         }
         .legend-card.gold-border.selected {
             border-color: var(--gold-border) !important;
-            box-shadow: 0 0 36px var(--gold-glow), inset 0 0 24px rgba(226,185,110,0.04) !important;
+            box-shadow:
+                0 0 40px var(--gold-glow),
+                inset 0 0 28px rgba(226,185,110,0.04) !important;
+        }
+
+        /* Sold-out legend card */
+        .legend-card.card-sold-out {
+            filter: grayscale(0.85) brightness(0.7) contrast(0.9);
+            opacity: 0.55;
+        }
+        .legend-card.card-sold-out::after {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(5,6,9,0.35);
+            z-index: 5; border-radius: inherit;
+            pointer-events: none;
         }
 
         /* Inner top border glow strip */
         .legend-card-inner-glow {
             position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 2;
             background: linear-gradient(90deg, transparent 5%, var(--cyan) 50%, transparent 95%);
-            opacity: 0.4;
+            opacity: 0.45;
+            pointer-events: none;
         }
         .legend-card.gold-border .legend-card-inner-glow {
             background: linear-gradient(90deg, transparent 5%, var(--gold) 50%, transparent 95%);
@@ -521,14 +646,12 @@
 
         /* Image wrap */
         .card-img-wrap {
-            overflow: hidden; height: 250px; position: relative;
+            overflow: hidden; height: 260px; position: relative;
             background: var(--bg-3);
         }
         .card-img {
             width: 100%; height: 100%; object-fit: cover;
-            transition: transform 0.65s var(--ease);
-            mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+            transition: transform 0.65s var(--ease-premium);
         }
 
         /* Badge on card image */
@@ -539,14 +662,15 @@
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--border-hi); border-radius: 50px;
             font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px;
-            padding: 4px 11px; color: var(--gold); text-transform: uppercase;
+            padding: 4px 12px; color: var(--gold); text-transform: uppercase;
             font-family: 'DM Sans', sans-serif;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
         .card-badge.cyan-badge { color: var(--cyan); }
 
         /* Card content */
         .legend-content {
-            padding: 20px 20px 18px; flex: 1;
+            padding: 22px 22px 20px; flex: 1;
             display: flex; flex-direction: column; gap: 8px;
         }
         .legend-content h3 {
@@ -556,7 +680,7 @@
         }
         .price-tag {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.5rem; font-weight: 600;
+            font-size: 1.6rem; font-weight: 600;
             color: var(--cyan); letter-spacing: 0.5px;
         }
         .price-tag.gold-price { color: var(--gold); }
@@ -567,32 +691,32 @@
             background: rgba(255,255,255,0.04);
             color: var(--text);
             border: 1px solid var(--border-hi);
-            padding: 12px 16px; border-radius: var(--radius-sm);
+            padding: 13px 16px; border-radius: var(--radius-sm);
             font-weight: 600; font-size: 0.82rem; letter-spacing: 0.8px;
             cursor: pointer; width: 100%;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             font-family: 'DM Sans', sans-serif; text-transform: uppercase;
             transition:
-                background var(--t-fast),
-                color var(--t-fast),
-                border-color var(--t-fast),
+                background var(--t-fast) var(--ease-premium),
+                color var(--t-fast) var(--ease-premium),
+                border-color var(--t-fast) var(--ease-premium),
                 transform var(--t-fast) var(--ease-spring),
-                box-shadow var(--t-fast);
+                box-shadow var(--t-fast) var(--ease-premium);
         }
         .btn-add-special:hover:not([disabled]) {
             background: linear-gradient(135deg, var(--cyan), var(--cyan-mid));
             color: #000; border-color: var(--cyan);
             transform: scale(1.03);
-            box-shadow: 0 6px 20px var(--cyan-glow);
+            box-shadow: 0 6px 24px var(--cyan-glow);
         }
         .btn-add-special:active:not([disabled]) { transform: scale(0.96); }
-        .btn-add-special[disabled] { opacity: 0.35; cursor: not-allowed; }
+        .btn-add-special[disabled] { opacity: 0.30; cursor: not-allowed; }
 
         /* Gold button hover */
         .legend-card.gold-border .btn-add-special:hover:not([disabled]) {
             background: linear-gradient(135deg, var(--gold-bright), var(--gold));
             color: #000; border-color: var(--gold);
-            box-shadow: 0 6px 20px var(--gold-glow);
+            box-shadow: 0 6px 24px var(--gold-glow);
         }
 
         /* Selected button states */
@@ -676,7 +800,7 @@
         }
         .cart-close:hover { color: var(--text-bright); transform: rotate(90deg); background: rgba(255,255,255,0.08); }
 
-        /* Cart list scroll area — invisible scrollbar */
+        /* Cart list — invisible scrollbar */
         #cart-list {
             flex: 1; overflow-y: auto;
             scrollbar-width: none;
@@ -839,6 +963,9 @@
 
     <div id="toast"></div>
 
+    <!-- Hidden audio element -->
+    <audio id="bg-audio" src="we-are-one.mp3.mp3" loop preload="none"></audio>
+
     <div id="intro-space"><div class="earth-zoom"></div></div>
 
     <!-- ── AUTH SCREEN ── -->
@@ -862,6 +989,16 @@
             <span class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></span>
             <span class="nav-logo">PANINI</span>
             <div class="nav-right-actions">
+                <!-- Audio control button -->
+                <button class="btn-audio" id="btn-audio-nav" onclick="toggleAudio()" title="Música oficial">
+                    <i class="fa-solid fa-music audio-icon"></i>
+                    <div class="audio-bars">
+                        <span class="audio-bar"></span>
+                        <span class="audio-bar"></span>
+                        <span class="audio-bar"></span>
+                        <span class="audio-bar"></span>
+                    </div>
+                </button>
                 <a href="https://instagram.com/pablooib" target="_blank" class="btn-insta-nav">
                     <i class="fa-brands fa-instagram"></i> @pablooib
                 </a>
@@ -884,6 +1021,17 @@
             <p class="sidebar-section">Cuenta</p>
             <div class="sidebar-item" onclick="showView('profile-view')">
                 <i class="fa-solid fa-user-gear" style="width:18px;"></i> Perfil
+            </div>
+            <!-- Audio toggle in sidebar -->
+            <div class="sidebar-audio-btn" id="sidebar-audio-btn" onclick="toggleAudio()">
+                <div style="display:flex;align-items:center;gap:11px;">
+                    <i class="fa-solid fa-headphones" style="width:18px;"></i>
+                    <div>
+                        <div style="font-size:0.86rem;font-weight:500;">Música oficial</div>
+                        <div class="sidebar-audio-track" id="sidebar-audio-track">We Are One — FIFA 2026</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-play" id="sidebar-audio-icon" style="font-size:0.75rem;opacity:0.6;"></i>
             </div>
             <div class="sidebar-item danger" onclick="logout()">
                 <i class="fa-solid fa-power-off" style="width:18px;"></i> Cerrar Sesión
@@ -998,8 +1146,7 @@
     let selectedCountry = '';
     let activeUnsubs = [];
 
-    /* Unsubs para Campeones y Legends (para no duplicar listeners) */
-    let unsubCampeones   = null;
+    let unsubCampeones    = null;
     let unsubRoyalLegends = null;
 
     const grupos = [
@@ -1033,10 +1180,33 @@
     };
 
     /* ════════════════════════════════════════
-       AUTH LIFECYCLE — BUG FIX CENTRAL
-       Los listeners de secciones especiales
-       se inician DENTRO de onAuthStateChanged
-       una vez confirmado el usuario activo.
+       AUDIO CONTROL
+    ════════════════════════════════════════ */
+    let audioPlaying = false;
+
+    function toggleAudio() {
+        const audio      = document.getElementById('bg-audio');
+        const btnNav     = document.getElementById('btn-audio-nav');
+        const btnSidebar = document.getElementById('sidebar-audio-btn');
+        const icon       = document.getElementById('sidebar-audio-icon');
+
+        if (audioPlaying) {
+            audio.pause();
+            audioPlaying = false;
+            btnNav.classList.remove('playing');
+            btnSidebar.classList.remove('active');
+            if (icon) { icon.className = 'fa-solid fa-play'; icon.style.opacity = '0.6'; }
+        } else {
+            audio.play().catch(() => {});
+            audioPlaying = true;
+            btnNav.classList.add('playing');
+            btnSidebar.classList.add('active');
+            if (icon) { icon.className = 'fa-solid fa-pause'; icon.style.opacity = '1'; }
+        }
+    }
+
+    /* ════════════════════════════════════════
+       AUTH LIFECYCLE
     ════════════════════════════════════════ */
     auth.onAuthStateChanged(user => {
         setTimeout(() => {
@@ -1050,7 +1220,6 @@
     });
 
     function initApp(user) {
-        /* ── UI setup ── */
         document.getElementById('auth-screen').style.display  = 'none';
         document.getElementById('app').style.display          = 'block';
         document.getElementById('nav-avatar').src             = user.photoURL  || '';
@@ -1058,19 +1227,13 @@
         document.getElementById('profile-name').innerText     = user.displayName || 'Usuario';
         document.getElementById('profile-email').innerText    = user.email || '';
 
-        /* ── Album stickers ── */
         selectedCountry = grupos[0].paises[0];
         renderGroup();
         listenToStickers();
 
-        /*
-         * BUG FIX: listenToCampeones y listenToRoyalLegends se invocan aquí,
-         * dentro de initApp(), que a su vez solo se llama cuando el usuario
-         * ya está autenticado (auth.onAuthStateChanged devuelve un user truthy).
-         * Esto garantiza que db esté listo y el DOM esté visible.
-         * Además, cada función cancela su listener anterior antes de crear uno
-         * nuevo, evitando duplicados al llamarlas desde removeItem().
-         */
+        /* ── BUG FIX: listeners de secciones especiales iniciados aquí,
+           tras confirmar usuario autenticado, garantizando que db y DOM
+           estén listos. Cada función cancela su listener previo. ── */
         listenToCampeones();
         listenToRoyalLegends();
     }
@@ -1199,169 +1362,267 @@
     }
 
     /* ════════════════════════════════════════
+       HELPER — Normaliza un snapshot de
+       Firestore a un array de {idCard, info}
+       sin importar si los datos vienen de:
+         a) Un único doc con mapa de objetos
+            (config/campeones_config → {k: {...}})
+         b) Una colección de docs individuales
+            (config/campeones/items/{docId})
+       Ambos esquemas quedan cubiertos de forma
+       defensiva y tolerante a fallos.
+    ════════════════════════════════════════ */
+    function normalizeSpecialData(snapOrSnaps) {
+        const items = [];
+
+        /* Caso A: snapshot único (QueryDocumentSnapshot con .data()) */
+        if (snapOrSnaps && typeof snapOrSnaps.data === 'function') {
+            const raw = snapOrSnaps.exists ? snapOrSnaps.data() : null;
+            if (!raw) return items;
+
+            /* ¿El doc tiene campos que son objetos con price/precio? → mapa */
+            Object.entries(raw).forEach(([idCard, info]) => {
+                if (info && typeof info === 'object' && !Array.isArray(info)) {
+                    items.push({ idCard, info });
+                }
+            });
+            return items;
+        }
+
+        /* Caso B: QuerySnapshot (colección de múltiples docs) */
+        if (snapOrSnaps && typeof snapOrSnaps.forEach === 'function') {
+            snapOrSnaps.forEach(doc => {
+                const info = doc.data();
+                if (info && typeof info === 'object') {
+                    items.push({ idCard: doc.id, info });
+                }
+            });
+            return items;
+        }
+
+        return items;
+    }
+
+    /* ════════════════════════════════════════
        LISTEN — CAMPEONES DEL MUNDO
-       BUG FIX: Se cancela el listener previo
-       antes de crear uno nuevo. El contenedor
-       existe en el DOM porque .view usa
-       display:none (no se remueve del DOM).
+       Estrategia dual: intenta primero leer
+       como doc único (mapa); si el doc no
+       existe o está vacío, escucha la
+       colección 'campeones_items'.
     ════════════════════════════════════════ */
     function listenToCampeones() {
-        /* Cancelar listener anterior si existe */
-        if (unsubCampeones) {
-            unsubCampeones();
-            unsubCampeones = null;
-        }
+        if (unsubCampeones) { unsubCampeones(); unsubCampeones = null; }
 
         const container = document.getElementById('campeones-cards-container');
         if (!container) return;
 
-        /* Mostrar skeletons mientras carga */
-        container.innerHTML = `
-            <div class="legend-card" style="min-height:320px;">
-                <div class="card-img-wrap skeleton" style="height:250px;"></div>
-                <div class="legend-content" style="gap:10px;">
-                    <div class="skeleton" style="height:18px;border-radius:6px;width:70%;"></div>
-                    <div class="skeleton" style="height:26px;border-radius:6px;width:40%;"></div>
-                    <div class="skeleton" style="height:42px;border-radius:10px;width:100%;margin-top:auto;"></div>
-                </div>
-            </div>
-            <div class="legend-card" style="min-height:320px;">
-                <div class="card-img-wrap skeleton" style="height:250px;"></div>
-                <div class="legend-content" style="gap:10px;">
-                    <div class="skeleton" style="height:18px;border-radius:6px;width:65%;"></div>
-                    <div class="skeleton" style="height:26px;border-radius:6px;width:35%;"></div>
-                    <div class="skeleton" style="height:42px;border-radius:10px;width:100%;margin-top:auto;"></div>
-                </div>
-            </div>`;
+        container.innerHTML = buildSkeletons('cyan');
 
-        unsubCampeones = db.collection('config').doc('campeones_config').onSnapshot(snap => {
-            if (!snap.exists) {
-                container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;">No hay datos disponibles.</p>`;
+        /* Listener principal: doc único con mapa de campos */
+        const unsubDoc = db.collection('config').doc('campeones_config').onSnapshot(snap => {
+            let items = normalizeSpecialData(snap);
+
+            if (items.length > 0) {
+                renderCampeonesCards(container, items);
                 return;
             }
 
-            let html = '';
-            Object.entries(snap.data()).forEach(([idCard, info]) => {
-                /* Limpiar del carrito si el ítem ya no está disponible */
-                if (!info.disponible) {
-                    const i = cart.findIndex(x => x.id === info.itemCartName);
-                    if (i > -1) { cart.splice(i, 1); updateCartUI(); }
-                }
-
-                const isSel = cart.some(x => x.id === info.itemCartName);
-                const cls   = isSel ? 'legend-card selected' : 'legend-card';
-                const txt   = isSel ? 'Quitar' : (info.disponible ? 'Agregar' : 'Agotado');
-                const dis   = (!isSel && !info.disponible) ? 'disabled' : '';
-
-                html += `
-                <div id="card-campeon-${idCard}" class="${cls}">
-                    <div class="legend-card-inner-glow"></div>
-                    <div class="card-img-wrap">
-                        <img src="panini.png" class="card-img"
-                             style="object-fit:contain;padding:20px;background:rgba(0,0,0,0.25);"
-                             onerror="this.src='panini.png'">
-                        <span class="card-badge cyan-badge"><i class="fa-solid fa-trophy"></i> Campeón</span>
-                    </div>
-                    <div class="legend-content">
-                        <h3>${(info.name || idCard).toUpperCase()}</h3>
-                        <span class="price-tag">Q${parseFloat(info.price || 0).toFixed(2)}</span>
-                        <button class="btn-add-special" ${dis}
-                                onclick="toggleSpecial('${info.itemCartName}',${info.price || 0},'card-campeon-${idCard}')">
-                            <i class="fa-solid fa-trophy"></i>
-                            <span class="btn-txt">${txt}</span>
-                        </button>
-                    </div>
-                </div>`;
-            });
-
-            container.innerHTML = html || `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;">No hay campeones cargados aún.</p>`;
+            /* Si el doc no existe o está vacío, escuchamos la subcolección */
+            if (unsubCampeones === unsubDoc) {
+                /* Cancelamos y montamos listener de colección alternativa */
+                unsubDoc();
+                const unsubCol = db.collection('campeones').onSnapshot(colSnap => {
+                    const colItems = normalizeSpecialData(colSnap);
+                    if (colItems.length > 0) {
+                        renderCampeonesCards(container, colItems);
+                    } else {
+                        container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay campeones cargados aún.</p>`;
+                    }
+                }, err => {
+                    console.error('Error colección campeones:', err);
+                    container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;grid-column:1/-1;">Error al cargar datos.</p>`;
+                });
+                unsubCampeones = unsubCol;
+            }
         }, err => {
-            console.error('Error en listenToCampeones:', err);
-            container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;">Error al cargar datos.</p>`;
+            console.error('Error en listenToCampeones doc:', err);
+            /* Fallback directo a colección */
+            const unsubCol = db.collection('campeones').onSnapshot(colSnap => {
+                const colItems = normalizeSpecialData(colSnap);
+                renderCampeonesCards(container, colItems.length > 0 ? colItems : []);
+                if (colItems.length === 0) {
+                    container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay datos disponibles.</p>`;
+                }
+            }, () => {
+                container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;grid-column:1/-1;">Error al cargar datos.</p>`;
+            });
+            unsubCampeones = unsubCol;
         });
+
+        unsubCampeones = unsubDoc;
+    }
+
+    function renderCampeonesCards(container, items) {
+        if (!items || items.length === 0) {
+            container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay campeones cargados aún.</p>`;
+            return;
+        }
+        let html = '';
+        items.forEach(({ idCard, info }) => {
+            /* Normalizar campos: soporta price / precio */
+            const price  = parseFloat(info.price ?? info.precio ?? 0);
+            const disp   = info.disponible ?? true;
+            const name   = info.name || info.nombre || idCard;
+            const cartId = info.itemCartName || info.cartName || idCard;
+
+            if (!disp) {
+                const i = cart.findIndex(x => x.id === cartId);
+                if (i > -1) { cart.splice(i, 1); updateCartUI(); }
+            }
+
+            const isSel   = cart.some(x => x.id === cartId);
+            const cls     = ['legend-card', isSel ? 'selected' : '', !disp && !isSel ? 'card-sold-out' : ''].filter(Boolean).join(' ');
+            const txt     = isSel ? 'Quitar' : (disp ? 'Agregar' : 'Agotado');
+            const dis     = (!isSel && !disp) ? 'disabled' : '';
+
+            html += `
+            <div id="card-campeon-${idCard}" class="${cls}">
+                <div class="legend-card-inner-glow"></div>
+                <div class="card-img-wrap">
+                    <img src="panini.png" class="card-img"
+                         style="object-fit:contain;padding:20px;background:rgba(0,0,0,0.25);"
+                         onerror="this.src='panini.png'">
+                    <span class="card-badge cyan-badge"><i class="fa-solid fa-trophy"></i> Campeón</span>
+                </div>
+                <div class="legend-content">
+                    <h3>${String(name).toUpperCase()}</h3>
+                    <span class="price-tag">Q${price.toFixed(2)}</span>
+                    <button class="btn-add-special" ${dis}
+                            onclick="toggleSpecial('${cartId}',${price},'card-campeon-${idCard}')">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span class="btn-txt">${txt}</span>
+                    </button>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
     }
 
     /* ════════════════════════════════════════
        LISTEN — ROYAL LEGENDS
-       BUG FIX: Mismo patrón de cancelación
-       de listener. El campo `name` se lee
-       directamente de info.name; la imagen
-       se mapea con LEGEND_IMAGES[idCard].
+       Misma estrategia dual defensiva.
     ════════════════════════════════════════ */
     function listenToRoyalLegends() {
-        /* Cancelar listener anterior si existe */
-        if (unsubRoyalLegends) {
-            unsubRoyalLegends();
-            unsubRoyalLegends = null;
-        }
+        if (unsubRoyalLegends) { unsubRoyalLegends(); unsubRoyalLegends = null; }
 
         const container = document.getElementById('royal-legends-container');
         if (!container) return;
 
-        /* Mostrar skeletons mientras carga */
-        container.innerHTML = `
-            <div class="legend-card gold-border" style="min-height:320px;">
-                <div class="card-img-wrap skeleton" style="height:250px;"></div>
-                <div class="legend-content" style="gap:10px;">
-                    <div class="skeleton" style="height:18px;border-radius:6px;width:70%;"></div>
-                    <div class="skeleton" style="height:26px;border-radius:6px;width:40%;"></div>
-                    <div class="skeleton" style="height:42px;border-radius:10px;width:100%;margin-top:auto;"></div>
-                </div>
-            </div>
-            <div class="legend-card gold-border" style="min-height:320px;">
-                <div class="card-img-wrap skeleton" style="height:250px;"></div>
-                <div class="legend-content" style="gap:10px;">
-                    <div class="skeleton" style="height:18px;border-radius:6px;width:60%;"></div>
-                    <div class="skeleton" style="height:26px;border-radius:6px;width:38%;"></div>
-                    <div class="skeleton" style="height:42px;border-radius:10px;width:100%;margin-top:auto;"></div>
-                </div>
-            </div>`;
+        container.innerHTML = buildSkeletons('gold');
 
-        unsubRoyalLegends = db.collection('config').doc('royal_legends').onSnapshot(snap => {
-            if (!snap.exists) {
-                container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;">No hay datos disponibles.</p>`;
+        const unsubDoc = db.collection('config').doc('royal_legends').onSnapshot(snap => {
+            let items = normalizeSpecialData(snap);
+
+            if (items.length > 0) {
+                renderLegendsCards(container, items);
                 return;
             }
 
-            let html = '';
-            Object.entries(snap.data()).forEach(([idCard, info]) => {
-                const sourceImg = LEGEND_IMAGES[idCard] || 'panini.png';
-
-                /* Limpiar del carrito si el ítem ya no está disponible */
-                if (!info.disponible) {
-                    const i = cart.findIndex(x => x.id === info.itemCartName);
-                    if (i > -1) { cart.splice(i, 1); updateCartUI(); }
-                }
-
-                const isSel = cart.some(x => x.id === info.itemCartName);
-                const cls   = ['legend-card', 'gold-border', isSel ? 'selected' : ''].filter(Boolean).join(' ');
-                const txt   = isSel ? 'Quitar' : (info.disponible ? 'Agregar' : 'Agotado');
-                const dis   = (!isSel && !info.disponible) ? 'disabled' : '';
-
-                html += `
-                <div id="${idCard}" class="${cls}">
-                    <div class="legend-card-inner-glow"></div>
-                    <div class="card-img-wrap">
-                        <img src="${sourceImg}" class="card-img" onerror="this.src='panini.png'">
-                        <span class="card-badge"><i class="fa-solid fa-crown"></i> Legend</span>
-                    </div>
-                    <div class="legend-content">
-                        <h3>${info.name || 'Leyenda'}</h3>
-                        <span class="price-tag gold-price">Q${parseFloat(info.price || 0).toFixed(2)}</span>
-                        <button class="btn-add-special" ${dis}
-                                onclick="toggleSpecial('${info.itemCartName}',${info.price || 0},'${idCard}')">
-                            <i class="fa-solid fa-plus"></i>
-                            <span class="btn-txt">${txt}</span>
-                        </button>
-                    </div>
-                </div>`;
-            });
-
-            container.innerHTML = html || `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;">No hay legends cargadas aún.</p>`;
+            if (unsubRoyalLegends === unsubDoc) {
+                unsubDoc();
+                const unsubCol = db.collection('royal_legends').onSnapshot(colSnap => {
+                    const colItems = normalizeSpecialData(colSnap);
+                    if (colItems.length > 0) {
+                        renderLegendsCards(container, colItems);
+                    } else {
+                        container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay legends cargadas aún.</p>`;
+                    }
+                }, err => {
+                    console.error('Error colección royal_legends:', err);
+                    container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;grid-column:1/-1;">Error al cargar datos.</p>`;
+                });
+                unsubRoyalLegends = unsubCol;
+            }
         }, err => {
-            console.error('Error en listenToRoyalLegends:', err);
-            container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;">Error al cargar datos.</p>`;
+            console.error('Error en listenToRoyalLegends doc:', err);
+            const unsubCol = db.collection('royal_legends').onSnapshot(colSnap => {
+                const colItems = normalizeSpecialData(colSnap);
+                renderLegendsCards(container, colItems.length > 0 ? colItems : []);
+                if (colItems.length === 0) {
+                    container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay datos disponibles.</p>`;
+                }
+            }, () => {
+                container.innerHTML = `<p style="text-align:center;color:var(--danger);width:100%;padding:40px 0;grid-column:1/-1;">Error al cargar datos.</p>`;
+            });
+            unsubRoyalLegends = unsubCol;
         });
+
+        unsubRoyalLegends = unsubDoc;
+    }
+
+    function renderLegendsCards(container, items) {
+        if (!items || items.length === 0) {
+            container.innerHTML = `<p style="text-align:center;color:var(--text-dim);width:100%;padding:40px 0;grid-column:1/-1;">No hay legends cargadas aún.</p>`;
+            return;
+        }
+        let html = '';
+        items.forEach(({ idCard, info }) => {
+            const price     = parseFloat(info.price ?? info.precio ?? 0);
+            const disp      = info.disponible ?? true;
+            const name      = info.name || info.nombre || 'Leyenda';
+            const cartId    = info.itemCartName || info.cartName || idCard;
+            const sourceImg = LEGEND_IMAGES[idCard] || 'panini.png';
+
+            if (!disp) {
+                const i = cart.findIndex(x => x.id === cartId);
+                if (i > -1) { cart.splice(i, 1); updateCartUI(); }
+            }
+
+            const isSel = cart.some(x => x.id === cartId);
+            const cls   = ['legend-card', 'gold-border', isSel ? 'selected' : '', !disp && !isSel ? 'card-sold-out' : ''].filter(Boolean).join(' ');
+            const txt   = isSel ? 'Quitar' : (disp ? 'Agregar' : 'Agotado');
+            const dis   = (!isSel && !disp) ? 'disabled' : '';
+
+            html += `
+            <div id="${idCard}" class="${cls}">
+                <div class="legend-card-inner-glow"></div>
+                <div class="card-img-wrap">
+                    <img src="${sourceImg}" class="card-img" onerror="this.src='panini.png'">
+                    <span class="card-badge"><i class="fa-solid fa-crown"></i> Legend</span>
+                </div>
+                <div class="legend-content">
+                    <h3>${name}</h3>
+                    <span class="price-tag gold-price">Q${price.toFixed(2)}</span>
+                    <button class="btn-add-special" ${dis}
+                            onclick="toggleSpecial('${cartId}',${price},'${idCard}')">
+                        <i class="fa-solid fa-star"></i>
+                        <span class="btn-txt">${txt}</span>
+                    </button>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    /* ════════════════════════════════════════
+       HELPER — Skeleton placeholders
+    ════════════════════════════════════════ */
+    function buildSkeletons(type) {
+        const isCyan = type !== 'gold';
+        const cardCls = isCyan ? 'legend-card' : 'legend-card gold-border';
+        let s = '';
+        for (let i = 0; i < 2; i++) {
+            s += `
+            <div class="${cardCls}" style="min-height:340px;">
+                <div class="card-img-wrap skeleton" style="height:260px;"></div>
+                <div class="legend-content" style="gap:10px;">
+                    <div class="skeleton" style="height:18px;border-radius:6px;width:${70 - i*8}%;"></div>
+                    <div class="skeleton" style="height:28px;border-radius:6px;width:${40 - i*4}%;"></div>
+                    <div class="skeleton" style="height:44px;border-radius:10px;width:100%;margin-top:auto;"></div>
+                </div>
+            </div>`;
+        }
+        return s;
     }
 
     /* ════════════════════════════════════════
@@ -1448,7 +1709,6 @@
         cart.splice(i, 1);
         updateCartUI();
 
-        /* Sync sticker grid visual state */
         if (item.id.startsWith(selectedCountry + ' #')) {
             const key  = item.id.split(' #')[1];
             const cell = document.getElementById(`sticker-container-${key}`);
@@ -1456,20 +1716,18 @@
         }
 
         /*
-         * BUG FIX: En lugar de llamar listenToCampeones() y listenToRoyalLegends()
-         * aquí (lo que causaba que se crearan listeners duplicados y se perdía
-         * la referencia de los unsubs), simplemente re-renderizamos el DOM de las
-         * tarjetas especiales de forma síncrona a partir del estado actual del carrito,
-         * sin recrear los listeners de Firestore que ya están activos y son válidos.
+         * Re-sincronizamos el DOM de tarjetas especiales de forma síncrona
+         * a partir del estado actual del carrito, sin recrear los listeners
+         * de Firestore que ya están activos y son válidos.
          */
         refreshSpecialCardsDOM();
         showToast('✗ Item eliminado', true);
     }
 
     /*
-     * refreshSpecialCardsDOM — Re-sincroniza el estado visual (clase selected,
-     * texto del botón) de todas las tarjetas especiales ya renderizadas
-     * sin necesitar un nuevo onSnapshot. Se llama solo desde removeItem().
+     * refreshSpecialCardsDOM — Re-sincroniza estado visual (clase selected,
+     * texto del botón) de todas las tarjetas ya renderizadas
+     * sin necesitar un nuevo onSnapshot.
      */
     function refreshSpecialCardsDOM() {
         /* Campeones */
@@ -1485,8 +1743,7 @@
         });
 
         /* Royal Legends */
-        const legendIds = Object.keys(LEGEND_IMAGES);
-        legendIds.forEach(idCard => {
+        Object.keys(LEGEND_IMAGES).forEach(idCard => {
             const el = document.getElementById(idCard);
             if (!el) return;
             const btn    = el.querySelector('.btn-txt');
